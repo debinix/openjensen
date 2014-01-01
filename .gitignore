@@ -1,0 +1,20 @@
+# Git ignore for Cobol
+
+# Ignore build directory
+
+build/
+
+# Ignore binaries
+
+*.so
+*.cgi
+
+# Ignore project files etc.
+
+*.komodoproject
+*.komodo
+
+# Igonore some temporary files
+
+*.cob
+
