@@ -17,4 +17,5 @@ build/
 # Igonore some temporary files
 
 *.cob
+*.tmp
 

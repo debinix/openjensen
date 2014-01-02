@@ -72,7 +72,7 @@
             newline
             "<h3>CGI environment with GNU Cobol</h3>"
             newline "<p>"
-            'To <a href="../index.html">Back to form entry - try again!'
+            '<a href="../index.html"> Back to form entry - try again!'
             newline "</p><p>"
             "<i>All values of &lt;, &gt;, and &amp;"
             " replaced by space</i>"
