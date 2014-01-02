@@ -7,13 +7,15 @@
         working-storage section.
         01  newline     PIC X VALUE x'0a'.        
         
+        *> Need a dummy parameter for this routine
+        *> to to link as a shared library.
         linkage section.
         01  dummy    PIC X.     
         
-        PROCEDURE DIVISION.
+        PROCEDURE DIVISION USING dummy.
         000-print-html-header.
         
-            *> Always send out the Content-type before any other IO
+            *> Always send out the Content-Type before any other I/O
             DISPLAY
                 "Content-Type: text/html; charset=utf-8"
                 newline
