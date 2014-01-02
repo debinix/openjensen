@@ -39,7 +39,7 @@ all clean cleanall build:
 
 	cd src && $(MAKE) $@
 	cd lib && $(MAKE) $@
-
+	cd html && $(MAKE) $@
 
 dist: $(distdir).tar.gz
 

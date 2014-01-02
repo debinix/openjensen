@@ -14,7 +14,7 @@ Linux 3.2.0-4-amd64 #1 SMP Debian 3.2.51-1 x86_64 GNU/Linux - kernel information
 
 PostgreSQL 9.1.11 - the open relation database system
 
-Open COBOL 1.1 (Now GnuCobol) - the COBOL complier
+Open COBOL 1.1 (Now GnuCobol) - the COBOL compiler
 
 OCESQL 1.0.0 - the pre-processor for embedded SQL
 
@@ -36,7 +36,7 @@ Then install with ./configure, make and make install.
 ### Komodo Edit or Komodo IDE.
 
 An editor like Komodo Editor (free) will just work well for COBOL system
-development. On the wishlist, COBOL syntax checks and vertical guide lines.
+development. On the wishlist, support for COBOL syntax checks.
 
 The project directory structure for COBOL system development:
 
