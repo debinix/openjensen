@@ -1,5 +1,5 @@
         IDENTIFICATION DIVISION.
-        program-id. ojconnectaddress.
+        program-id. vojconnectaddress.
         
         ENVIRONMENT DIVISION.
         
@@ -8,6 +8,7 @@
              
         01  pagetitle    PIC X(20) VALUE 'Open Jensen'.
         01  dummy        PIC X     VALUE SPACE.
+        01  newline      PIC X     VALUE x'0a'. 
         
         *>******************************************************
         PROCEDURE DIVISION.
@@ -36,11 +37,11 @@
         *>******************************************************    
         100-get-database-entry.
         
-
             DISPLAY
                 "<h3>Hämta addresser</h3>"
                 '<form action="http://www.mc-butter.se/'
-                "cgi-bin/ojgetsqldata.cgi"
+                "cgi-bin/cojgetsqldata.cgi "
+                'target="iframe_db" '
                 'method="post">'
                     "<p>"
                     'Användare: <input type="text" '
@@ -53,7 +54,12 @@
                     'value="Utför"> <input type="reset" '
                     'value="Rensa">'
                     "</p>"    
-                "</form>"               
+                "</form>"
+                newline
+                '<iframe width="600" '
+                'name="iframe_db" '
+                'height="200"></iframe>'
+                            
             
             END-DISPLAY
 
