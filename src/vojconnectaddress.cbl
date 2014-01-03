@@ -42,7 +42,7 @@
                 "<h3>Hämta adresser</h3>"
                 '<form action="http://www.mc-butter.se/'
                 "cgi-bin/cojgetsqldata.cgi"
-                ' target="iframe_db" '
+                ' target="main" '
                 'method="post">'
                     "<p>"
                     'Användare: <input type="text" '
@@ -56,11 +56,7 @@
                     'value="Rensa">'
                     "</p>"    
                 "</form>"
-                newline
-                '<iframe width="600" '
-                'name="iframe_db" '
-                'src="cojgetsqldata.cgi" '
-                'height="200"></iframe>'                    
+                   
             
             END-DISPLAY
 
