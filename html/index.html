@@ -1,67 +1,14 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-            "http://www.w3.org/TR/html4/loose.dtd">
-<html lang="sv">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN"
+        "http://www.w3.org/TR/html4/frameset.dtd">
+<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">	
 <title>Open Jensen</title>
-<style>
-ul#menu, ul.submenu{
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-ul#menu li{
-    float: left;
-}
-/* hide the submenu */
-li ul.submenu {
-    display: none;
-}
-ul#menu li a{
-    display: block;
-    text-decoration: none;
-    color: #ffffff;
-    padding: 7px 14px;
-    background: brown;
-    border-right: 1px solid white;
-    border-top: 1px solid white;
-    float:none;
-}
-/* show the submenu */
-ul#menu li:hover ul.submenu{
-    display: block;
-    position: absolute;
-    float:left;
-}
-ul#menu li:hover li,  ul#menu li:hover a {
-    float: none;
-    background: #CC6600;
-}
-ul#menu li:hover li a:hover {
-    background: brown;
-}
-</style>
 </head>
- 
-<body>
-<ul id="menu">
-<li><a href="http://www.mc-butter.se/envtest.html">Miljövariabler</a></li>
-<li><a href="#">Kontakt adresser</a>
-    <ul class="submenu">
-        <li><a href="#">Ny adress</a></li>		
-        <li><a href="http://www.mc-butter.se/cgi-bin/ojconnectaddress.cgi">Visa adress</a></li>
-        <li><a href="#">Uppdatera adress</a></li>
-        <li><a href="#">Tag bort adress</a></li>		
-    </ul>
-</li>
-<li><a href="#">Menu 3</a>
-    <ul class="submenu">
-        <li><a href="#">Submenu 1</a></li>
-        <li><a href="#">Submenu 2</a></li>
-    </ul>
-</li>
-<li><a href="#">Menu 4</a></li>
-</ul>
- 
-</body>
+
+<frameset rows="30%,*">
+  <frame src="menu.html" name="menu" noresize="noresize" frameborder="0">
+  <frame src="" name="main" frameborder="0">
+</frameset>
+
 </html>

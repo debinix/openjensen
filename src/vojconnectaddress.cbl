@@ -38,10 +38,11 @@
         100-get-database-entry.
         
             DISPLAY
-                "<h3>Hämta addresser</h3>"
+            
+                "<h3>Hämta adresser</h3>"
                 '<form action="http://www.mc-butter.se/'
-                "cgi-bin/cojgetsqldata.cgi "
-                'target="iframe_db" '
+                "cgi-bin/cojgetsqldata.cgi"
+                ' target="iframe_db" '
                 'method="post">'
                     "<p>"
                     'Användare: <input type="text" '
@@ -58,8 +59,8 @@
                 newline
                 '<iframe width="600" '
                 'name="iframe_db" '
-                'height="200"></iframe>'
-                            
+                'src="cojgetsqldata.cgi" '
+                'height="200"></iframe>'                    
             
             END-DISPLAY
 
