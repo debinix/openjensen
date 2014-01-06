@@ -2,48 +2,84 @@
             "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="sv">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">	
-<title>Open Jensen huvudmeny</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>Huvudmeny</title>
 <style>
-ul#menu
-{
-    margin-left: 0;
-    padding-left: 8px;
-    list-style-type:none;
-    font-family:Arial, Helvetica, sans-serif;
-}
-ul#menu a
-{
-    display:block;    
-    text-decoration:none;
-    background:#036;
-    color:#FFF;
-    padding: .2em .5em;
-    border-bottom: 1px solid #FFF;
-    width: 7em;
-}
-ul#menu a:hover
-{
-    background:#69C;
-    color: #000;
-}
-ul#menu li
-{
-    display: inline;
-}
+	body {
+		font-family: "Lucida Sans Unicode","Lucida Grande",Sans-Serif;
+		color: #3E3E3E;
+		background: #FFFFFF;
+		font-size: 12px;
+	}
+	
+	p {
+		padding: 5px;
+	}
+	
+	a {
+		color: #3687AF;
+	}
+	
+	#menu { 
+	  float: left;
+	  width:200px;
+	}
+	
+	#menu, #menu ul{
+	  list-style-type: none;
+	  padding: 0;
+	  margin: 0;
+	}
+	
+	#menu li { 
+	  cursor:pointer;
+	  background:#94C5EB url(arrows.png) no-repeat right top;
+	  border-bottom:1px solid #444;
+	}
+	
+	#menu li a {
+	  text-decoration: none;
+	}
+	
+	#menu>li>a { 
+	  padding: 2px 10px; font-weight:bold;
+	}
+	
+	#menu li li{ 
+	  cursor:auto;
+	  border:0;
+	  padding:0 14px;
+	  background-color:#fff;
+	  background-image: none;
+	}	
 </style>
+	<script src="jquery-1.7.1.min.js" type="text/javascript" ></script>
+	<script type="text/javascript" src="script.js"></script>
 </head>
 <body>
 
-<ul id="menu">
-        <li id="active"><a href="http://www.mc-butter.se/listenv.html" target="main">Miljövariabler</a></li>
-        <li id="active"><a href="http://www.mc-butter.se/anslutdb.html" target="main">Anslut databas</a></li>
-        <li><a href="#">Meny 3</a></li>
-        <li><a href="#">Meny 4</a></li>
-        <li><a href="#">Meny 5</a></li>
-        <li><a href="#">Meny 6</a></li>
-        <li><a href="#">Meny 7</a></li>
-        <li><a href="#">Meny 8</a></li>
-</ul>
+	<ul id="menu">
+	  <li><a href="#">Tests</a>
+		<ul class="active">
+		  <li><a href="http://www.mc-butter.se/listenv.html" target="main">Miljövariabler</a></li>
+		  <li><a href="http://www.mc-butter.se/anslutdb.html" target="main">Anslutningstest</a></li>
+		  <li><a href="#">Läs tabell ur databas</a></li>
+		</ul>
+	  </li>
+	  <li><a href="#">Meny 2</a>
+		<ul>
+		  <li><a href="#">Submeny 2.1</a></li>
+		  <li><a href="#">Submeny 2.2</a></li>
+		</ul>
+	  </li>
+	  <li><a href="#">Meny 3</a>
+		<ul>
+		  <li><a href="#">Submeny 3.1</a></li>
+		  <li><a href="#">Submeny 3.2</a></li>
+		  <li><a href="#">Submeny 3.3</a></li>
+		</ul>
+	  </li>
+	</ul>
+
 </body>
 </html>
