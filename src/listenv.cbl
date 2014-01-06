@@ -71,12 +71,12 @@
             "</head><body>"
             newline
             "<h3>CGI environment with GNU Cobol</h3>"
-            newline "<p>"
-            '<a href="../index.html"> Back to main menu - try again!'
-            newline "</p><p>"
+            newline
+            "<p>"
             "<i>All values of &lt;, &gt;, and &amp;"
             " replaced by space</i>"
-            "</p><p><table>"
+            "</p>
+            <p><table>"
         end-display
  
        *> Display some of the known CGI environment values
