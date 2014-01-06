@@ -1,0 +1,8 @@
+TODO
+====
+
+1. Long lines wrap in the main-window.
+ - How to add scrollbars (HTML/CSS) that works?
+
+2. Decode POST variables (Cobol) into separate variables
+ - Does Open Cobol provides new string functions for this?

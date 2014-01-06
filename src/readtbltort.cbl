@@ -1,5 +1,5 @@
         IDENTIFICATION DIVISION.
-        program-id. anslutdb.
+        program-id. readtbltort.
         
         ENVIRONMENT DIVISION.
         input-output section.
@@ -16,18 +16,43 @@
         
         working-storage section.
              
-        01  pagetitle    PIC X(20)  VALUE 'Anslutningstest'.
+        01  pagetitle    PIC X(20)  VALUE 'Läs tabell t_ort'.
         01  dummy        PIC X      VALUE SPACE.
         01  newline      PIC X      VALUE x'0a'.
         
         01  in-status            PIC 9999.        
-        01 value-string  PIC X(256) VALUE SPACE.        
+        01  value-string  PIC X(256) VALUE SPACE.
+        
+        01  ws-tort-rec-vars.
+            05  ws-ort_id           PIC   9(5).
+            05  FILLER              PIC  X.            
+            05  ws-enhetsnamn       PIC  X(40).
+            05  FILLER              PIC  X.                  
+            05  ws-gatunamn         PIC  X(40).
+            05  FILLER              PIC  X.                  
+            05  ws-gatunummer       PIC  X(40).
+            05  FILLER              PIC  X.                  
+            05  ws-postort          PIC  X(40).
+            05  FILLER              PIC  X.                  
+            05  ws-postnummer       PIC  X(5).
+            05  FILLER              PIC  X.                  
+            05  ws-email            PIC  X(40).
+            05  FILLER              PIC  X.                  
+            05  ws-arbetstfn        PIC  X(40).           
         
         EXEC SQL BEGIN DECLARE SECTION END-EXEC.
         01  username                PIC  X(30) VALUE SPACE.        
         01  dbname                  PIC  X(30) VALUE SPACE.
         01  dbpasswd                PIC  X(10) VALUE SPACE.
-        01  record-cnt              PIC  9(04).
+        01  tort-rec-vars.
+           05  ort_id               PIC   9(5).
+           05  enhetsnamn           PIC  X(40).
+           05  gatunamn             PIC  X(40).
+           05  gatunummer           PIC  X(40).
+           05  postort              PIC  X(40).           
+           05  postnummer           PIC  X(5).
+           05  email                PIC  X(40).            
+           05  arbetstfn            PIC  X(40).            
         EXEC SQL END DECLARE SECTION END-EXEC.
  
         EXEC SQL INCLUDE SQLCA END-EXEC.        
@@ -45,13 +70,13 @@
             CALL 'start-html' USING BY CONTENT pagetitle
             
             DISPLAY
-                "<h3>*** ANSLUTNINGSTEST STARTAS ***</h3>"
+                "<h3>*** LÄS TABELL T_ORT ***</h3>"
             END-DISPLAY
             
             *> Get POST variables from environment and set up for db
             PERFORM 050-set-post-variables            
 
-            PERFORM 100-connect-test-to-database
+            PERFORM 100-read-table
              
             *>  end html doc
             CALL 'end-html' USING BY REFERENCE dummy.                
@@ -102,7 +127,7 @@
             .    
             
         *>******************************************************    
-        100-connect-test-to-database.
+        100-read-table.
         
             *>  CONNECT
             MOVE  "openjensen"    TO   dbname.
@@ -118,23 +143,63 @@
                 STOP RUN
             END-IF
             
-            *>  SELECT COUNT(*) INTO HOST-VARIABLE
-            *>  Note: table name (t_ort) has to be hard coded.
-            EXEC SQL 
-                SELECT COUNT(*) INTO :record-cnt FROM t_ort
-            END-EXEC.
             
+            *> DECLARE CURSOR
+            EXEC SQL 
+                DECLARE C1 CURSOR FOR
+                SELECT ort_id, enhetsnamn, gatunamn, gatunummer,
+                      postort, postnummer
+                      FROM t_ort
+            END-EXEC.
+            EXEC SQL
+                OPEN C1
+            END-EXEC.
+           
             IF  SQLSTATE NOT = ZERO
                 PERFORM 900-error-routine
+                STOP RUN
             END-IF
+           
+            *> FETCH
+            EXEC SQL 
+               FETCH C1 INTO :ort_id, :enhetsnamn, :gatunamn,
+                    :gatunummer, :postort
+                    :arbetstfn
+            END-EXEC.
+           
+            PERFORM UNTIL SQLSTATE NOT = ZERO
             
-            IF SQLSTATE = ZERO
-                DISPLAY
-                    "<p>"
-                    "ANTALET POSTER: " record-cnt
-                    "</p>"
-                END-DISPLAY
+                MOVE ort_id        TO    ws-ort_id
+                MOVE enhetsnamn    TO    ws-enhetsnamn 
+                MOVE gatunamn      TO    ws-gatunamn
+                MOVE gatunummer    TO    ws-gatunummer  
+                MOVE postort       TO    ws-postort           
+                MOVE postnummer    TO    ws-postnummer 
+              
+                DISPLAY "<br>" ws-tort-rec-vars
+              
+                EXEC SQL
+                    FETCH C1 INTO :ort_id, :enhetsnamn, :gatunamn,
+                        :gatunummer, :postort, :postnummer
+                END-EXEC
+              
+            END-PERFORM.
+            
+            IF  SQLSTATE NOT = "02000"
+                PERFORM 900-error-routine
+                STOP RUN
             END-IF
+           
+            *>  CLOSE CURSOR
+            EXEC SQL 
+                CLOSE C1 
+            END-EXEC. 
+           
+            *> COMMIT
+            EXEC SQL 
+                COMMIT WORK
+            END-EXEC.            
+            
                                   
             *>  DISCONNECT
             EXEC SQL
@@ -145,7 +210,7 @@
             IF SQLSTATE = ZERO
                 DISPLAY
                     "<p>"            
-                    "<h3>*** ANSLUTNINGSTEST OK ***</h3>"
+                    "<h3>*** SLUT PÅ DATA ***</h3>"
                     "</p>"
                 END-DISPLAY
             END-IF

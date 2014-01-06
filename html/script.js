@@ -22,7 +22,7 @@ $( '#menu > li > ul' )
       $('#menu .waiting')
         .click()
         .removeClass('waiting');
-    }, 600);
+    }, 1000);
   }, function() {
     $('#menu .waiting').removeClass('waiting');
   });

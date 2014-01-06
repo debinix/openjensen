@@ -3,9 +3,9 @@
 # 
 # Enter one of the following commands 
 #
-#  make, all, build		  Copy HTML file to build directory
+#  make, all, build		  Copy HTML, PNG and JS files to build directory
 #
-#  make clean, cleanall   Erases all HTML files in build directory
+#  make clean, cleanall   Erases all HTML, PNG and JS files in build directory
 #
 #############################################################################
 #
@@ -22,26 +22,42 @@ RMDIR := /bin/rm -f
 
 #############################################################################
 #
-#	MAKE ALL, MAKE BUILD
+#	MAKE ALL, MAKE BUILD (HTML, PNG and JS)
 #
 #############################################################################
 
 all build:
-	$(QUIET) $(ECHO) [makefile]: Copy files to build directory
+	$(QUIET) $(ECHO) [makefile]: Copy HTML files to build directory
 	$(QUIET) - $(CP) *.html ../build/.
 	$(QUIET) $(ECHO) [makefile]: Change ownership of HTML files 
 	$(QUIET) - $(CHOWN) bekr:bekr ../build/*.html
+#
+	$(QUIET) $(ECHO) [makefile]: Copy PNG files to build directory
+	$(QUIET) - $(CP) *.png ../build/.
+	$(QUIET) $(ECHO) [makefile]: Change ownership of PNG files 
+	$(QUIET) - $(CHOWN) bekr:bekr ../build/*.png
+#
+	$(QUIET) $(ECHO) [makefile]: Copy JS files to build directory
+	$(QUIET) - $(CP) *.js ../build/.
+	$(QUIET) $(ECHO) [makefile]: Change ownership of JS files 
+	$(QUIET) - $(CHOWN) bekr:bekr ../build/*.js
 
 #############################################################################
 #
-#	MAKE CLEAN, MAKE CLEANALL
+#	MAKE CLEAN, MAKE CLEANALL (HTML, PNG and JS in build directory)
 #
 #############################################################################
 
 clean: cleanall
 
 cleanall:
-	$(QUIET) $(ECHO) [makefile]: Remove any html files in build directory
+	$(QUIET) $(ECHO) [makefile]: Remove any HTML files in build directory
 	$(QUIET) $(RMDIR) ../build/*.html
+#
+	$(QUIET) $(ECHO) [makefile]: Remove any PNG files in build directory
+	$(QUIET) $(RMDIR) ../build/*.png
+#
+	$(QUIET) $(ECHO) [makefile]: Remove any JS files in build directory
+	$(QUIET) $(RMDIR) ../build/*.js
 
 .PHONY: all build clean cleanall

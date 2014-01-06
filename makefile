@@ -29,7 +29,7 @@ TAROPT = chof -
 package = openjensen
 version = 0.$(shell date +%Y%m%d.%H%M)
 tarname = $(package)
-distdir = $(HOME)/$(tarname)-$(version)
+distdir = /home/bekr/$(tarname)-$(version)
 
 #############################################################################
 #	1 -- MAKE ALL, BUILD, DIST, CLEAN, CLEANALL
