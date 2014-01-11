@@ -45,7 +45,7 @@
             CALL 'start-html' USING BY CONTENT pagetitle            
 
             ACCEPT content-length FROM ENVIRONMENT 'CONTENT_LENGTH'
-            COMPUTE num-cnt-len = FUNCTION NUMVAL(content-length).
+            COMPUTE num-cnt-len = FUNCTION NUMVAL(content-length)
 
             IF num-cnt-len = 0
                 DISPLAY "<p>CGI POST: Content-Length is 0!</p>"
@@ -65,7 +65,9 @@
             PERFORM 020-set-number-of-value-pairs
             
             DISPLAY '<p>Debug: Postlength: ' num-cnt-len
-            DISPLAY 'Debug: Our long post string: </p>' post-string
+                '<br>'
+                'Debug: Our long post string: </p>' post-string
+            END-DISPLAY
             
             PERFORM VARYING pair-counter FROM 1 BY 1
                 UNTIL pair-counter > number-of-value-pairs
@@ -80,14 +82,13 @@
                 
             END-PERFORM
             
-            ### main dispatch for data base queries from here ###
+            *>
+            *>    main dispatch of call queries here
+            *> 
             
-            
-            
-            ### end of various calls ###
             
             *>  end html doc
-            CALL 'end-html' USING rtnflag    
+            CALL 'end-html' USING BY CONTENT rtnflag    
         
             GOBACK
             .
@@ -105,11 +106,17 @@
                 END-IF
             END-IF
             CLOSE webinput
-            
-            MOVE chunk-of-post(1:num-cnt-len) TO post-string
 
+            *> decode high ascii HTML encoded characters            
+            MOVE chunk-of-post(1:num-cnt-len) TO post-string
+            
+            CALL 'url-charconv' USING rtnflag post-string num-cnt-len
+            
+            *> Restore all space charcters, encoded + as signs
+            INSPECT post-string CONVERTING '+' to SPACE
         
-            . 
+            .
+
         *>******************************************************
         020-set-number-of-value-pairs.
         
@@ -162,4 +169,5 @@
             
             .
 
-        *>******************************************************  
+        *>******************************************************
+        
