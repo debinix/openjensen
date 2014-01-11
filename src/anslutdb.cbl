@@ -15,7 +15,9 @@
         01  chunk-of-post     PIC X(1024).            
         
         working-storage section.
-             
+
+        01  content-length       PIC X(5)  VALUE SPACE.
+
         01  pagetitle    PIC X(20)  VALUE 'Anslutningstest'.
         01  dummy        PIC X      VALUE SPACE.
         01  newline      PIC X      VALUE x'0a'.
@@ -44,8 +46,13 @@
             *>  start html doc
             CALL 'start-html' USING BY CONTENT pagetitle
             
+            ACCEPT content-length FROM ENVIRONMENT 'CONTENT_LENGTH'
+            
             DISPLAY
                 "<h3>*** ANSLUTNINGSTEST STARTAS ***</h3>"
+                "<p>Content length (bytes): "
+                content-length
+                "</p>"
             END-DISPLAY
             
             *> Get POST variables from environment and set up for db

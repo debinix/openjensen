@@ -1,0 +1,95 @@
+#!/bin/bash
+###############################################################
+#  Do not edit. Managed by Puppet. Changes will be wiped out! # 
+###############################################################
+
+function make_and_install {
+    ssh jensen@mc-butter.se /home/jensen/bin/remote_make_makeinstall
+}
+
+function html2jensen {
+    echo "SCP all HTML files...to mc-butter.se!"
+    scp /home/bekr/openjensen/html/*.html jensen@mc-butter.se:/home/jensen/openjensen/html/.
+}
+
+function js2jensen {
+    echo "SCP max 5 named JS files...to mc-butter!"
+    scp /home/bekr/openjensen/html/*.js jensen@mc-butter.se:/home/jensen/openjensen/html/.
+}
+
+function png2jensen {
+    echo "SCP max 5 named PNG files...to mc-butter!"
+    scp /home/bekr/openjensen/html/*.png jensen@mc-butter.se:/home/jensen/openjensen/html/.
+}
+
+function lib2jensen {
+    echo "SCP max 5 Library Cobol files...to mc-butter!"
+    scp /home/bekr/openjensen/lib/*.cbl jensen@mc-butter.se:/home/jensen/openjensen/lib/.
+}
+
+function src2jensen {
+    echo "SCP max 5 Cobol files...to mc-butter!"
+    scp /home/bekr/openjensen/src/*.cbl jensen@mc-butter.se:/home/jensen/openjensen/src/. 
+}
+
+
+function menu {
+    echo
+    echo
+    echo -e "\t\t\tOpen Jensen Developers Tools Menu"
+    echo -e "\t\t\t---------------------------------" 
+    echo -e "\t0 - Recompile all files and install to public web directory"
+    echo
+    echo -e "\t1 - Copy/overwrite SRC CBL files in remote source directory"
+    echo
+    echo -e "\t2 - Copy/overwrite HTML files in remote source directory"
+    echo -e "\t3 - Copy/overwrite JS files in remote source directory"    
+    echo -e "\t4 - Copy/overwrite PNG files in remote source directory"
+    echo
+    echo -e "\t5 - Copy/overwrite LIB CBL files in remote source directory"
+    echo
+    echo -e "\t9 - Exit program"
+}
+
+while [ 1 ]
+do
+    menu
+    echo
+    echo -e "\t[Select an option from the menu]"
+    read option
+    case $option in
+    
+        0)
+            make_and_install
+            ;;
+            
+        1)
+            src2jensen
+            ;;
+            
+        2)
+            html2jensen
+            ;;    
+        
+        3)
+            js2jensen
+            ;;
+        
+        4)
+            png2jense
+            ;;
+        
+        5)
+            lib2jensen
+            ;;
+        
+        9)
+            break
+            echo
+            ;;
+        
+    esac
+    
+done
+
+

@@ -13,6 +13,8 @@
            01 chunk-of-post     pic x(1024).
  
         working-storage section.
+        01 content-length       PIC X(5)  VALUE SPACE.
+        
         01 in-status            pic 9999.
         01 newline              pic x     value x'0a'.
         01 name-count           pic 99    value 25.
@@ -59,6 +61,8 @@
             newline
             newline
         end-display
+        
+        ACCEPT content-length FROM ENVIRONMENT 'CONTENT_LENGTH'
  
         display
             "<html><head>"
@@ -74,9 +78,11 @@
             newline
             "<p>"
             "<i>All values of &lt;, &gt;, and &amp;"
-            " replaced by space</i>"
-            "</p>
-            <p><table>"
+            " replaced by space</i><br>"
+            "Content length (bytes): "
+            content-length
+            "</p>"
+            "<p><table>"
         end-display
  
        *> Display some of the known CGI environment values

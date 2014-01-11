@@ -3,13 +3,17 @@
 # 
 # Enter one of the following commands 
 #
-#  make, all, build		  Copy HTML, PNG and JS files to build directory
+#  make, all, build		  Copy HTML, PNG and JS files to LOCAL build directory
 #
 #  make clean, cleanall   Erases all HTML, PNG and JS files in build directory
 #
+#  make install           Replace HTML, PNG, and JS files on REMOTE hosts
+#                         directory (i.e. html) and runs make & make install.
+#                         Requires script on remote host, and SSH key on host.
+#
 #############################################################################
 #
-#	VARIABLES
+#	VARIABLES & COMMANDS
 #
 #############################################################################
 
@@ -19,6 +23,9 @@ CP := /bin/cp
 ECHO := /bin/echo
 CHOWN := /bin/chown
 RMDIR := /bin/rm -f
+
+SSH := /usr/bin/ssh
+SCP := /usr/bin/scp
 
 #############################################################################
 #

@@ -10,9 +10,9 @@
         *> Need a dummy parameter for this routine
         *> to to link as a shared library.
         linkage section.
-        01  dummy    PIC X.     
+        01  rtnflag    PIC X.     
         
-        PROCEDURE DIVISION USING dummy.
+        PROCEDURE DIVISION USING rtnflag.
         000-print-html-header.
         
             *> Always send out the Content-Type before any other I/O

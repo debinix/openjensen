@@ -7,9 +7,9 @@
         working-storage section.      
         
         linkage section.
-        01  dummy    PIC X.      
+        01  rtnflag    PIC X.      
         
-        PROCEDURE DIVISION.
+        PROCEDURE DIVISION USING rtnflag.
         000-end-html.
         
             DISPLAY
