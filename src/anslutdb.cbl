@@ -39,12 +39,12 @@
         000-main.
         
             *> (just to be sure)       
-            COPY src_setupenv_openjensen.        
+            COPY setupenv_openjensen.        
         
             *> Always send out the Content-Type before any other I/O
-            CALL 'print-header' USING BY REFERENCE dummy.
+            CALL 'wui-print-header' USING BY REFERENCE dummy.
             *>  start html doc
-            CALL 'start-html' USING BY CONTENT pagetitle
+            CALL 'wui-start-html' USING BY CONTENT pagetitle
             
             ACCEPT content-length FROM ENVIRONMENT 'CONTENT_LENGTH'
             
@@ -61,7 +61,7 @@
             PERFORM 100-connect-test-to-database
              
             *>  end html doc
-            CALL 'end-html' USING BY REFERENCE dummy.                
+            CALL 'wui-end-html' USING BY REFERENCE dummy.                
         
             GOBACK
             .

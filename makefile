@@ -56,19 +56,15 @@ $(distdir):
 #
 	$(QUIET) $(MKDIR) $(distdir)/src
 	$(QUIET) - $(CP) src/makefile $(distdir)/src/.
-	$(QUIET) - $(CP) src/*.cbl $(distdir)/src/.
-	
-	$(QUIET) $(MKDIR) $(distdir)/src/copy
-	$(QUIET) - $(CP) src/copy/*.cbl $(distdir)/src/copy/.	
-	$(QUIET) - $(CP) src/copy/*.cpy $(distdir)/src/copy/.		
+	$(QUIET) - $(CP) src/*.cbl $(distdir)/src/.	
 #
 	$(QUIET) $(MKDIR) $(distdir)/lib
 	$(QUIET) - $(CP) lib/makefile $(distdir)/lib/.
 	$(QUIET) - $(CP) lib/*.cbl $(distdir)/lib/.
-	
-	$(QUIET) $(MKDIR) $(distdir)/lib/copy
-	$(QUIET) - $(CP) lib/copy/*.cbl $(distdir)/lib/copy/.	
-	$(QUIET) - $(CP) lib/copy/*.cpy $(distdir)/lib/copy/.	
+#	
+	$(QUIET) $(MKDIR) $(distdir)/copy
+	$(QUIET) - $(CP) lib/copy/*.cbl $(distdir)/copy/.	
+	$(QUIET) - $(CP) lib/copy/*.cpy $(distdir)/copy/.	
 
 
 

@@ -59,8 +59,8 @@
         PROCEDURE DIVISION.
         000-main.
 
-            CALL 'print-header' USING BY REFERENCE dummy.
-            CALL 'start-html'   USING BY CONTENT pagetitle
+            CALL 'wui-print-header' USING BY REFERENCE dummy.
+            CALL 'wui-start-html'   USING BY CONTENT pagetitle
             
             ACCEPT value-string FROM ENVIRONMENT
                 'REQUEST_METHOD'
@@ -77,7 +77,7 @@
             
 
         
-            CALL 'end-html' USING BY REFERENCE dummy.                
+            CALL 'wui-end-html' USING BY REFERENCE dummy.                
         
             GOBACK
             .

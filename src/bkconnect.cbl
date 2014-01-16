@@ -22,7 +22,7 @@
 
        000-main.
        *> (just to be sure)       
-           COPY src_setupenv_openjensen.
+           COPY setupenv_openjensen.
        *>           
            DISPLAY "*** CONNECT STARTED ***".
            

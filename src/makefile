@@ -41,7 +41,7 @@ COPYDIR = copy
 # ---------------------------------------------------------
 # Sets environment path for Copy books. Includes 'sqlca.cbl', 
 # Move Copy-files in a sub directory directory to source
-export COBCPY=$(shell pwd)/$(COPYDIR)
+export COBCPY=$(../$(COPYDIR)
 # ----------------------------------------------------------
 
 # ----------------------------------------------------------

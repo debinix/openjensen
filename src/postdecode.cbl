@@ -54,10 +54,10 @@
         000-decode-post-from-browser.
         
             *> (just to be sure)       
-            COPY src_setupenv_openjensen.        
+            COPY setupenv_openjensen.        
         
-            CALL 'print-header' USING rtnflag
-            CALL 'start-html' USING BY CONTENT pagetitle            
+            CALL 'wui-print-header' USING rtnflag
+            CALL 'wui-start-html' USING BY CONTENT pagetitle            
 
             ACCEPT content-length FROM ENVIRONMENT 'CONTENT_LENGTH'
             COMPUTE num-cnt-len = FUNCTION NUMVAL(content-length)
@@ -117,7 +117,7 @@
             
             
             *>  end html doc
-            CALL 'end-html' USING BY CONTENT rtnflag    
+            CALL 'wui-end-html' USING BY CONTENT rtnflag    
         
             GOBACK
             .
