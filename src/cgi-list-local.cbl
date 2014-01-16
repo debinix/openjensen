@@ -39,9 +39,21 @@
        *>**************************************************
        PROCEDURE DIVISION.
        *>**************************************************       
-       B0100-cgi-list-local.
-           
-       *>  CONNECT
+       0000-main.
+       
+           PERFORM A0100-init
+           PERFORM B0100-cgi-list-local
+           PERFORM C0100-goback
+           .
+       *>**************************************************          
+       A0100-init.       
+       
+           *> always send out the Content-Type before any other I/O
+           CALL 'wui-print-header' USING wc-page-title   
+           *>  start html doc
+           CALL 'wui-start-html' USING wn-rtn-code              
+                      
+       *>  connect
            MOVE  "openjensen"    TO   wc-database.
            MOVE  "jensen"        TO   wc-username.
            MOVE  SPACE           TO   wc-passwd.
@@ -51,12 +63,17 @@
                                             USING :wc-database 
            END-EXEC
            
-           
            IF  SQLSTATE NOT = ZERO
-                PERFORM B900-error-routine GOBACK
-           END-IF  
-
-       *>  DECLARE CURSOR
+                PERFORM Z0100-error-routine
+                PERFORM C0100-goback
+           END-IF 
+       
+           .
+       
+       *>**************************************************          
+       B0100-cgi-list-local.
+           
+       *>  declare cursor
            EXEC SQL 
                DECLARE cur-1 CURSOR FOR
                SELECT Lokal_id, Lokalnamn, Vaningsplan, Maxdeltagare
@@ -68,16 +85,15 @@
            END-EXEC
            
            IF  SQLSTATE NOT = ZERO
-               PERFORM B900-error-routine GOBACK
+               PERFORM Z0100-error-routine
+               PERFORM C0100-goback
            END-IF
-             
        
        *>  fetch first row       
            EXEC SQL 
                FETCH cur-1 INTO :Lokal_id,    :Lokalnamn,
                                 :Vaningsplan, :Maxdeltagare
            END-EXEC
-           
            
            PERFORM UNTIL SQLSTATE NOT = ZERO
            
@@ -86,7 +102,10 @@
               MOVE  Vaningsplan   TO    wc-vaningsplan
               MOVE  Maxdeltagare  TO    wn-maxdeltagare
               
-              DISPLAY wr-jlocalrecord
+              DISPLAY
+                wr-jlocalrecord
+              END-DISPLAY  
+              
               INITIALIZE wr-jlocalrecord
            
               *> fetch next row  
@@ -97,7 +116,8 @@
            END-PERFORM
            
            IF  SQLSTATE NOT = ZERO
-                PERFORM B900-error-routine GOBACK
+                PERFORM Z0100-error-routine
+                PERFORM C0100-goback
            END-IF              
              
        *>  close cursor
@@ -108,25 +128,31 @@
        *>  commit
            EXEC SQL 
                COMMIT WORK
-           END-EXEC                          
+           END-EXEC
+           
+           IF  SQLSTATE NOT = ZERO
+                PERFORM Z0100-error-routine
+                PERFORM C0100-goback
+           END-IF      
                                  
        *>  disconnect
            EXEC SQL
                DISCONNECT ALL
            END-EXEC
            
+           .
+
+       *>**************************************************
+       C0100-goback.
+
+           CALL 'wui-end-html' USING wn-rtn-code 
            
            GOBACK
            .
 
        *>**************************************************
-       B900-error-routine.
-       
-           *> Always send out the Content-Type before any other I/O
-           CALL 'wui-print-header' USING wc-page-title   
-           *>  start html doc
-           CALL 'wui-start-html' USING wn-rtn-code    
-           
+       Z0100-error-routine.
+                  
            DISPLAY "*** SQL ERROR ***".
            DISPLAY "SQLSTATE: " SQLSTATE.
            EVALUATE SQLSTATE
@@ -146,7 +172,7 @@
               *>  END-EXEC
            END-EVALUATE
            
-           CALL 'wui-end-html' USING wn-rtn-code 
            .
            
+       *>**************************************************    
        *> END PROGRAM  
