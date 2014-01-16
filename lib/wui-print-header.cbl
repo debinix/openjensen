@@ -7,12 +7,12 @@
         working-storage section.
         01  newline     PIC X VALUE x'0a'.        
         
-        *> Need a dummy parameter for this routine
-        *> to to link as a shared library.
+        *> Always require one link parameter in linkage-
+        *> section to complile as dynamic (*.so) library.
         linkage section.
-        01  rtnflag    PIC X.     
+        01  rtn-code    PIC S99.    
         
-        PROCEDURE DIVISION USING rtnflag.
+        PROCEDURE DIVISION USING rtn-code.
         000-print-html-header.
         
             *> Always send out the Content-Type before any other I/O

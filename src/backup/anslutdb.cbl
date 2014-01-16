@@ -34,12 +34,13 @@
  
         EXEC SQL INCLUDE SQLCA END-EXEC.        
         
+        
         *>******************************************************
         PROCEDURE DIVISION.
         000-main.
         
             *> (just to be sure)       
-            COPY setupenv_openjensen.        
+            *> COPY setupenv_openjensen.        
         
             *> Always send out the Content-Type before any other I/O
             CALL 'wui-print-header' USING BY REFERENCE dummy.

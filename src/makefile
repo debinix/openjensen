@@ -21,6 +21,10 @@
 #
 # OCESQL library is used for pre-processing the  
 # embedded SQL statements before the final compilation.
+#
+# Set Copybook location in bashrc (Includes e.g. 'sqlca.cbl'):
+# export COBCPY=../copy
+#
 ###########################################################
 
 FIND := /usr/bin/find
@@ -35,14 +39,6 @@ CFLAG = -x
 QUIET = @
 OCESQL = ocesql
 COBC = cobc
-COPYDIR = copy
-
-
-# ---------------------------------------------------------
-# Sets environment path for Copy books. Includes 'sqlca.cbl', 
-# Move Copy-files in a sub directory directory to source
-export COBCPY=$(../$(COPYDIR)
-# ----------------------------------------------------------
 
 # ----------------------------------------------------------
 # targets - find all cbl source files in current directory

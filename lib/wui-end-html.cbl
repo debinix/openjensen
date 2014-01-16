@@ -7,9 +7,9 @@
         working-storage section.      
         
         linkage section.
-        01  rtnflag    PIC X.      
+        01  rtn-code    PIC S99.      
         
-        PROCEDURE DIVISION USING rtnflag.
+        PROCEDURE DIVISION USING rtn-code.
         000-end-html.
         
             DISPLAY

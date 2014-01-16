@@ -2,7 +2,6 @@
 
 ### Directory Structure
 
-bekr@dell:~/openjensen (master)$ tree -L 1
 bekr@dell:~/openjensen (master)$ tree -L 2 -d
 .
 ├── build
@@ -13,11 +12,10 @@ bekr@dell:~/openjensen (master)$ tree -L 2 -d
 │   ├── backup
 │   └── tmp
 ├── lib
-│   ├── copy
 │   └── tmp
+├── copy
 ├── sql
 ├── src
-│   ├── copy
 │   └── tmp
 └── tools
 
@@ -42,12 +40,17 @@ the source directory when we build our source.
 
 Set environment path for Copy books. E.g. that include 'sqlca.cbl'
 for SQL pre-processor and other Cobol cpy-book code.
-Move Copy-files in a sub directory directory to source-files.
+Move Copy-files to its own directory.
 
-In the make file (we have a make file in every directory).
-$(COPYDIR) is the directory name were copybook are (e.g. 'copy')
+Set the bashrc file:
+The relative directory name were copybook are (e.g. 'copy')
 
-export COBCPY=$(shell pwd)/$(COPYDIR)
+export COBCPY=../copy (don't set this in the make file)
+
+In the copy (book) directory their is symbolic link to sqlca.cbl
+from sqlca.cpy (OCESQL looks only for copybook with *.cbl).
+Poilicy is to use extension *.cpy for all copybooks.
+
 
 
 ### Run-time environment on server
