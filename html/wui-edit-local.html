@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+            "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="sv">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">	
+<title>Visa Jensens utbildningslokaler</title>
+</head>
+<body>
+<form action="http://www.mc-butter.se/cgi-bin/cgi-edit-local.cgi" method="post" target="main">
+<fieldset>     
+<legend>Ändra informationen om denna undervisningslokal</legend>
+    <p>
+    Ange databasens identifikationsnummer för lokal <b>eller</b> ange dess skyltade namn:   
+    </p>
+    <p>
+    Identifikationsnummer: <input type="text" name="local-id"><br>eller<br>    
+    Lokalens skyltade namn: <input type="text" name="local-name">
+    </p>
+</fieldset>     
+<fieldset>    
+<legend>Ändra informationen för lokalen</legend>
+    <p>
+    Benämning för en icke lokal: <select name="alt-lokal-name">
+        <option value="" selected>Alterantiv till skyltnamn</option>
+        <option value="Examensarbete">Examensarbete</option>
+        <option value="LIA 1">LIA 1</option>
+        <option value="LIA 2">LIA 2</option>
+    </select><br><br>    
+    Lokalens skyltade namn*: <input type="text" name="local-name"><br>
+    Våningsplan*: <select name="plan">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+    </select>
+    <br>Antalet undervisningsplatser*: <input type="text" name="local-max"><br><br>   
+    <input type="submit" value="Ändra informationen nu"><br><br>
+    <i>*) Anges bara för en Jensen lokal</i><br> 
+    </p>
+</fieldset>    
+</form>
+</body>
+</html>
