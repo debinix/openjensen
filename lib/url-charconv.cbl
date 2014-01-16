@@ -10,15 +10,7 @@
         
         01  urlchars             PIC X(5)   VALUE SPACE.
         01  cindex               PIC 9(3)   VALUE 1.
-        
-        *> ISO8859-1 hex codes for åäö, ÅÄÖ
-        01  gem-au               PIC X      VALUE x'E5'.        
-        01  gem-ae               PIC X      VALUE x'E4'.
-        01  gem-ou               PIC X      VALUE x'F6'.        
-        01  ver-au               PIC X      VALUE x'C5'.
-        01  ver-ae               PIC X      VALUE x'C4'.        
-        01  ver-ou               PIC X      VALUE x'D6'.        
-        
+     
         linkage section.
         01  rtnflag              PIC X.        
         01  raw-post-string      PIC X(256).
@@ -28,7 +20,7 @@
         *>  Note the call order of parameters below!
         *> (NOT the order the linkage section above)
         PROCEDURE DIVISION USING rtnflag raw-post-string num-len-cnt.
-        000-main-conversion.
+        000-convert-to-utf8.
         
             MOVE raw-post-string TO ws-post-string
         
@@ -39,26 +31,31 @@
                     
                 *> DISPLAY 'Debug: Found it: ' ws-post-string(cindex:6)
                     
-                    *> ISO8859-1 hex codes for åäö, ÅÄÖ
+                    *> http://en.wikipedia.org/wiki/UTF-8
+                    *> http://www.utf8-chartable.de/
+                    
+                    *> utf-8 hex codes for åäö and ÅÄÖ (U+0000-000F)
+                    
                     EVALUATE ws-post-string(cindex:6)
                         
+                        *> å
                         WHEN '%C3%A5'
-                            MOVE gem-au TO cnv-post-string(cindex:1)
-                            
+                            MOVE x'c3a5' TO cnv-post-string(cindex:2)
+                        *> ä    
                         WHEN '%C3%A4'
-                            MOVE gem-ae TO cnv-post-string(cindex:1)
-                            
+                            MOVE x'c3a4' TO cnv-post-string(cindex:2)
+                        *> ö    
                         WHEN '%C3%B6'
-                            MOVE gem-ou TO cnv-post-string(cindex:1)
-                            
+                            MOVE x'c3b6' TO cnv-post-string(cindex:2)
+                        *> Å    
                         WHEN '%C3%85'
-                            MOVE ver-au TO cnv-post-string(cindex:1)
-                            
+                            MOVE x'c385' TO cnv-post-string(cindex:2)
+                        *> Ä    
                         WHEN '%C3%84'
-                            MOVE ver-ae TO cnv-post-string(cindex:1)
-                            
+                             MOVE x'c384' TO cnv-post-string(cindex:2)
+                        *> Ö    
                         WHEN '%C3%96'
-                            MOVE ver-ou TO cnv-post-string(cindex:1)            
+                            MOVE x'c396' TO cnv-post-string(cindex:2)            
                     
                     END-EVALUATE
 
@@ -74,8 +71,6 @@
 
 
             END-PERFORM
-            
-            DISPLAY 'Without encodings but missing: ' cnv-post-string
             
             MOVE cnv-post-string TO raw-post-string
 

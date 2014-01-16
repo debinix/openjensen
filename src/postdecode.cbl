@@ -1,5 +1,17 @@
         IDENTIFICATION DIVISION.
         program-id. postdecode.
+        *>*************************************************
+        *>
+        *> Modulfunction: Split the browser post string
+        *>                in separate form parameters
+        *>
+        *> Module: postdecode
+        *>
+        *> Vers: 0.01
+        *>
+        *> Coder: BK
+        *>
+        *>*************************************************
         
         ENVIRONMENT DIVISION.
         input-output section.
@@ -15,6 +27,10 @@
         01  chunk-of-post     PIC X(1024).            
         
         working-storage section.
+        01  module-rec.
+            05  mod-rec-version  PIC X(5)   VALUE '0.01-'. 
+            05  mod-rec-name     PIC X(35)  VALUE 'postdecode'.       
+        
         01  in-status            PIC 9999.  
         01  pagetitle            PIC X(20)  VALUE 'CGI decode'.
         01  rtnflag              PIC X      VALUE '0'.
@@ -34,9 +50,8 @@
         01  pair-counter                PIC 99 VALUE ZERO.
         01  space-counter               PIC 99 VALUE ZERO.        
         
-        *>******************************************************
         PROCEDURE DIVISION.
-        000-main.
+        000-decode-post-from-browser.
         
             *> (just to be sure)       
             COPY src_setupenv_openjensen.        
@@ -54,31 +69,45 @@
             END-IF
   
             IF num-cnt-len > 256
-                DISPLAY "<p>CGI POST: Content-Length is to large</p>"
+                DISPLAY
+                    "<p>CGI POST: Content-Length is to large</p>"
+                END-DISPLAY
                 CALL 'end-html' USING rtnflag    
                 GOBACK
             END-IF            
             
-            
+            *> get long post tring  and convert back to utf-8
             PERFORM 010-get-stdin-poststring
             *>  Count number value-pair-separators '&'        
             PERFORM 020-set-number-of-value-pairs
             
             DISPLAY '<p>Debug: Postlength: ' num-cnt-len
-                '<br>'
-                'Debug: Our long post string: </p>' post-string
+                ' - Converted post-string: ' post-string
+                ' - Pairs: ' number-of-value-pairs
+                '</p>'
             END-DISPLAY
             
             PERFORM VARYING pair-counter FROM 1 BY 1
                 UNTIL pair-counter > number-of-value-pairs
             
-                PERFORM 030-set-next-value-pair
+                DISPLAY
+                    '<br>PairCnt: ' pair-counter
+                END-DISPLAY
+            
+                *> extract one name-pair
+                PERFORM 030-extract-next-value-pair
                 
-                *>  Sets environment only if a pair has a value
-                PERFORM 040-set-environment
+                *> Debug 
+                *> CALL
+                *>    'dump-string' USING BY CONTENT tmp-name tmp-value
+                *> END-CALL
                 
-                *> only for debug
-                PERFORM 050-show-new-environment
+                DISPLAY
+                    '<p>'
+                    '<br>tmp-name:' tmp-name
+                    ' - tmp-value:' tmp-value
+                    '</p>'
+                END-DISPLAY
                 
             END-PERFORM
             
@@ -95,7 +124,7 @@
         *>******************************************************    
         010-get-stdin-poststring.
             
-            *> get STDIN post input to our variable
+            *> get STDIN post input and assign to our variable
             OPEN INPUT webinput
             IF in-status < 10 THEN
                 READ
@@ -107,12 +136,12 @@
             END-IF
             CLOSE webinput
 
-            *> decode high ascii HTML encoded characters            
+            *> decode utf-8 encoded characters            
             MOVE chunk-of-post(1:num-cnt-len) TO post-string
             
             CALL 'url-charconv' USING rtnflag post-string num-cnt-len
             
-            *> Restore all space charcters, encoded + as signs
+            *> Restore all space characters (encoded as + signs)
             INSPECT post-string CONVERTING '+' to SPACE
         
             .
@@ -129,7 +158,7 @@
             ADD 1 TO number-of-value-pairs
             .
         *>******************************************************            
-        030-set-next-value-pair.
+        030-extract-next-value-pair.
         
             MOVE SPACE TO tmp-name-value
             MOVE SPACE TO tmp-name
@@ -139,35 +168,13 @@
             UNSTRING post-string DELIMITED BY '&'
                 INTO tmp-name-value
                 WITH POINTER unstring-next-position
+            END-UNSTRING
             
             *> Separate out the name and value part                            
             UNSTRING tmp-name-value DELIMITED BY '='
-                INTO tmp-name
-                     tmp-value
+                INTO tmp-name tmp-value
+            END-UNSTRING
             .
-        *>******************************************************     
-        040-set-environment.
-        
-            MOVE ZERO TO space-counter
-            INSPECT tmp-value TALLYING space-counter
-                FOR ALL ' '
-                
-            *> DISPLAY 'Debug: Number of spaces: ' space-counter    
-        
-            IF space-counter NOT = FUNCTION LENGTH(tmp-value)
-                SET ENVIRONMENT tmp-name TO tmp-value
-            *> DISPLAY 'Debug: Environment: ' tmp-name ' ' tmp-value
-            END-IF
-    
-            .
-        *>******************************************************             
-        050-show-new-environment.
-        
-            ACCEPT env-value FROM ENVIRONMENT tmp-name
-            DISPLAY '<p>Retrieved Environment: </p>'
-                                tmp-name' : ' env-value
             
-            .
-
         *>******************************************************
         
