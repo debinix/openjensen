@@ -63,8 +63,8 @@ $(distdir):
 	$(QUIET) - $(CP) lib/*.cbl $(distdir)/lib/.
 #	
 	$(QUIET) $(MKDIR) $(distdir)/copy
-	$(QUIET) - $(CP) lib/copy/*.cbl $(distdir)/copy/.	
-	$(QUIET) - $(CP) lib/copy/*.cpy $(distdir)/copy/.	
+	$(QUIET) - $(CP) copy/*.cbl $(distdir)/copy/.	
+	$(QUIET) - $(CP) copy/*.cpy $(distdir)/copy/.	
 
 
 

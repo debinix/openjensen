@@ -1,1 +1,0 @@
-/home/bekr/openjensen/src/copy/sqlca.cpy
