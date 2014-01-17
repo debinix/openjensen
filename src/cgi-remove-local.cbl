@@ -73,12 +73,10 @@
            CALL 'wui-start-html' USING wc-pagetitle
            
            
-           *> CGI post: remove row by local-name
+           *> CGI post: remove row by local-name?
            MOVE 'local-name' TO wc-post1-name
            MOVE SPACE TO wc-post1-value
-
-           CALL 'get-post-value' USING wc-post1-name
-                                       wc-post1-value                           
+           CALL 'get-post-value' USING wc-post1-name wc-post1-value.                      
            MOVE wc-post1-value TO wc-lokalnamn
 
 
@@ -86,22 +84,11 @@
            MOVE 'local-id' TO wc-post2-name
            MOVE SPACE TO wc-post2-value
            
-           CALL 'get-post-value' USING wc-post2-name
-                                       wc-post2-value  
-           
-           *> debug           
-           DISPLAY
-                "<br> " wc-post2-name " " wc-post2-value
-           END-DISPLAY                            
+           CALL 'get-post-value' USING wc-post2-name wc-post2-value.                        
                                        
            *> convert to number (SPACE --> 0)
-           COMPUTE wn-lokal-id = FUNCTION NUMVAL(wc-post2-value)                                               
-
-           *> debug
-           DISPLAY
-                "<br> " wc-post2-name " (" wn-lokal-id ")"
-           END-DISPLAY
-           
+           MOVE FUNCTION NUMVAL(wc-post2-value) TO wn-lokal-id                                               
+      
            IF wc-lokalnamn = SPACE AND wn-lokal-id = 0
                 DISPLAY "<br> *** MISSING LOKAL ID ELLER NAMN ***"
            ELSE
@@ -145,10 +132,17 @@
                     DELETE FROM T_JLOKAL
                              WHERE Lokal_id = :jlokal-lokal-id
                 END-EXEC
+                
+                IF  SQLSTATE NOT = ZERO
+                    PERFORM Z0100-error-routine
+                ELSE
+                    DISPLAY "<br> *** Lokal bortagen ***"
+                END-IF
            
            END-IF
            
-           *> deletion based on local given name           
+           
+           *> deletion based on Lokalnamn          
            IF wc-lokalnamn NOT = SPACE 
            
                 *> the selected row to be removed
@@ -159,14 +153,17 @@
                     DELETE FROM T_JLOKAL
                              WHERE Lokalnamn = :jlokal-lokalnamn
                 END-EXEC
+                
+                IF  SQLSTATE NOT = ZERO
+                    PERFORM Z0100-error-routine
+                ELSE
+                    DISPLAY "<br> *** Lokal bortagen ***"
+                END-IF
+                
            
            END-IF
            
-           IF  SQLSTATE NOT = ZERO
-                PERFORM Z0100-error-routine
-           ELSE
-                PERFORM B0210-commit-work
-           END-IF
+           PERFORM B0210-commit-work
            
            PERFORM B0220-disconnect
            
@@ -179,8 +176,6 @@
            EXEC SQL 
                COMMIT WORK
            END-EXEC
-           DISPLAY "<br> *** Lokal bortagen ***"
-
            .           
            
        *>**************************************************
