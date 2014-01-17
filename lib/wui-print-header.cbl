@@ -18,8 +18,8 @@
             *> Always send out the Content-Type before any other I/O
             DISPLAY
                 "Content-Type: text/html; charset=utf-8"
-                newline
-                newline
+                wc-newline
+                wc-newline
             END-DISPLAY        
         
             GOBACK

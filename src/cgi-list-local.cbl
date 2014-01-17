@@ -11,7 +11,10 @@
        working-storage section.
        *> used in calls to dynamic libraries
        01  wn-rtn-code             PIC  S99   VALUE ZERO.
-       01  wc-pagetitle            PIC X(20) VALUE 'Lista lokaler'.  
+       01  wc-post-name            PIC X(40)  VALUE SPACE.
+       01  wc-post-value           PIC X(40)  VALUE SPACE.  
+       
+       01  wc-pagetitle            PIC X(20) VALUE 'Lista lokaler'.
        
        *> table data
        01  wr-rec-vars.
@@ -43,7 +46,17 @@
        0000-main.
        
            PERFORM A0100-init
-           PERFORM B0100-cgi-list-local
+           
+           *> is web GUI checkbox (jensen-only) checked or not
+           EVALUATE wc-post-value
+                WHEN 'on'
+                    PERFORM B0100-cgi-list-local-only
+                WHEN SPACE
+                    PERFORM B0200-cgi-list-local-all
+           
+           END-EVALUATE
+           
+           PERFORM B0300-commit-and-disconnect
            PERFORM C0100-goback
            .
        *>**************************************************          
@@ -52,8 +65,15 @@
            *> always send out the Content-Type before any other I/O
            CALL 'wui-print-header' USING wn-rtn-code  
            *>  start html doc
-           CALL 'wui-start-html' USING wc-pagetitle            
-                      
+           CALL 'wui-start-html' USING wc-pagetitle
+           
+           
+       *>  find out if checkbox is on/off from CGI post
+           MOVE 'jensen-only' TO wc-post-name
+           CALL 'get-post-value' USING wn-rtn-code
+                                       wc-post-name
+            
+                                       wc-post-value                    
        *>  connect
            MOVE  "openjensen"    TO   wc-database.
            MOVE  "jensen"        TO   wc-username.
@@ -67,23 +87,23 @@
            IF  SQLSTATE NOT = ZERO
                 PERFORM Z0100-error-routine
                 PERFORM C0100-goback
-           END-IF 
-       
+           END-IF
+           
            .
-       
        *>**************************************************          
-       B0100-cgi-list-local.
+       B0100-cgi-list-local-only.
            
        *>  declare cursor (only place were tablenames are used)
            EXEC SQL 
-               DECLARE jlokalcurs CURSOR FOR
+               DECLARE curslocal CURSOR FOR
                SELECT Lokal_id, Lokalnamn, Vaningsplan, Maxdeltagare
                       FROM T_JLOKAL
+                      WHERE Vaningsplan IS NOT NULL
            END-EXEC
            
            *> never never use a dash in cursor names!
            EXEC SQL
-               OPEN jlokalcurs
+               OPEN curslocal
            END-EXEC
            
            IF  SQLSTATE NOT = ZERO
@@ -93,7 +113,7 @@
        
        *>  fetch first row       
            EXEC SQL 
-               FETCH jlokalcurs INTO :jlokal-lokal-id,:jlokal-lokalnamn,
+               FETCH curslocal INTO :jlokal-lokal-id,:jlokal-lokalnamn,
                           :jlokal-vaningsplan,:jlokal-maxdeltagare
            END-EXEC
            
@@ -104,15 +124,13 @@
               MOVE  jlokal-vaningsplan   TO    wc-vaningsplan
               MOVE  jlokal-maxdeltagare  TO    wn-maxdeltagare
               
-              DISPLAY
-                "<br>" wr-rec-vars
-              END-DISPLAY  
-              
+              DISPLAY "<br>" wr-rec-vars
+
               INITIALIZE jlocal-rec-vars
            
               *> fetch next row  
                EXEC SQL 
-                    FETCH jlokalcurs INTO :jlokal-lokal-id,
+                    FETCH curslocal INTO :jlokal-lokal-id,
                                 :jlokal-lokalnamn,:jlokal-vaningsplan,
                                 :jlokal-maxdeltagare
                END-EXEC
@@ -127,9 +145,72 @@
              
        *>  close cursor
            EXEC SQL 
-               CLOSE jlokalcurs 
+               CLOSE curslocal 
            END-EXEC 
            
+           .       
+       
+       *>**************************************************          
+       B0200-cgi-list-local-all.
+           
+       *>  declare cursor (only place were tablenames are used)
+           EXEC SQL 
+               DECLARE cursall CURSOR FOR
+               SELECT Lokal_id, Lokalnamn, Vaningsplan, Maxdeltagare
+                      FROM T_JLOKAL
+           END-EXEC
+           
+           *> never never use a dash in cursor names!
+           EXEC SQL
+               OPEN cursall
+           END-EXEC
+           
+           IF  SQLSTATE NOT = ZERO
+               PERFORM Z0100-error-routine
+               PERFORM C0100-goback
+           END-IF
+       
+       *>  fetch first row       
+           EXEC SQL 
+               FETCH cursall INTO :jlokal-lokal-id,:jlokal-lokalnamn,
+                          :jlokal-vaningsplan,:jlokal-maxdeltagare
+           END-EXEC
+           
+           PERFORM UNTIL SQLSTATE NOT = ZERO
+           
+              MOVE  jlokal-lokal-id      TO    wn-lokal-id
+              MOVE  jlokal-lokalnamn     TO    wc-lokalnamn
+              MOVE  jlokal-vaningsplan   TO    wc-vaningsplan
+              MOVE  jlokal-maxdeltagare  TO    wn-maxdeltagare
+              
+              DISPLAY "<br>" wr-rec-vars
+
+              INITIALIZE jlocal-rec-vars
+           
+              *> fetch next row  
+               EXEC SQL 
+                    FETCH cursall INTO :jlokal-lokal-id,
+                                :jlokal-lokalnamn,:jlokal-vaningsplan,
+                                :jlokal-maxdeltagare
+               END-EXEC
+              
+           END-PERFORM
+           
+           *> end of data
+           IF  SQLSTATE NOT = "02000"
+                PERFORM Z0100-error-routine
+                PERFORM C0100-goback
+           END-IF              
+             
+       *>  close cursor
+           EXEC SQL 
+               CLOSE cursall 
+           END-EXEC 
+           
+           .
+       *>**************************************************
+       B0300-commit-and-disconnect.
+
        *>  commit
            EXEC SQL 
                COMMIT WORK
