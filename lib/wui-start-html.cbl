@@ -1,5 +1,5 @@
         IDENTIFICATION DIVISION.
-        program-id. start-html.
+        program-id. wui-start-html.
         
         ENVIRONMENT DIVISION.
         
@@ -7,9 +7,9 @@
         working-storage section.      
         
         linkage section.
-        01  pagetitle    PIC X(20).   
+        01  wc-pagetitle        PIC X(20).   
         
-        PROCEDURE DIVISION USING pagetitle.
+        PROCEDURE DIVISION USING wc-pagetitle.
         000-start-html.
         
             *> Always send out the Content-type before any other IO
@@ -23,7 +23,7 @@
             '<meta http-equiv="Content-Type"'
             'content="text/html; charset=utf-8">'	
             "<title>"
-            pagetitle
+            wc-pagetitle
             "</title>"
             "<style>"
             *>COPY <copybook css in style>

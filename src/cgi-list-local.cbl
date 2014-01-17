@@ -2,36 +2,37 @@
        *> cgi-list-local: fetch a list of locals 
        *> from table T_JLOKAL and writes to STDOUT 
        *> 
-       *> Coder: BK
+       *> Coder: BK 
        *>
        IDENTIFICATION DIVISION.
-       program-id. cgi-list-local.       
+       program-id. cgi-list-local.
        *>**************************************************
        DATA DIVISION.
        working-storage section.
        *> used in calls to dynamic libraries
-       01  wc-page-title           PIC  X(20) VALUE 'Databasfel'.
        01  wn-rtn-code             PIC  S99   VALUE ZERO.
+       01  wc-pagetitle            PIC X(20) VALUE 'Lista lokaler'.  
        
        *> table data
-       01  wr-jlocalrecord.
-           05  wn-lokal_id         PIC  9(04) VALUE ZERO.
+       01  wr-rec-vars.
+           05  wn-lokal-id         PIC  9(04) VALUE ZERO.
            05  FILLER              PIC  X.           
            05  wc-lokalnamn        PIC  X(40) VALUE SPACE.
            05  FILLER              PIC  X.
            05  wc-vaningsplan      PIC  X(40) VALUE SPACE.
            05  FILLER              PIC  X.
-           05  wn-maxdeltagare     PIC  9(04) VALUE ZERO.           
+           05  wn-maxdeltagare     PIC  9(04) VALUE ZERO.          
            
-       *> database connect info and T_JLOKAL 
+       *> wc-database connect info and T_JLOKAL 
        EXEC SQL BEGIN DECLARE SECTION END-EXEC.
-       01  wc-database              PIC  X(30).
-       01  wc-passwd                PIC  X(10).       
-       01  wc-username              PIC  X(30).
-       01  Lokal_id                 PIC  9(04).
-       01  Lokalnamn                PIC  X(40).
-       01  Vaningsplan              PIC  X(40).
-       01  Maxdeltagare             PIC  9(04).
+       01  wc-database              PIC  X(30) VALUE SPACE.
+       01  wc-passwd                PIC  X(10) VALUE SPACE.       
+       01  wc-username              PIC  X(30) VALUE SPACE.
+       01  jlocal-rec-vars.       
+           05  jlokal-lokal-id      PIC  9(04).
+           05  jlokal-lokalnamn     PIC  X(40).
+           05  jlokal-vaningsplan   PIC  X(40).
+           05  jlokal-maxdeltagare  PIC  9(04).
        EXEC SQL END DECLARE SECTION END-EXEC.
 
        EXEC SQL INCLUDE SQLCA END-EXEC.
@@ -47,11 +48,11 @@
            .
        *>**************************************************          
        A0100-init.       
-       
+           
            *> always send out the Content-Type before any other I/O
-           CALL 'wui-print-header' USING wc-page-title   
+           CALL 'wui-print-header' USING wn-rtn-code  
            *>  start html doc
-           CALL 'wui-start-html' USING wn-rtn-code              
+           CALL 'wui-start-html' USING wc-pagetitle            
                       
        *>  connect
            MOVE  "openjensen"    TO   wc-database.
@@ -73,15 +74,16 @@
        *>**************************************************          
        B0100-cgi-list-local.
            
-       *>  declare cursor
+       *>  declare cursor (only place were tablenames are used)
            EXEC SQL 
-               DECLARE cur-1 CURSOR FOR
+               DECLARE jlokalcurs CURSOR FOR
                SELECT Lokal_id, Lokalnamn, Vaningsplan, Maxdeltagare
                       FROM T_JLOKAL
            END-EXEC
            
+           *> never never use a dash in cursor names!
            EXEC SQL
-               OPEN cur-1
+               OPEN jlokalcurs
            END-EXEC
            
            IF  SQLSTATE NOT = ZERO
@@ -91,38 +93,41 @@
        
        *>  fetch first row       
            EXEC SQL 
-               FETCH cur-1 INTO :Lokal_id,    :Lokalnamn,
-                                :Vaningsplan, :Maxdeltagare
+               FETCH jlokalcurs INTO :jlokal-lokal-id,:jlokal-lokalnamn,
+                          :jlokal-vaningsplan,:jlokal-maxdeltagare
            END-EXEC
            
            PERFORM UNTIL SQLSTATE NOT = ZERO
            
-              MOVE  Lokal_id      TO    wn-lokal_id
-              MOVE  Lokalnamn     TO    wc-lokalnamn
-              MOVE  Vaningsplan   TO    wc-vaningsplan
-              MOVE  Maxdeltagare  TO    wn-maxdeltagare
+              MOVE  jlokal-lokal-id      TO    wn-lokal-id
+              MOVE  jlokal-lokalnamn     TO    wc-lokalnamn
+              MOVE  jlokal-vaningsplan   TO    wc-vaningsplan
+              MOVE  jlokal-maxdeltagare  TO    wn-maxdeltagare
               
               DISPLAY
-                wr-jlocalrecord
+                "<br>" wr-rec-vars
               END-DISPLAY  
               
-              INITIALIZE wr-jlocalrecord
+              INITIALIZE jlocal-rec-vars
            
               *> fetch next row  
-              EXEC SQL 
-                 FETCH cur-1 INTO :Lokalnamn,:Vaningsplan,:Maxdeltagare
-              END-EXEC
+               EXEC SQL 
+                    FETCH jlokalcurs INTO :jlokal-lokal-id,
+                                :jlokal-lokalnamn,:jlokal-vaningsplan,
+                                :jlokal-maxdeltagare
+               END-EXEC
               
            END-PERFORM
            
-           IF  SQLSTATE NOT = ZERO
+           *> end of data
+           IF  SQLSTATE NOT = "02000"
                 PERFORM Z0100-error-routine
                 PERFORM C0100-goback
            END-IF              
              
        *>  close cursor
            EXEC SQL 
-               CLOSE cur-1 
+               CLOSE jlokalcurs 
            END-EXEC 
            
        *>  commit

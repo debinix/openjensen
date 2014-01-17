@@ -1,5 +1,5 @@
         IDENTIFICATION DIVISION.
-        program-id. end-html.
+        program-id. wui-end-html.
         
         ENVIRONMENT DIVISION.
         
@@ -7,9 +7,9 @@
         working-storage section.      
         
         linkage section.
-        01  rtn-code    PIC S99.      
+        01  ln-rtn-code    PIC S99.      
         
-        PROCEDURE DIVISION USING rtn-code.
+        PROCEDURE DIVISION USING ln-rtn-code.
         000-end-html.
         
             DISPLAY
