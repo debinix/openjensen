@@ -16,25 +16,28 @@
             03  is-valid-transaction-switch PIC X   VALUE 'N'.
                 88  is-valid-transaction            VALUE 'Y'.
             03  is-db-connected-switch      PIC X   VALUE 'N'.
-                88  is-db-connected                 VALUE 'Y'. 
+                88  is-db-connected                 VALUE 'Y'.
+            03  is-valid-init-switch        PIC X   VALUE 'N'.
+                88  is-valid-init                   VALUE 'Y'.
+            03  is-lokal-id-found-switch    PIC X   VALUE 'N'.
+                88  is-lokal-id-found               VALUE 'Y'.                
+            03  is-lokalname-found-switch    PIC X   VALUE 'N'.
+                88  is-lokalname-found               VALUE 'Y'.                  
        
        *> used in calls to dynamic libraries
        01  wn-rtn-code             PIC  S99   VALUE ZERO.
        
-       01  wc-post1-name            PIC X(40)  VALUE SPACE.
-       01  wc-post1-value           PIC X(40)  VALUE SPACE.
+       01  wc-post-name            PIC X(40)  VALUE SPACE.
+       01  wc-post-value           PIC X(40)  VALUE SPACE.
        
-       01  wc-post2-name            PIC X(40)  VALUE SPACE.
-       01  wc-post2-value           PIC X(40)  VALUE SPACE.  
-       
-       01  wc-pagetitle            PIC X(20) VALUE 'Tag bort lokal'.
+       01  wc-pagetitle            PIC X(20)  VALUE 'Tag bort lokal'.
        
        *> table data
        01  wr-rec-vars.
            05  wn-lokal-id         PIC  9(04) VALUE ZERO.   
            05  wc-lokalnamn        PIC  X(40) VALUE SPACE.
-           
-       *> wc-database connect info and table T_JLOKAL 
+       
+       *> variables wrapped within EXEC SQL - END-EXEC 
        EXEC SQL BEGIN DECLARE SECTION END-EXEC.
        01  wc-database              PIC  X(30) VALUE SPACE.
        01  wc-passwd                PIC  X(10) VALUE SPACE.       
@@ -53,7 +56,7 @@
        
            PERFORM A0100-init
            
-           IF is-valid-post
+           IF is-valid-post AND is-valid-init
            
                 PERFORM B0100-connect
                 IF is-db-connected
@@ -62,8 +65,11 @@
                 
            END-IF
            
-           PERFORM C0100-goback
+           PERFORM C0100-closedown
+           
+           GOBACK
            .
+           
        *>**************************************************          
        A0100-init.       
            
@@ -72,22 +78,32 @@
            *>  start html doc
            CALL 'wui-start-html' USING wc-pagetitle
            
+           *> decompose and save current post string
+           CALL 'write-post-string' USING wn-rtn-code
            
-           *> CGI post: remove row by local-name?
-           MOVE 'local-name' TO wc-post1-name
-           MOVE SPACE TO wc-post1-value
-           CALL 'get-post-value' USING wc-post1-name wc-post1-value.                      
-           MOVE wc-post1-value TO wc-lokalnamn
-
-
-           *>  CGI post: remove row by local-id?
-           MOVE 'local-id' TO wc-post2-name
-           MOVE SPACE TO wc-post2-value
+           IF wn-rtn-code = ZERO
            
-           CALL 'get-post-value' USING wc-post2-name wc-post2-value.                        
-                                       
-           *> convert to number (SPACE --> 0)
-           MOVE FUNCTION NUMVAL(wc-post2-value) TO wn-lokal-id                                               
+               SET is-valid-init TO TRUE
+               
+               *> CGI post: remove row by local-name?             
+               MOVE ZERO TO wn-rtn-code
+               MOVE SPACE TO wc-post-value
+               MOVE 'local-name' TO wc-post-name
+               CALL 'get-post-value' USING wn-rtn-code
+                                           wc-post-name wc-post-value
+
+               MOVE wc-post-value TO wc-lokalnamn
+
+               *> CGI post: remove row by local-id?
+               MOVE ZERO TO wn-rtn-code
+               MOVE SPACE TO wc-post-value
+               MOVE 'local-id' TO wc-post-name               
+               CALL 'get-post-value' USING wn-rtn-code
+                                           wc-post-name wc-post-value
+               *> convert to number (SPACE --> 0)
+               MOVE FUNCTION NUMVAL(wc-post-value) TO wn-lokal-id                                                               
+               
+           END-IF                                            
       
            IF wc-lokalnamn = SPACE AND wn-lokal-id = 0
                 DISPLAY "<br> *** MISSING LOKAL ID ELLER NAMN ***"
@@ -110,7 +126,7 @@
                                                  USING :wc-database 
            END-EXEC
                 
-           IF  SQLSTATE NOT = ZERO
+           IF  SQLCODE NOT = ZERO
                 PERFORM Z0100-error-routine
            ELSE
                 SET is-db-connected TO TRUE
@@ -127,50 +143,110 @@
                 *> the selected row to be removed
                 MOVE wn-lokal-id TO jlokal-lokal-id
                 
-                *> delete row from table
-                EXEC SQL 
-                    DELETE FROM T_JLOKAL
-                             WHERE Lokal_id = :jlokal-lokal-id
-                END-EXEC
+                PERFORM B0210-is-lokal-id-data-found
                 
-                IF  SQLSTATE NOT = ZERO
-                    PERFORM Z0100-error-routine
-                ELSE
-                    DISPLAY "<br> *** Lokal bortagen ***"
+                *> delete row from table
+                IF is-lokal-id-found
+                     EXEC SQL 
+                         DELETE FROM T_JLOKAL
+                                  WHERE Lokal_id = :jlokal-lokal-id
+                     END-EXEC
                 END-IF
-           
-           END-IF
-           
-           
-           *> deletion based on Lokalnamn          
-           IF wc-lokalnamn NOT = SPACE 
-           
+                
+                IF  SQLCODE = ZERO
+                    DISPLAY "<br> *** Lokal bortagen ***"           
+                ELSE
+                    PERFORM Z0100-error-routine
+                END-IF
+                
+           *> deletion based on Lokalnamn           
+           ELSE IF wc-lokalnamn NOT = SPACE 
+
                 *> the selected row to be removed
                 MOVE wc-lokalnamn TO jlokal-lokalnamn
                 
-                *> delete row from table
-                EXEC SQL 
-                    DELETE FROM T_JLOKAL
-                             WHERE Lokalnamn = :jlokal-lokalnamn
-                END-EXEC
+                PERFORM B0220-is-lokalname-data-found
                 
-                IF  SQLSTATE NOT = ZERO
-                    PERFORM Z0100-error-routine
-                ELSE
-                    DISPLAY "<br> *** Lokal bortagen ***"
+                *> delete row from table
+                IF is-lokalname-found                
+                     EXEC SQL 
+                         DELETE FROM T_JLOKAL
+                                  WHERE Lokalnamn = :jlokal-lokalnamn
+                     END-EXEC
                 END-IF
                 
-           
+                IF  SQLCODE = ZERO
+                    DISPLAY "<br> *** Lokal bortagen ***"           
+                ELSE
+                    PERFORM Z0100-error-routine
+                END-IF
+                
            END-IF
            
-           PERFORM B0210-commit-work
+           PERFORM B0300-commit-work
            
-           PERFORM B0220-disconnect
+           PERFORM B0310-disconnect
            
            .
            
        *>**************************************************
-       B0210-commit-work.
+       B0210-is-lokal-id-data-found.
+
+           *> Cursor for T_JLOKAL
+           EXEC SQL
+             DECLARE curs1 CURSOR FOR
+                 SELECT Lokal_id
+                 FROM T_JLOKAL
+                     WHERE Lokal_id = :jlokal-lokal-id
+           END-EXEC.      
+
+           *> Open the cursor
+           EXEC SQL
+                OPEN curs1
+           END-EXEC
+                      
+           *> try a fetch
+           EXEC SQL
+               FETCH curs1
+                   INTO :wn-lokal-id
+           END-EXEC
+           
+           IF SQLCODE = ZERO
+               SET is-lokal-id-found TO TRUE
+           END-IF
+              
+           .
+           
+       *>**************************************************
+       B0220-is-lokalname-data-found.
+
+           *> Cursor for T_JLOKAL
+           EXEC SQL
+             DECLARE curs2 CURSOR FOR
+                 SELECT Lokalnamn
+                 FROM T_JLOKAL
+                     WHERE Lokalnamn = :jlokal-lokalnamn
+           END-EXEC.      
+
+           *> Open the cursor
+           EXEC SQL
+                OPEN curs2
+           END-EXEC
+                      
+           *> try a fetch
+           EXEC SQL
+               FETCH curs2
+                   INTO :wc-lokalnamn
+           END-EXEC
+           
+           IF SQLCODE = ZERO
+               SET is-lokalname-found TO TRUE
+           END-IF
+              
+           .       
+       
+       *>**************************************************       
+       B0300-commit-work.
 
            *>  commit work permanently
            EXEC SQL 
@@ -179,7 +255,7 @@
            .           
            
        *>**************************************************
-       B0220-disconnect.
+       B0310-disconnect.
 
            *>  disconnect
            EXEC SQL
@@ -189,33 +265,19 @@
            .
 
        *>**************************************************
-       C0100-goback.
+       C0100-closedown.
 
            CALL 'wui-end-html' USING wn-rtn-code
            
-           GOBACK
            .
 
        *>**************************************************
        Z0100-error-routine.
-                  
-           DISPLAY "*** SQL ERROR ***".
-           DISPLAY "SQLSTATE: " SQLSTATE.
            
-           EVALUATE SQLSTATE
-              WHEN  "02000"
-                 DISPLAY "Record not found"
-              WHEN  "08003"
-              WHEN  "08001"
-                 DISPLAY "Connection falied"
-              WHEN  SPACE
-                 DISPLAY "Undefined error"
-              WHEN  OTHER
-                 DISPLAY "SQLCODE: "   SQLCODE
-                 DISPLAY "SQLERRMC: "  SQLERRMC
-           END-EVALUATE
-           
+           *> requires the ending dot (and no extension)!
+           COPY z0100-error-routine.
+       
            .
-           
+                  
        *>**************************************************    
        *> END PROGRAM  

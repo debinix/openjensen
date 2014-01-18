@@ -1,8 +1,22 @@
-TODO
-====
+TODO (2014-01-18)
+================
 
 1. Long lines wrap in the main-window.
  - How to add scrollbars (HTML/CSS) that works?
 
-2. Decode POST variables (Cobol) into separate variables
- - Does Open Cobol provides new string functions for this?
+2. Strings have to replace '+' (i.e. SPACE) before multiple words
+can be inserted into tables
+
+3. Utf-8 conversion on client data before inserted into tables
+
+4. Validation on indata
+
+5. The Update local and Delete local forms almost identical,
+use hidden field to use same cgi and separate action.
+
+6. Do the 'Add local' cgi
+
+7. Restructure overall code, remove duplicate performs, use copybook..
+
+
+

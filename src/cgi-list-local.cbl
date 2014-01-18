@@ -9,6 +9,15 @@
        *>**************************************************
        DATA DIVISION.
        working-storage section.
+       01   switches.
+            03  is-db-connected-switch      PIC X   VALUE 'N'.
+                88  is-db-connected                 VALUE 'Y'.
+            03  is-valid-init-switch        PIC X   VALUE 'N'.
+                88  is-valid-init                   VALUE 'Y'.
+            03  is-real-locals-switch     PIC X   VALUE 'N'.
+                88  is-real-locals                VALUE 'Y'.                
+                
+       
        *> used in calls to dynamic libraries
        01  wn-rtn-code             PIC  S99   VALUE ZERO.
        01  wc-post-name            PIC X(40)  VALUE SPACE.
@@ -26,7 +35,7 @@
            05  FILLER              PIC  X.
            05  wn-maxdeltagare     PIC  9(04) VALUE ZERO.          
            
-       *> wc-database connect info and T_JLOKAL 
+       *> variables wrapped within EXEC SQL - END-EXEC 
        EXEC SQL BEGIN DECLARE SECTION END-EXEC.
        01  wc-database              PIC  X(30) VALUE SPACE.
        01  wc-passwd                PIC  X(10) VALUE SPACE.       
@@ -47,18 +56,19 @@
        
            PERFORM A0100-init
            
-           *> is web GUI checkbox (jensen-only) checked or not
-           EVALUATE wc-post-value
-                WHEN 'on'
-                    PERFORM B0100-cgi-list-local-only
-                WHEN SPACE
-                    PERFORM B0200-cgi-list-local-all
+           IF is-valid-init
+                PERFORM B0100-connect
+                IF is-db-connected
+                    PERFORM B0200-list-locals
+                    PERFORM B0300-disconnect
+                END-IF
+           END-IF
+                   
+           PERFORM C0100-closedown
            
-           END-EVALUATE
-           
-           PERFORM B0300-commit-and-disconnect
-           PERFORM C0100-goback
+           GOBACK
            .
+           
        *>**************************************************          
        A0100-init.       
            
@@ -67,31 +77,62 @@
            *>  start html doc
            CALL 'wui-start-html' USING wc-pagetitle
            
+           *> decompose and save current post string
+           CALL 'write-post-string' USING wn-rtn-code
            
-       *>  find out if checkbox is on/off from CGI post
-           MOVE 'jensen-only' TO wc-post-name
-           CALL 'get-post-value' USING wn-rtn-code
-                                       wc-post-name
-            
-                                       wc-post-value                    
-       *>  connect
+           IF wn-rtn-code = ZERO
+           
+               SET is-valid-init TO TRUE
+               
+               *>  find out if checkbox is on/off from CGI post           
+               MOVE ZERO TO wn-rtn-code
+               MOVE SPACE TO wc-post-value
+               MOVE 'jensen-only' TO wc-post-name
+               CALL 'get-post-value' USING wn-rtn-code
+                                           wc-post-name wc-post-value
+
+               IF wc-post-value = 'on'
+                   SET is-real-locals TO TRUE
+               END-IF
+  
+           END-IF
+
+           .
+       
+       *>**************************************************
+       B0100-connect.
+        
+           *>  connect
            MOVE  "openjensen"    TO   wc-database.
            MOVE  "jensen"        TO   wc-username.
            MOVE  SPACE           TO   wc-passwd.
-           
+                
            EXEC SQL
                CONNECT :wc-username IDENTIFIED BY :wc-passwd
-                                            USING :wc-database 
+                                                 USING :wc-database 
            END-EXEC
-           
+                
            IF  SQLSTATE NOT = ZERO
                 PERFORM Z0100-error-routine
-                PERFORM C0100-goback
+           ELSE
+                SET is-db-connected TO TRUE
+           END-IF  
+
+           .       
+       
+       *>**************************************************          
+       B0200-list-locals.
+           
+           IF is-real-locals
+               PERFORM B0210-list-real-locals
+           ELSE
+               PERFORM B0220-list-all-locals 
            END-IF
            
            .
+           
        *>**************************************************          
-       B0100-cgi-list-local-only.
+       B0210-list-real-locals.
            
        *>  declare cursor (only place were tablenames are used)
            EXEC SQL 
@@ -105,11 +146,6 @@
            EXEC SQL
                OPEN curslocal
            END-EXEC
-           
-           IF  SQLSTATE NOT = ZERO
-               PERFORM Z0100-error-routine
-               PERFORM C0100-goback
-           END-IF
        
        *>  fetch first row       
            EXEC SQL 
@@ -117,7 +153,7 @@
                           :jlokal-vaningsplan,:jlokal-maxdeltagare
            END-EXEC
            
-           PERFORM UNTIL SQLSTATE NOT = ZERO
+           PERFORM UNTIL SQLCODE NOT = ZERO
            
               MOVE  jlokal-lokal-id      TO    wn-lokal-id
               MOVE  jlokal-lokalnamn     TO    wc-lokalnamn
@@ -138,9 +174,8 @@
            END-PERFORM
            
            *> end of data
-           IF  SQLSTATE NOT = "02000"
+           IF  SQLSTATE NOT = '02000'
                 PERFORM Z0100-error-routine
-                PERFORM C0100-goback
            END-IF              
              
        *>  close cursor
@@ -150,8 +185,9 @@
            
            .       
        
+
        *>**************************************************          
-       B0200-cgi-list-local-all.
+       B0220-list-all-locals.
            
        *>  declare cursor (only place were tablenames are used)
            EXEC SQL 
@@ -160,15 +196,10 @@
                       FROM T_JLOKAL
            END-EXEC
            
-           *> never never use a dash in cursor names!
+           *> never, never use a dash in cursor names!
            EXEC SQL
                OPEN cursall
            END-EXEC
-           
-           IF  SQLSTATE NOT = ZERO
-               PERFORM Z0100-error-routine
-               PERFORM C0100-goback
-           END-IF
        
        *>  fetch first row       
            EXEC SQL 
@@ -176,7 +207,7 @@
                           :jlokal-vaningsplan,:jlokal-maxdeltagare
            END-EXEC
            
-           PERFORM UNTIL SQLSTATE NOT = ZERO
+           PERFORM UNTIL SQLCODE NOT = ZERO
            
               MOVE  jlokal-lokal-id      TO    wn-lokal-id
               MOVE  jlokal-lokalnamn     TO    wc-lokalnamn
@@ -197,9 +228,8 @@
            END-PERFORM
            
            *> end of data
-           IF  SQLSTATE NOT = "02000"
+           IF  SQLSTATE NOT = '02000'
                 PERFORM Z0100-error-routine
-                PERFORM C0100-goback
            END-IF              
              
        *>  close cursor
@@ -209,17 +239,7 @@
            
            .
        *>**************************************************
-       B0300-commit-and-disconnect.
-
-       *>  commit
-           EXEC SQL 
-               COMMIT WORK
-           END-EXEC
-           
-           IF  SQLSTATE NOT = ZERO
-                PERFORM Z0100-error-routine
-                PERFORM C0100-goback
-           END-IF      
+       B0300-disconnect. 
                                  
        *>  disconnect
            EXEC SQL
@@ -229,34 +249,17 @@
            .
 
        *>**************************************************
-       C0100-goback.
+       C0100-closedown.
 
            CALL 'wui-end-html' USING wn-rtn-code 
            
-           GOBACK
            .
 
        *>**************************************************
        Z0100-error-routine.
                   
-           DISPLAY "*** SQL ERROR ***".
-           DISPLAY "SQLSTATE: " SQLSTATE.
-           EVALUATE SQLSTATE
-              WHEN  "02000"
-                 DISPLAY "Record not found"
-              WHEN  "08003"
-              WHEN  "08001"
-                 DISPLAY "Connection falied"
-              WHEN  SPACE
-                 DISPLAY "Undefined error"
-              WHEN  OTHER
-                 DISPLAY "SQLCODE: "   SQLCODE
-                 DISPLAY "SQLERRMC: "  SQLERRMC
-              *> TO RESTART TRANSACTION, DO ROLLBACK.
-              *> EXEC SQL
-              *>       ROLLBACK
-              *>  END-EXEC
-           END-EVALUATE
+           *> requires the ending dot (and no extension)!
+           COPY z0100-error-routine.
            
            .
            
