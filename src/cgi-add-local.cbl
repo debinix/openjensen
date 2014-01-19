@@ -17,9 +17,13 @@
             03  is-in-table-switch                  PIC X   VALUE 'N'.
                 88  is-in-table                             VALUE 'Y'.
             03  is-valid-table-position-switch      PIC X   VALUE 'N'.
-                88  is-valid-table-position                 VALUE 'Y'.                
+                88  is-valid-table-position                 VALUE 'Y'.
+
+       01   flags.
+            03  cgi-action                          PIC X.
+                88  is-add-local                            VALUE '1'.
+                88  is-edit-local                           VALUE '2'.                
                 
-       
        *> used in calls to dynamic libraries
        01  wn-rtn-code             PIC  S99   VALUE ZERO.
        01  wc-post-name            PIC X(40)  VALUE SPACE.
@@ -61,10 +65,19 @@
            PERFORM A0100-init
            
            IF is-valid-init
+           
                 PERFORM B0100-connect
                 IF is-db-connected
-                    PERFORM B0200-add-local
-                    PERFORM B0300-disconnect
+                
+                    IF is-edit-local
+                        DISPLAY "<br> Do edit!"                    
+                    END-IF
+
+                    IF is-add-local
+                        PERFORM B0200-add-local
+                        PERFORM B0300-disconnect
+                    END-IF
+           
                 END-IF
            END-IF
                    
@@ -85,6 +98,20 @@
            CALL 'write-post-string' USING wn-rtn-code
            
            IF wn-rtn-code = ZERO
+           
+               *> read in hidden cgi action field
+               MOVE ZERO TO wn-rtn-code
+               MOVE SPACE TO wc-post-value
+               MOVE 'cgiaction' TO wc-post-name
+               CALL 'get-post-value' USING wn-rtn-code
+                                           wc-post-name wc-post-value
+                                           
+               EVALUATE wc-post-value
+                    WHEN 'edit-local'
+                        SET is-edit-local TO TRUE
+                    WHEN 'add-local'
+                        SET is-add-local TO TRUE                       
+               END-EVALUATE
                
                *>  read local-sign-name (default choice)         
                MOVE ZERO TO wn-rtn-code
