@@ -9,15 +9,19 @@
        *>**************************************************
        DATA DIVISION.
        working-storage section.
-       01   switches.
+       01   switches-add.
             03  is-db-connected-switch              PIC X   VALUE 'N'.
                 88  is-db-connected                         VALUE 'Y'.
             03  is-valid-init-switch                PIC X   VALUE 'N'.
                 88  is-valid-init                           VALUE 'Y'.
-            03  is-in-table-switch                  PIC X   VALUE 'N'.
-                88  is-in-table                             VALUE 'Y'.
+            03  name-is-in-table-switch             PIC X   VALUE 'N'.
+                88  name-is-in-table                        VALUE 'Y'.
             03  is-valid-table-position-switch      PIC X   VALUE 'N'.
                 88  is-valid-table-position                 VALUE 'Y'.
+                
+       01   switches-edit.                
+            03  local-id-is-in-table-switch         PIC X   VALUE 'N'.
+                88  local-id-is-in-table                    VALUE 'Y'.                
 
        01   flags.
             03  cgi-action                          PIC X.
@@ -31,15 +35,20 @@
        
        01  wc-pagetitle            PIC X(20) VALUE 'Lista lokaler'.
        
-       *> table data
+       *> browser table data
        01  wr-rec-vars.
-           05  wn-lokal-id         PIC  9(4) VALUE ZERO.
-           05  FILLER              PIC  X.           
-           05  wc-lokalnamn        PIC  X(40) VALUE SPACE.
-           05  FILLER              PIC  X.
+           05  wn-lokal-id         PIC  9(4) VALUE ZERO.     
+           05  wc-lokalnamn        PIC  X(40) VALUE SPACE. 
            05  wc-vaningsplan      PIC  X(40) VALUE SPACE.
-           05  FILLER              PIC  X.
-           05  wn-maxdeltagare     PIC  9(4) VALUE ZERO.          
+           05  wn-maxdeltagare     PIC  9(4) VALUE ZERO.
+           
+       *> existing table data
+       01  wr-cur-rec-vars.
+           05  wn-cur-lokal-id         PIC  9(4) VALUE ZERO.     
+           05  wc-cur-lokalnamn        PIC  X(40) VALUE SPACE. 
+           05  wc-cur-vaningsplan      PIC  X(40) VALUE SPACE.
+           05  wn-cur-maxdeltagare     PIC  9(4) VALUE ZERO.           
+           
            
        *> host variables used within EXEC SQL - END-EXEC 
        EXEC SQL BEGIN DECLARE SECTION END-EXEC.
@@ -69,15 +78,18 @@
                 PERFORM B0100-connect
                 IF is-db-connected
                 
-                    IF is-edit-local
-                        DISPLAY "<br> Do edit!"                    
-                    END-IF
-
+                    *> action add new local
                     IF is-add-local
                         PERFORM B0200-add-local
-                        PERFORM B0300-disconnect
+                        PERFORM Z0200-disconnect
                     END-IF
-           
+                
+                    *> action edit existing local
+                    IF is-edit-local
+                        PERFORM B0300-edit-local
+                        PERFORM Z0200-disconnect
+                    END-IF
+
                 END-IF
            END-IF
                    
@@ -107,10 +119,21 @@
                                            wc-post-name wc-post-value
                                            
                EVALUATE wc-post-value
+               
                     WHEN 'edit-local'
                         SET is-edit-local TO TRUE
+                        MOVE ZERO TO wn-rtn-code
+                        MOVE SPACE TO wc-post-value
+                        MOVE 'local-id' TO wc-post-name
+                        CALL 'get-post-value' USING wn-rtn-code
+                                           wc-post-name wc-post-value
+                        
+                        MOVE FUNCTION NUMVAL(wc-post-value)
+                                         TO wn-local-id
+
                     WHEN 'add-local'
-                        SET is-add-local TO TRUE                       
+                        SET is-add-local TO TRUE
+                        
                END-EVALUATE
                
                *>  read local-sign-name (default choice)         
@@ -191,9 +214,9 @@
        B0200-add-local.
            
            
-           PERFORM B0210-test-exist-local
+           PERFORM B0210-does-local-name-exist
                
-           IF NOT is-in-table
+           IF NOT name-is-in-table
                PERFORM B0220-get-new-row-number
                
                IF is-valid-table-position
@@ -206,7 +229,7 @@
            .
            
        *>**************************************************          
-       B0210-test-exist-local.
+       B0210-does-local-name-exist.
            
            *> Cursor for T_JLOKAL
            EXEC SQL
@@ -233,7 +256,7 @@
                *> set flag if already in the table
                IF FUNCTION UPPER-CASE (wc-lokalnamn) =
                   FUNCTION UPPER-CASE (jlokal-lokalnamn)
-                        SET is-in-table TO TRUE
+                        SET name-is-in-table TO TRUE
                END-IF
            
               *> fetch next row  
@@ -250,12 +273,12 @@
                 PERFORM Z0100-error-routine
            END-IF                 
              
-       *>  close cursor
+           *> close cursor
            EXEC SQL 
                CLOSE cursaddlocal 
            END-EXEC 
            
-         .       
+           .       
        
        *>**************************************************          
        B0220-get-new-row-number.
@@ -281,7 +304,6 @@
             
            MOVE wn-lokal-id TO jlokal-lokal-id
            MOVE wc-lokalnamn TO jlokal-lokalnamn
-           
            MOVE wc-vaningsplan TO jlokal-vaningsplan
            MOVE wn-maxdeltagare TO jlokal-maxdeltagare
             
@@ -308,18 +330,88 @@
                COMMIT WORK
            END-EXEC
            .           
-           
 
-       *>**************************************************
-       B0300-disconnect. 
-                                 
-       *>  disconnect
-           EXEC SQL
-               DISCONNECT ALL
-           END-EXEC
+       *>**************************************************          
+       B0300-edit-local.
+           
+           PERFORM B0310-does-local-id-exist
+               
+           IF local-id-is-in-table
+               PERFORM B0320-change-local-item
+           ELSE    
+               DISPLAY "<br> *** Denna lokal finns ej!"
+           END-IF
            
            .
 
+       *>**************************************************
+           B0310-does-local-id-exist.
+
+           *> Cursor for T_JLOKAL
+           EXEC SQL
+             DECLARE curseditlocal CURSOR FOR
+                 SELECT Lokal_id, Lokalnamn, Vaningsplan, Maxdeltagare
+                 FROM T_JLOKAL
+           END-EXEC      
+
+           *> Open the cursor
+           EXEC SQL
+                OPEN curseditlocal
+           END-EXEC
+           
+           MOVE wn-lokal-id TO jlokal-lokal-id
+                      
+           *> fetch first row
+           EXEC SQL
+               FETCH curseditlocal
+                   INTO :jlokal-lokal-id, :jlokal-lokalnamn,
+                        :jlokal-vaningsplan, :jlokal-maxdeltagare 
+           END-EXEC
+           
+           PERFORM UNTIL SQLCODE NOT = ZERO
+           
+               *> set flag if in table
+               IF wn-lokal-id = jlokal-lokal-id
+                    SET local-id-is-in-table TO TRUE
+                    
+                    *> this it the local row items we may update
+                    MOVE jlocal-rec-vars TO wr-cur-rec-vars
+                    
+               END-IF
+           
+              *> fetch next row  
+               EXEC SQL
+                   FETCH curseditlocal
+                       INTO :jlokal-lokal-id, :jlokal-lokalnamn,
+                            :jlokal-vaningsplan, :jlokal-maxdeltagare
+               END-EXEC
+              
+           END-PERFORM
+           
+           
+           *> end of data
+           IF  SQLSTATE NOT = '02000'
+                PERFORM Z0100-error-routine
+           END-IF                 
+             
+           *> close cursor
+           EXEC SQL 
+               CLOSE curseditlocal 
+           END-EXEC            
+           
+           .
+           
+       *>**************************************************
+           B0320-change-local-item.
+
+           
+           DISPLAY "<br> Current row: " wr-cur-rec-vars 
+           DISPLAY "<br> Would have changed item!"
+           DISPLAY "<br> User data: " wr-rec-vars            
+            
+           .           
+           
+           
        *>**************************************************
        C0100-closedown.
 
@@ -335,5 +427,15 @@
            
            .
            
+       *>**************************************************
+       Z0200-disconnect. 
+                                 
+       *>  disconnect
+           EXEC SQL
+               DISCONNECT ALL
+           END-EXEC
+           
+           .
+
        *>**************************************************    
        *> END PROGRAM  
