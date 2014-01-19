@@ -109,7 +109,7 @@
                END-IF
 
                IF wc-lokalnamn = SPACE
-                   DISPLAY "<br> *** SAKNAR NAMN PÅ LOKAL ***"
+                   DISPLAY "<br> *** Saknar namn på lokal ***"
                ELSE
                    SET is-valid-init TO TRUE
                END-IF
@@ -172,7 +172,8 @@
                IF is-valid-table-position
                    PERFORM B0230-add-local-to-table
                END-IF
-               
+           ELSE    
+               DISPLAY "<br> *** Denna lokal finns redan upplagd"
            END-IF
            
            .
@@ -251,11 +252,37 @@
        B0230-add-local-to-table.
        
             
-           DISPLAY "<br> I would add: " wc-lokalnamn
-           DISPLAY "<br> at row position: " wn-lokal-id           
-
-        
+           MOVE wn-lokal-id TO jlokal-lokal-id
+           MOVE wc-lokalnamn TO jlokal-lokalnamn
+           
+           MOVE wc-vaningsplan TO jlokal-vaningsplan
+           MOVE wn-maxdeltagare TO jlokal-maxdeltagare
+            
+           EXEC SQL
+               INSERT INTO T_JLOKAL
+               VALUES (:jlokal-lokal-id, :jlokal-lokalnamn,
+                       :jlokal-vaningsplan, :jlokal-maxdeltagare)
+           END-EXEC 
+            
+           IF  SQLCODE NOT = ZERO
+                PERFORM Z0100-error-routine
+           ELSE
+                PERFORM B0240-commit-work
+                DISPLAY "<br> *** Lokal adderad ***"
+           END-IF     
+    
            .
+
+       *>**************************************************       
+       B0240-commit-work.
+
+           *>  commit work permanently
+           EXEC SQL 
+               COMMIT WORK
+           END-EXEC
+           .           
+           
+
        *>**************************************************
        B0300-disconnect. 
                                  

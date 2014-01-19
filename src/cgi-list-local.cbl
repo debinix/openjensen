@@ -196,6 +196,7 @@
                DECLARE cursall CURSOR FOR
                SELECT Lokal_id, Lokalnamn, Vaningsplan, Maxdeltagare
                       FROM T_JLOKAL
+                      ORDER BY Lokal_id
            END-EXEC
            
            *> never, never use a dash in cursor names!

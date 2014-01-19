@@ -20,9 +20,7 @@
             03  is-valid-init-switch        PIC X   VALUE 'N'.
                 88  is-valid-init                   VALUE 'Y'.
             03  is-lokal-id-found-switch    PIC X   VALUE 'N'.
-                88  is-lokal-id-found               VALUE 'Y'.                
-            03  is-lokalname-found-switch    PIC X   VALUE 'N'.
-                88  is-lokalname-found               VALUE 'Y'.                  
+                88  is-lokal-id-found               VALUE 'Y'.                              
        
        *> used in calls to dynamic libraries
        01  wn-rtn-code             PIC  S99   VALUE ZERO.
@@ -87,16 +85,7 @@
            
                SET is-valid-init TO TRUE
                
-               *> CGI post: remove row by local-name?             
-               MOVE ZERO TO wn-rtn-code
-               MOVE SPACE TO wc-post-value
-               MOVE 'local-name' TO wc-post-name
-               CALL 'get-post-value' USING wn-rtn-code
-                                           wc-post-name wc-post-value
-
-               MOVE wc-post-value TO wc-lokalnamn
-
-               *> CGI post: remove row by local-id?
+               *> CGI post: remove row by local-id
                MOVE ZERO TO wn-rtn-code
                MOVE SPACE TO wc-post-value
                MOVE 'local-id' TO wc-post-name               
@@ -107,8 +96,8 @@
                
            END-IF                                            
       
-           IF wc-lokalnamn = SPACE AND wn-lokal-id = 0
-                DISPLAY "<br> *** MISSING LOKAL ID ELLER NAMN ***"
+           IF wn-lokal-id = 0
+                DISPLAY "<br> *** Saknar lokalens identifikation ***"
            ELSE
                 SET is-valid-post TO TRUE
            END-IF           
@@ -139,7 +128,7 @@
        *>**************************************************          
        B0200-cgi-delete-row.      
            
-           *> deletion based on Lokal_id (primary key)
+           *> delete based on Lokal_id
            IF wn-lokal-id NOT = 0  
            
                 *> the selected row to be removed
@@ -152,28 +141,6 @@
                      EXEC SQL 
                          DELETE FROM T_JLOKAL
                                   WHERE Lokal_id = :jlokal-lokal-id
-                     END-EXEC
-                END-IF
-                
-                IF  SQLCODE = ZERO
-                    DISPLAY "<br> *** Lokal bortagen ***"           
-                ELSE
-                    PERFORM Z0100-error-routine
-                END-IF
-                
-           *> deletion based on Lokalnamn           
-           ELSE IF wc-lokalnamn NOT = SPACE 
-
-                *> the selected row to be removed
-                MOVE wc-lokalnamn TO jlokal-lokalnamn
-                
-                PERFORM B0220-is-lokalname-data-found
-                
-                *> delete row from table
-                IF is-lokalname-found                
-                     EXEC SQL 
-                         DELETE FROM T_JLOKAL
-                                  WHERE Lokalnamn = :jlokal-lokalnamn
                      END-EXEC
                 END-IF
                 
@@ -217,35 +184,7 @@
                SET is-lokal-id-found TO TRUE
            END-IF
               
-           .
-           
-       *>**************************************************
-       B0220-is-lokalname-data-found.
-
-           *> Cursor for T_JLOKAL
-           EXEC SQL
-             DECLARE curs2 CURSOR FOR
-                 SELECT Lokalnamn
-                 FROM T_JLOKAL
-                     WHERE Lokalnamn = :jlokal-lokalnamn
-           END-EXEC.      
-
-           *> Open the cursor
-           EXEC SQL
-                OPEN curs2
-           END-EXEC
-                      
-           *> try a fetch
-           EXEC SQL
-               FETCH curs2
-                   INTO :wc-lokalnamn
-           END-EXEC
-           
-           IF SQLCODE = ZERO
-               SET is-lokalname-found TO TRUE
-           END-IF
-              
-           .       
+           . 
        
        *>**************************************************       
        B0300-commit-work.
