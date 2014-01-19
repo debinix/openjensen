@@ -1,21 +1,23 @@
        *>
-       *> cgi-list-local: fetch a list of locals 
-       *> from table T_JLOKAL and writes to STDOUT 
+       *> cgi-add-local: reads user data related to
+       *> a local and saves into table T_JLOKAL
        *> 
        *> Coder: BK 
        *>
        IDENTIFICATION DIVISION.
-       program-id. cgi-list-local.
+       program-id. cgi-add-local.
        *>**************************************************
        DATA DIVISION.
        working-storage section.
        01   switches.
-            03  is-db-connected-switch      PIC X   VALUE 'N'.
-                88  is-db-connected                 VALUE 'Y'.
-            03  is-valid-init-switch        PIC X   VALUE 'N'.
-                88  is-valid-init                   VALUE 'Y'.
-            03  is-real-locals-switch     PIC X   VALUE 'N'.
-                88  is-real-locals                VALUE 'Y'.                
+            03  is-db-connected-switch              PIC X   VALUE 'N'.
+                88  is-db-connected                         VALUE 'Y'.
+            03  is-valid-init-switch                PIC X   VALUE 'N'.
+                88  is-valid-init                           VALUE 'Y'.
+            03  is-in-table-switch                  PIC X   VALUE 'N'.
+                88  is-in-table                             VALUE 'Y'.
+            03  is-valid-table-position-switch      PIC X   VALUE 'N'.
+                88  is-valid-table-position                 VALUE 'Y'.                
                 
        
        *> used in calls to dynamic libraries
@@ -61,7 +63,7 @@
            IF is-valid-init
                 PERFORM B0100-connect
                 IF is-db-connected
-                    PERFORM B0200-list-locals
+                    PERFORM B0200-add-local
                     PERFORM B0300-disconnect
                 END-IF
            END-IF
@@ -83,31 +85,67 @@
            CALL 'write-post-string' USING wn-rtn-code
            
            IF wn-rtn-code = ZERO
-           
-               SET is-valid-init TO TRUE
                
-               *>  find out if checkbox is on/off from CGI post           
+               *>  read local-sign-name (default choice)         
                MOVE ZERO TO wn-rtn-code
                MOVE SPACE TO wc-post-value
-               MOVE 'jensen-only' TO wc-post-name
+               MOVE 'local-sign-name' TO wc-post-name
                CALL 'get-post-value' USING wn-rtn-code
-                                           wc-post-name wc-post-value
+                                           wc-post-name wc-post-value                           
 
-               IF wc-post-value = 'on'
-                   SET is-real-locals TO TRUE
+               MOVE wc-post-value TO wc-lokalnamn
+               
+               IF wc-post-value = SPACE
+               
+                   *>  read local-alt-name 
+                   MOVE ZERO TO wn-rtn-code
+                   MOVE SPACE TO wc-post-value
+                   MOVE 'local-alt-name' TO wc-post-name
+                   CALL 'get-post-value' USING wn-rtn-code
+                                        wc-post-name wc-post-value
+                   
+                   MOVE wc-post-value TO wc-lokalnamn
+               
                END-IF
+
+               IF wc-lokalnamn = SPACE
+                   DISPLAY "<br> *** SAKNAR NAMN PÅ LOKAL ***"
+               ELSE
+                   SET is-valid-init TO TRUE
+               END-IF
+
+
+               *>  read floor plan 
+               MOVE ZERO TO wn-rtn-code
+               MOVE SPACE TO wc-post-value
+               MOVE 'plan' TO wc-post-name
+               
+               CALL 'get-post-value' USING wn-rtn-code wc-post-name
+                                           wc-post-value                                     
+               
+               MOVE wc-post-value TO wc-vaningsplan
+               
+               *>  read max peoples in the local 
+               MOVE ZERO TO wn-rtn-code
+               MOVE SPACE TO wc-post-value
+               MOVE 'local-max' TO wc-post-name
+               CALL 'get-post-value' USING wn-rtn-code
+                                           wc-post-name wc-post-value               
+                                           
+               MOVE FUNCTION NUMVAL(wc-post-value)
+                                         TO wn-maxdeltagare
   
            END-IF
-
+           
            .
        
        *>**************************************************
        B0100-connect.
         
            *>  connect
-           MOVE  "openjensen"    TO   wc-database.
-           MOVE  "jensen"        TO   wc-username.
-           MOVE  SPACE           TO   wc-passwd.
+           MOVE  "openjensen"    TO   wc-database
+           MOVE  "jensen"        TO   wc-username
+           MOVE  SPACE           TO   wc-passwd
                 
            EXEC SQL
                CONNECT :wc-username IDENTIFIED BY :wc-passwd
@@ -123,122 +161,100 @@
            .       
        
        *>**************************************************          
-       B0200-list-locals.
+       B0200-add-local.
            
-           IF is-real-locals
-               PERFORM B0210-list-real-locals
-           ELSE
-               PERFORM B0220-list-all-locals 
+           
+           PERFORM B0210-test-exist-local
+               
+           IF NOT is-in-table
+               PERFORM B0220-get-new-row-number
+               
+               IF is-valid-table-position
+                   PERFORM B0230-add-local-to-table
+               END-IF
+               
            END-IF
            
            .
            
        *>**************************************************          
-       B0210-list-real-locals.
+       B0210-test-exist-local.
            
-       *>  declare cursor (only place were tablenames are used)
-           EXEC SQL 
-               DECLARE curslocal CURSOR FOR
-               SELECT Lokal_id, Lokalnamn, Vaningsplan, Maxdeltagare
-                      FROM T_JLOKAL
-                      WHERE Vaningsplan IS NOT NULL
-           END-EXEC
-           
-           *> never never use a dash in cursor names!
+           *> Cursor for T_JLOKAL
            EXEC SQL
-               OPEN curslocal
+             DECLARE cursaddlocal CURSOR FOR
+                 SELECT Lokal_id, Lokalnamn
+                 FROM T_JLOKAL
+           END-EXEC      
+
+           *> Open the cursor
+           EXEC SQL
+                OPEN cursaddlocal
            END-EXEC
-       
-       *>  fetch first row       
-           EXEC SQL 
-               FETCH curslocal INTO :jlokal-lokal-id,:jlokal-lokalnamn,
-                          :jlokal-vaningsplan,:jlokal-maxdeltagare
+           
+           MOVE wc-lokalnamn TO jlokal-lokalnamn
+                      
+           *> fetch first row
+           EXEC SQL
+               FETCH cursaddlocal
+                   INTO :jlokal-lokal-id, :jlokal-lokalnamn
            END-EXEC
            
            PERFORM UNTIL SQLCODE NOT = ZERO
            
-              MOVE  jlokal-lokal-id      TO    wn-lokal-id
-              MOVE  jlokal-lokalnamn     TO    wc-lokalnamn
-              MOVE  jlokal-vaningsplan   TO    wc-vaningsplan
-              MOVE  jlokal-maxdeltagare  TO    wn-maxdeltagare
-              
-              DISPLAY "<br>" wr-rec-vars
-
-              INITIALIZE jlocal-rec-vars
+               *> set flag if already in the table
+               IF FUNCTION UPPER-CASE (wc-lokalnamn) =
+                  FUNCTION UPPER-CASE (jlokal-lokalnamn)
+                        SET is-in-table TO TRUE
+               END-IF
            
               *> fetch next row  
-               EXEC SQL 
-                    FETCH curslocal INTO :jlokal-lokal-id,
-                                :jlokal-lokalnamn,:jlokal-vaningsplan,
-                                :jlokal-maxdeltagare
+               EXEC SQL
+                   FETCH cursaddlocal
+                       INTO :jlokal-lokal-id, :jlokal-lokalnamn
                END-EXEC
               
            END-PERFORM
            
+           
            *> end of data
            IF  SQLSTATE NOT = '02000'
                 PERFORM Z0100-error-routine
-           END-IF              
+           END-IF                 
              
        *>  close cursor
            EXEC SQL 
-               CLOSE curslocal 
+               CLOSE cursaddlocal 
            END-EXEC 
            
-           .       
+         .       
        
-
        *>**************************************************          
-       B0220-list-all-locals.
-           
-       *>  declare cursor (only place were tablenames are used)
-           EXEC SQL 
-               DECLARE cursall CURSOR FOR
-               SELECT Lokal_id, Lokalnamn, Vaningsplan, Maxdeltagare
-                      FROM T_JLOKAL
-           END-EXEC
-           
-           *> never, never use a dash in cursor names!
-           EXEC SQL
-               OPEN cursall
-           END-EXEC
+       B0220-get-new-row-number.
        
-       *>  fetch first row       
            EXEC SQL 
-               FETCH cursall INTO :jlokal-lokal-id,:jlokal-lokalnamn,
-                          :jlokal-vaningsplan,:jlokal-maxdeltagare
+               SELECT COUNT(*) INTO :jlokal-lokal-id FROM T_JLOKAL
            END-EXEC
            
-           PERFORM UNTIL SQLCODE NOT = ZERO
-           
-              MOVE  jlokal-lokal-id      TO    wn-lokal-id
-              MOVE  jlokal-lokalnamn     TO    wc-lokalnamn
-              MOVE  jlokal-vaningsplan   TO    wc-vaningsplan
-              MOVE  jlokal-maxdeltagare  TO    wn-maxdeltagare
-              
-              DISPLAY "<br>" wr-rec-vars
-
-              INITIALIZE jlocal-rec-vars
-           
-              *> fetch next row  
-               EXEC SQL 
-                    FETCH cursall INTO :jlokal-lokal-id,
-                                :jlokal-lokalnamn,:jlokal-vaningsplan,
-                                :jlokal-maxdeltagare
-               END-EXEC
-              
-           END-PERFORM
-           
-           *> end of data
-           IF  SQLSTATE NOT = '02000'
+           IF  SQLCODE NOT = ZERO
                 PERFORM Z0100-error-routine
-           END-IF              
-             
-       *>  close cursor
-           EXEC SQL 
-               CLOSE cursall 
-           END-EXEC 
+           ELSE
+               SET is-valid-table-position TO TRUE
+           END-IF
            
+           *> next row in table
+           COMPUTE wn-lokal-id = jlokal-lokal-id + 1
+           
+           .
+           
+       *>**************************************************          
+       B0230-add-local-to-table.
+       
+            
+           DISPLAY "<br> I would add: " wc-lokalnamn
+           DISPLAY "<br> at row position: " wn-lokal-id           
+
+        
            .
        *>**************************************************
        B0300-disconnect. 

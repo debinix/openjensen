@@ -34,17 +34,19 @@
        
        *> table data
        01  wr-rec-vars.
-           05  wn-lokal-id         PIC  9(04) VALUE ZERO.   
+           05  wn-lokal-id         PIC  9(4) VALUE ZERO.   
            05  wc-lokalnamn        PIC  X(40) VALUE SPACE.
        
-       *> variables wrapped within EXEC SQL - END-EXEC 
+       *> host variables used within EXEC SQL - END-EXEC 
        EXEC SQL BEGIN DECLARE SECTION END-EXEC.
-       01  wc-database              PIC  X(30) VALUE SPACE.
-       01  wc-passwd                PIC  X(10) VALUE SPACE.       
-       01  wc-username              PIC  X(30) VALUE SPACE.
+       *>
+       01  wc-database              PIC  X(30).
+       01  wc-passwd                PIC  X(10).       
+       01  wc-username              PIC  X(30).
        01  jlocal-rec-vars.       
-           05  jlokal-lokal-id      PIC  9(04).
+           05  jlokal-lokal-id      PIC  9(4).
            05  jlokal-lokalnamn     PIC  X(40).
+       *>    
        EXEC SQL END DECLARE SECTION END-EXEC.
 
        EXEC SQL INCLUDE SQLCA END-EXEC.

@@ -10,27 +10,28 @@
 <fieldset>
 <legend>Lägg till en undervisningslokal</legend>
     <p>
-    Benämning för en icke lokal: <select name="alt-lokal-name">
-        <option value="" selected>Alterantiv till skyltnamn</option>
-        <option value="Examensarbete">Examensarbete</option>
-        <option value="LIA 1">LIA 1</option>
-        <option value="LIA 2">LIA 2</option>
-    </select><br><br>    
-    Lokalens skyltade namn*: <input type="text" name="local-name"><br>
-    Våningsplan*: <select name="plan">
+    Lokalens skyltade namn: <input type="text" name="local-sign-name"><br>
+    Våningsplan: <select name="plan">
+        <option value="-" selected>-</option>      
+        <option value="0">0</option>    
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="3">3</option>
-        <option value="4" selected>4</option>
+        <option value="4">4</option>
         <option value="5">5</option>
         <option value="6">6</option>
         <option value="7">7</option>
         <option value="8">8</option>
         <option value="9">9</option>
     </select>
-    <br>Antalet undervisningsplatser*: <input type="text" name="local-max"><br><br>   
+    <br>Antalet undervisningsplatser: <input type="text" name="local-max"><br><br>
     <input type="submit" value="Lägg till denna lokal"><br><br>
-    <i>*) Anges bara för en Jensen lokal</i><br> 
+    Alternativ till ovan om undervisningslokal utanför Jensen: <select name="local-alt-name">
+        <option value="" selected>Alternativ lokal</option>
+        <option value="Examensarbete">Examensarbete</option>
+        <option value="LIA 1">LIA 1</option>
+        <option value="LIA 2">LIA 2</option>
+    </select>    
     </p>
 </fieldset>    
 </form>
