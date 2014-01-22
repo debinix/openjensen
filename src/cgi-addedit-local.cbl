@@ -1,5 +1,5 @@
        *>
-       *> cgi-addeit-local: reads new user data related to
+       *> cgi-addedit-local: reads new user data related to
        *> a local, or changes existing data.
        *> Finally saves into table T_JLOKAL
        *> 
@@ -343,7 +343,7 @@
        B0220-get-new-row-number.
        
            EXEC SQL 
-               SELECT COUNT(*) INTO :jlokal-lokal-id FROM T_JLOKAL
+               SELECT MAX(*) INTO :jlokal-lokal-id FROM T_JLOKAL
            END-EXEC
            
            IF  SQLCODE NOT = ZERO
@@ -404,7 +404,7 @@
            .
 
        *>**************************************************
-           B0310-does-local-id-exist.
+       B0310-does-local-id-exist.
 
            *> Cursor for T_JLOKAL
            EXEC SQL
@@ -412,7 +412,7 @@
                  SELECT Lokal_id, Lokalnamn, Vaningsplan, Maxdeltagare
                  FROM T_JLOKAL
            END-EXEC      
-
+           
            *> Open the cursor
            EXEC SQL
                 OPEN curseditlocal
@@ -432,9 +432,21 @@
                *> set flag if in table
                IF wn-lokal-id = jlokal-lokal-id
                     SET local-id-is-in-table TO TRUE
-                    
-                    *> this it the local row items we may update
-                    MOVE jlocal-rec-vars TO wr-cur-rec-vars
+
+               *> retrieve current row columns (which we may update)
+               
+               MOVE jlokal-lokal-id TO wn-cur-lokal-id
+               MOVE jlokal-lokalnamn TO wc-cur-lokalnamn
+               
+               *> handle nulls colummns
+               MOVE jlokal-vaningsplan TO wc-cur-vaningsplan
+               MOVE jlokal-maxdeltagare TO wn-cur-maxdeltagare
+               
+               DISPLAY "<br> Nuvarande tabell"
+               DISPLAY "<br>|"wn-cur-lokal-id "|"
+               DISPLAY "<br>|"wc-cur-lokalnamn "|"
+               DISPLAY "<br>|"wc-cur-vaningsplan "|"
+               DISPLAY "<br>|"wn-cur-maxdeltagare "|"
                     
                END-IF
            
@@ -447,7 +459,6 @@
               
            END-PERFORM
            
-           
            *> end of data
            IF  SQLSTATE NOT = '02000'
                 PERFORM Z0100-error-routine
@@ -456,39 +467,47 @@
            *> close cursor
            EXEC SQL 
                CLOSE curseditlocal 
-           END-EXEC            
+           END-EXEC    
+           
            
            .
            
        *>**************************************************
-           B0320-change-local-item.
+       B0320-change-local-item.
 
            *> change any value that is different from existing
+           *> (do we need to handle NULLs with an indicator variable)
+           *> See postgresql documentation...
            
+           *> any changes to Lokalnamn?
            IF wc-lokalnamn NOT = wc-cur-lokalnamn
                MOVE wc-lokalnamn TO jlokal-lokalnamn
            ELSE    
                MOVE wc-cur-lokalnamn TO jlokal-lokalnamn
            END-IF
            
-           
+           *> any changes to Vaningsplan?           
            IF wc-vaningsplan NOT = wc-cur-vaningsplan
                MOVE wc-vaningsplan TO jlokal-vaningsplan
            ELSE
                MOVE wc-cur-vaningsplan TO jlokal-vaningsplan
            END-IF
            
-           
+            *> any changes to Maxdeltagare?
            IF wn-cur-maxdeltagare NOT = wn-cur-maxdeltagare
                MOVE wc-lokalnamn TO jlokal-maxdeltagare
            ELSE    
                MOVE wn-cur-maxdeltagare TO jlokal-maxdeltagare
            END-IF
            
-           
+           DISPLAY "<br> Kolumner till databas"
+           DISPLAY "<br>|"jlokal-lokal-id "|"
+           DISPLAY "<br>|"jlokal-lokalnamn "|"
+           DISPLAY "<br>|"jlokal-vaningsplan "|"
+           DISPLAY "<br>|"jlokal-maxdeltagare "|"
+                      
+           *> finally update table
            MOVE wn-lokal-id TO jlokal-lokal-id
-           
-           *> update table
            EXEC SQL
                UPDATE T_JLOKAL
                    SET Lokalnamn = :jlokal-lokalnamn,
