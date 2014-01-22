@@ -25,22 +25,15 @@
        
        01  wc-pagetitle            PIC X(20) VALUE 'Lista lokaler'.
        
-       *> table data
-       01  wr-rec-vars.
-           05  wn-lokal-id         PIC  9(4) VALUE ZERO.
-           05  FILLER              PIC  X.           
-           05  wc-lokalnamn        PIC  X(40) VALUE SPACE.
-           05  FILLER              PIC  X.
-           05  wc-vaningsplan      PIC  X(40) VALUE SPACE.
-           05  FILLER              PIC  X.
-           05  wc-maxdeltagare     PIC  X(40) VALUE SPACE.        
-           
-       *> host variables used within EXEC SQL - END-EXEC 
        EXEC SQL BEGIN DECLARE SECTION END-EXEC.
-       *>
        01  wc-database              PIC  X(30).
        01  wc-passwd                PIC  X(10).       
        01  wc-username              PIC  X(30).
+       EXEC SQL END DECLARE SECTION END-EXEC.       
+       
+       *>#######################################################
+       EXEC SQL BEGIN DECLARE SECTION END-EXEC.
+       *>
        01  jlocal-rec-vars.       
            05  jlokal-lokal-id      PIC  9(4).
            05  jlokal-lokalnamn     PIC  X(40).
@@ -48,6 +41,13 @@
            05  jlokal-maxdeltagare  PIC  X(40).
        *>    
        EXEC SQL END DECLARE SECTION END-EXEC.
+       *> table data
+       01  wr-rec-vars.
+           05  wn-lokal-id         PIC  9(4) VALUE ZERO.          
+           05  wc-lokalnamn        PIC  X(40) VALUE SPACE.
+           05  wc-vaningsplan      PIC  X(40) VALUE SPACE.
+           05  wc-maxdeltagare     PIC  X(40) VALUE SPACE.     
+       *>#######################################################
 
        EXEC SQL INCLUDE SQLCA END-EXEC.
        
@@ -162,7 +162,7 @@
               MOVE  jlokal-vaningsplan   TO    wc-vaningsplan
               MOVE  jlokal-maxdeltagare  TO    wc-maxdeltagare
               
-              DISPLAY "<br>" wr-rec-vars
+              PERFORM Z0200-display-row
 
               INITIALIZE jlocal-rec-vars
            
@@ -217,7 +217,7 @@
               MOVE  jlokal-vaningsplan   TO    wc-vaningsplan
               MOVE  jlokal-maxdeltagare  TO    wc-maxdeltagare
               
-              DISPLAY "<br>" wr-rec-vars
+              PERFORM Z0200-display-row
 
               INITIALIZE jlocal-rec-vars
            
@@ -241,6 +241,8 @@
            END-EXEC 
            
            .
+           
+
        *>**************************************************
        B0300-disconnect. 
                                  
@@ -265,6 +267,17 @@
            COPY z0100-error-routine.
            
            .
+           
+       *>**************************************************
+       Z0200-display-row.            
+           
+           *> display to STDOUT
+           DISPLAY
+                "<br>|" wn-lokal-id "|" wc-lokalnamn "|"
+                          wc-vaningsplan "|" wc-maxdeltagare "|"
+           END-DISPLAY
+           
+           .            
            
        *>**************************************************    
        *> END PROGRAM  

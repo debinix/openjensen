@@ -30,22 +30,29 @@
        
        01  wc-pagetitle            PIC X(20)  VALUE 'Tag bort lokal'.
        
-       *> table data
-       01  wr-rec-vars.
-           05  wn-lokal-id         PIC  9(4) VALUE ZERO.   
-           05  wc-lokalnamn        PIC  X(40) VALUE SPACE.
-       
-       *> host variables used within EXEC SQL - END-EXEC 
        EXEC SQL BEGIN DECLARE SECTION END-EXEC.
-       *>
        01  wc-database              PIC  X(30).
        01  wc-passwd                PIC  X(10).       
        01  wc-username              PIC  X(30).
+       EXEC SQL END DECLARE SECTION END-EXEC.           
+       
+       *>#######################################################
+       EXEC SQL BEGIN DECLARE SECTION END-EXEC.
+       *>
        01  jlocal-rec-vars.       
            05  jlokal-lokal-id      PIC  9(4).
            05  jlokal-lokalnamn     PIC  X(40).
+           05  jlokal-vaningsplan   PIC  X(40).
+           05  jlokal-maxdeltagare  PIC  X(40).
        *>    
        EXEC SQL END DECLARE SECTION END-EXEC.
+       *> table data
+       01  wr-rec-vars.
+           05  wn-lokal-id         PIC  9(4) VALUE ZERO.
+           05  wc-lokalnamn        PIC  X(40) VALUE SPACE.
+           05  wc-vaningsplan      PIC  X(40) VALUE SPACE.
+           05  wc-maxdeltagare     PIC  X(40) VALUE SPACE.     
+       *>#######################################################
 
        EXEC SQL INCLUDE SQLCA END-EXEC.
        
