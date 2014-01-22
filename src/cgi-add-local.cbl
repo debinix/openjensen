@@ -1,12 +1,11 @@
        *>
-       *> cgi-addedit-local: reads new user data related to
-       *> a local, or changes existing data.
-       *> Finally saves into table T_JLOKAL
+       *> cgi-add-local: adds user data related to
+       *> a local, saves into table T_JLOKAL
        *> 
        *> Coder: BK 
        *>
        IDENTIFICATION DIVISION.
-       program-id. cgi-addedit-local.
+       program-id. cgi-add-local.
        *>**************************************************
        DATA DIVISION.
        working-storage section.
@@ -19,16 +18,7 @@
                 88  name-is-in-table                        VALUE 'Y'.
             03  is-valid-table-position-switch      PIC X   VALUE 'N'.
                 88  is-valid-table-position                 VALUE 'Y'.
-                
-       01   switches-edit.                
-            03  local-id-is-in-table-switch         PIC X   VALUE 'N'.
-                88  local-id-is-in-table                    VALUE 'Y'.                
-
-       01   flags.
-            03  cgi-action                          PIC X.
-                88  is-add-local                            VALUE '1'.
-                88  is-edit-local                           VALUE '2'.                
-                
+                            
        *> used in calls to dynamic libraries
        01  wn-rtn-code             PIC  S99   VALUE ZERO.
        01  wc-post-name            PIC X(40)  VALUE SPACE.
@@ -41,16 +31,8 @@
            05  wn-lokal-id         PIC  9(4) VALUE ZERO.     
            05  wc-lokalnamn        PIC  X(40) VALUE SPACE. 
            05  wc-vaningsplan      PIC  X(40) VALUE SPACE.
-           05  wn-maxdeltagare     PIC  9(4) VALUE ZERO.
-           
-       *> existing table data
-       01  wr-cur-rec-vars.
-           05  wn-cur-lokal-id         PIC  9(4) VALUE ZERO.     
-           05  wc-cur-lokalnamn        PIC  X(40) VALUE SPACE. 
-           05  wc-cur-vaningsplan      PIC  X(40) VALUE SPACE.
-           05  wn-cur-maxdeltagare     PIC  9(4) VALUE ZERO.           
-           
-           
+           05  wc-maxdeltagare     PIC  X(40) VALUE SPACE.
+     
        *> host variables used within EXEC SQL - END-EXEC 
        EXEC SQL BEGIN DECLARE SECTION END-EXEC.
        *>
@@ -61,7 +43,7 @@
            05  jlokal-lokal-id      PIC  9(4).
            05  jlokal-lokalnamn     PIC  X(40).
            05  jlokal-vaningsplan   PIC  X(40).
-           05  jlokal-maxdeltagare  PIC  9(4).
+           05  jlokal-maxdeltagare  PIC  X(40).
        *>    
        EXEC SQL END DECLARE SECTION END-EXEC.
 
@@ -79,19 +61,11 @@
                 PERFORM B0100-connect
                 IF is-db-connected
                 
-                    *> action add new local
-                    IF is-add-local
-                        PERFORM B0200-add-local
-                        PERFORM Z0200-disconnect
-                    END-IF
+                    PERFORM B0200-add-local
+                    PERFORM Z0200-disconnect
                 
-                    *> action edit existing local
-                    IF is-edit-local
-                        PERFORM B0300-edit-local
-                        PERFORM Z0200-disconnect
-                    END-IF
-
                 END-IF
+                
            END-IF
                    
            PERFORM C0100-closedown
@@ -111,90 +85,12 @@
            CALL 'write-post-string' USING wn-rtn-code
            
            IF wn-rtn-code = ZERO
-           
-               *> is action 'add' or is action 'change' local
-               MOVE ZERO TO wn-rtn-code
-               MOVE SPACE TO wc-post-value
-               MOVE 'cgiaction' TO wc-post-name
-               CALL 'get-post-value' USING wn-rtn-code
-                                           wc-post-name wc-post-value
-                                           
-               EVALUATE wc-post-value
-               
-                    WHEN 'edit-local'
-                        SET is-edit-local TO TRUE
-                        PERFORM A0110-init-edit-action
-                    WHEN 'add-local'
-                        SET is-add-local TO TRUE
-                        PERFORM A0120-init-add-action
-                        
-               END-EVALUATE
-               
+               PERFORM A0110-init-add-action
            END-IF
            
-           .
-           
-       *>**************************************************       
-       A0110-init-edit-action.
-       
-           *> what row are we updating (local-id - required)
-           MOVE ZERO TO wn-rtn-code
-           MOVE SPACE TO wc-post-value
-           MOVE 'local-id' TO wc-post-name
-           CALL 'get-post-value' USING wn-rtn-code
-                               wc-post-name wc-post-value
-            
-           MOVE FUNCTION NUMVAL(wc-post-value) TO wn-lokal-id
-            
-           IF wc-post-value = SPACE              
-               DISPLAY "<br>[Varning] Saknar ett angivet lokal id."                             
-           ELSE                 
-                             
-               *> *** one of these columns must change ***
-                       
-               *> update alternative name?           
-               MOVE ZERO TO wn-rtn-code
-               MOVE SPACE TO wc-post-value
-               MOVE 'local-sign-name' TO wc-post-name
-               CALL 'get-post-value' USING wn-rtn-code
-                                    wc-post-name wc-post-value
-                     
-               MOVE wc-post-value TO wc-lokalnamn   
-                
-               *>  update floor plan?
-               MOVE ZERO TO wn-rtn-code
-               MOVE SPACE TO wc-post-value
-               MOVE 'plan' TO wc-post-name
-                 
-               CALL 'get-post-value' USING wn-rtn-code wc-post-name
-                                            wc-post-value                                     
-                 
-               MOVE wc-post-value TO wc-vaningsplan
-                 
-               *>  update max peoples in the local?
-               MOVE ZERO TO wn-rtn-code
-               MOVE SPACE TO wc-post-value
-               MOVE 'local-max' TO wc-post-name
-               CALL 'get-post-value' USING wn-rtn-code
-                                            wc-post-name wc-post-value               
-                                             
-               MOVE FUNCTION NUMVAL(wc-post-value)
-                                         TO wn-maxdeltagare              
-                
-               IF wc-lokalnamn NOT = SPACE OR
-                  wc-vaningsplan NOT = SPACE OR
-                  wn-maxdeltagare NOT = ZERO
-                        SET is-valid-init TO TRUE                  
-               ELSE   
-                   DISPLAY "<br>[Varning] Ingen kolumn att uppdatera."
-               END-IF   
-                  
-           
-           END-IF
-       
            . 
        *>**************************************************         
-       A0120-init-add-action.
+       A0110-init-add-action.
        
            *>  read local-sign-name (name is required)        
            MOVE ZERO TO wn-rtn-code
@@ -244,8 +140,7 @@
            CALL 'get-post-value' USING wn-rtn-code
                                        wc-post-name wc-post-value               
                                         
-           MOVE FUNCTION NUMVAL(wc-post-value)
-                                      TO wn-maxdeltagare       
+           MOVE wc-post-value TO wc-maxdeltagare       
            . 
        
        *>**************************************************
@@ -343,7 +238,9 @@
        B0220-get-new-row-number.
        
            EXEC SQL 
-               SELECT MAX(*) INTO :jlokal-lokal-id FROM T_JLOKAL
+               SELECT MAX(:jlokal-lokal-id)
+                   INTO :jlokal-lokal-id
+                   FROM T_JLOKAL
            END-EXEC
            
            IF  SQLCODE NOT = ZERO
@@ -364,7 +261,7 @@
            MOVE wn-lokal-id TO jlokal-lokal-id
            MOVE wc-lokalnamn TO jlokal-lokalnamn
            MOVE wc-vaningsplan TO jlokal-vaningsplan
-           MOVE wn-maxdeltagare TO jlokal-maxdeltagare
+           MOVE wc-maxdeltagare TO jlokal-maxdeltagare
             
            EXEC SQL
                INSERT INTO T_JLOKAL
@@ -389,143 +286,7 @@
                COMMIT WORK
            END-EXEC
            .           
-
-       *>**************************************************          
-       B0300-edit-local.
-           
-           PERFORM B0310-does-local-id-exist
-               
-           IF local-id-is-in-table
-               PERFORM B0320-change-local-item
-           ELSE    
-               DISPLAY "<br>[Info] Denna lokal finns ej."
-           END-IF
-           
-           .
-
-       *>**************************************************
-       B0310-does-local-id-exist.
-
-           *> Cursor for T_JLOKAL
-           EXEC SQL
-             DECLARE curseditlocal CURSOR FOR
-                 SELECT Lokal_id, Lokalnamn, Vaningsplan, Maxdeltagare
-                 FROM T_JLOKAL
-           END-EXEC      
-           
-           *> Open the cursor
-           EXEC SQL
-                OPEN curseditlocal
-           END-EXEC
-           
-           MOVE wn-lokal-id TO jlokal-lokal-id
-                      
-           *> fetch first row
-           EXEC SQL
-               FETCH curseditlocal
-                   INTO :jlokal-lokal-id, :jlokal-lokalnamn,
-                        :jlokal-vaningsplan, :jlokal-maxdeltagare 
-           END-EXEC
-           
-           PERFORM UNTIL SQLCODE NOT = ZERO
-           
-               *> set flag if in table
-               IF wn-lokal-id = jlokal-lokal-id
-                    SET local-id-is-in-table TO TRUE
-
-               *> retrieve current row columns (which we may update)
-               
-               MOVE jlokal-lokal-id TO wn-cur-lokal-id
-               MOVE jlokal-lokalnamn TO wc-cur-lokalnamn
-               
-               *> handle nulls colummns
-               MOVE jlokal-vaningsplan TO wc-cur-vaningsplan
-               MOVE jlokal-maxdeltagare TO wn-cur-maxdeltagare
-               
-               DISPLAY "<br> Nuvarande tabell"
-               DISPLAY "<br>|"wn-cur-lokal-id "|"
-               DISPLAY "<br>|"wc-cur-lokalnamn "|"
-               DISPLAY "<br>|"wc-cur-vaningsplan "|"
-               DISPLAY "<br>|"wn-cur-maxdeltagare "|"
-                    
-               END-IF
-           
-              *> fetch next row  
-               EXEC SQL
-                   FETCH curseditlocal
-                       INTO :jlokal-lokal-id, :jlokal-lokalnamn,
-                            :jlokal-vaningsplan, :jlokal-maxdeltagare
-               END-EXEC
-              
-           END-PERFORM
-           
-           *> end of data
-           IF  SQLSTATE NOT = '02000'
-                PERFORM Z0100-error-routine
-           END-IF                 
-             
-           *> close cursor
-           EXEC SQL 
-               CLOSE curseditlocal 
-           END-EXEC    
-           
-           
-           .
-           
-       *>**************************************************
-       B0320-change-local-item.
-
-           *> change any value that is different from existing
-           *> (do we need to handle NULLs with an indicator variable)
-           *> See postgresql documentation...
-           
-           *> any changes to Lokalnamn?
-           IF wc-lokalnamn NOT = wc-cur-lokalnamn
-               MOVE wc-lokalnamn TO jlokal-lokalnamn
-           ELSE    
-               MOVE wc-cur-lokalnamn TO jlokal-lokalnamn
-           END-IF
-           
-           *> any changes to Vaningsplan?           
-           IF wc-vaningsplan NOT = wc-cur-vaningsplan
-               MOVE wc-vaningsplan TO jlokal-vaningsplan
-           ELSE
-               MOVE wc-cur-vaningsplan TO jlokal-vaningsplan
-           END-IF
-           
-            *> any changes to Maxdeltagare?
-           IF wn-cur-maxdeltagare NOT = wn-cur-maxdeltagare
-               MOVE wc-lokalnamn TO jlokal-maxdeltagare
-           ELSE    
-               MOVE wn-cur-maxdeltagare TO jlokal-maxdeltagare
-           END-IF
-           
-           DISPLAY "<br> Kolumner till databas"
-           DISPLAY "<br>|"jlokal-lokal-id "|"
-           DISPLAY "<br>|"jlokal-lokalnamn "|"
-           DISPLAY "<br>|"jlokal-vaningsplan "|"
-           DISPLAY "<br>|"jlokal-maxdeltagare "|"
-                      
-           *> finally update table
-           MOVE wn-lokal-id TO jlokal-lokal-id
-           EXEC SQL
-               UPDATE T_JLOKAL
-                   SET Lokalnamn = :jlokal-lokalnamn,
-                       Vaningsplan = :jlokal-vaningsplan,
-                       Maxdeltagare = :jlokal-maxdeltagare
-               WHERE Lokal_id = :jlokal-lokal-id
-           END-EXEC
-            
-           IF  SQLCODE NOT = ZERO
-                PERFORM Z0100-error-routine
-           ELSE
-                PERFORM B0240-commit-work
-                DISPLAY "<br>[Info] Lokal ändrad."
-           END-IF
-           
-           .           
-           
-           
+         
        *>**************************************************
        C0100-closedown.
 

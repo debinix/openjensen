@@ -33,7 +33,7 @@
            05  FILLER              PIC  X.
            05  wc-vaningsplan      PIC  X(40) VALUE SPACE.
            05  FILLER              PIC  X.
-           05  wn-maxdeltagare     PIC  9(4) VALUE ZERO.          
+           05  wc-maxdeltagare     PIC  X(40) VALUE SPACE.        
            
        *> host variables used within EXEC SQL - END-EXEC 
        EXEC SQL BEGIN DECLARE SECTION END-EXEC.
@@ -45,7 +45,7 @@
            05  jlokal-lokal-id      PIC  9(4).
            05  jlokal-lokalnamn     PIC  X(40).
            05  jlokal-vaningsplan   PIC  X(40).
-           05  jlokal-maxdeltagare  PIC  9(4).
+           05  jlokal-maxdeltagare  PIC  X(40).
        *>    
        EXEC SQL END DECLARE SECTION END-EXEC.
 
@@ -160,7 +160,7 @@
               MOVE  jlokal-lokal-id      TO    wn-lokal-id
               MOVE  jlokal-lokalnamn     TO    wc-lokalnamn
               MOVE  jlokal-vaningsplan   TO    wc-vaningsplan
-              MOVE  jlokal-maxdeltagare  TO    wn-maxdeltagare
+              MOVE  jlokal-maxdeltagare  TO    wc-maxdeltagare
               
               DISPLAY "<br>" wr-rec-vars
 
@@ -215,7 +215,7 @@
               MOVE  jlokal-lokal-id      TO    wn-lokal-id
               MOVE  jlokal-lokalnamn     TO    wc-lokalnamn
               MOVE  jlokal-vaningsplan   TO    wc-vaningsplan
-              MOVE  jlokal-maxdeltagare  TO    wn-maxdeltagare
+              MOVE  jlokal-maxdeltagare  TO    wc-maxdeltagare
               
               DISPLAY "<br>" wr-rec-vars
 

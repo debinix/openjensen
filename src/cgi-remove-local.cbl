@@ -97,7 +97,7 @@
            END-IF                                            
       
            IF wn-lokal-id = 0
-                DISPLAY "<br> *** Saknar lokalens identifikation ***"
+                DISPLAY "<br>[Varning] Saknar lokalens identifikation"
            ELSE
                 SET is-valid-post TO TRUE
            END-IF           
@@ -145,7 +145,7 @@
                 END-IF
                 
                 IF  SQLCODE = ZERO
-                    DISPLAY "<br> *** Lokal bortagen ***"           
+                    DISPLAY "<br>[Info] Lokal bortagen."           
                 ELSE
                     PERFORM Z0100-error-routine
                 END-IF
