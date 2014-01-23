@@ -78,7 +78,15 @@
               PERFORM UNTIL is-eof-input OR value-is-found
               
                  IF fc-post-name = lc-post-name
+                 
+                     *> TODO
+                     *> restore HTML utf-8 encoded characters
+                 
+                     *> restore HTML encoded space characters
+                     INSPECT fc-post-value CONVERTING "+" to " " 
+                     
                      MOVE fc-post-value TO lc-post-value
+                     
                      SET value-is-found TO TRUE
                  END-IF
                  

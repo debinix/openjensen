@@ -8,28 +8,33 @@ function make_and_install {
 }
 
 function html2jensen {
-    echo "SCP all HTML files...to mc-butter.se!"
+    echo "Secure copy of all HTML files...to mc-butter.se!"
     scp /home/bekr/openjensen/html/*.html jensen@mc-butter.se:/home/jensen/openjensen/html/.
 }
 
 function js2jensen {
-    echo "SCP max 5 named JS files...to mc-butter!"
+    echo "Secure copy of all JS files...to mc-butter!"
     scp /home/bekr/openjensen/html/*.js jensen@mc-butter.se:/home/jensen/openjensen/html/.
 }
 
 function png2jensen {
-    echo "SCP max 5 named PNG files...to mc-butter!"
+    echo "Secure copy of all PNG files...to mc-butter!"
     scp /home/bekr/openjensen/html/*.png jensen@mc-butter.se:/home/jensen/openjensen/html/.
 }
 
 function lib2jensen {
-    echo "SCP max 5 Library Cobol files...to mc-butter!"
+    echo "Secure copy of all Library Cobol files...to mc-butter!"
     scp /home/bekr/openjensen/lib/*.cbl jensen@mc-butter.se:/home/jensen/openjensen/lib/.
 }
 
 function src2jensen {
-    echo "SCP max 5 Cobol files...to mc-butter!"
+    echo "Secure copy of all source Cobol files...to mc-butter!"
     scp /home/bekr/openjensen/src/*.cbl jensen@mc-butter.se:/home/jensen/openjensen/src/. 
+}
+
+function cpy2jensen {
+    echo "Secure copy of all Copybooks...to mc-butter!"
+    scp /home/bekr/openjensen/copy/*.cpy jensen@mc-butter.se:/home/jensen/openjensen/copy/.
 }
 
 
@@ -38,16 +43,18 @@ function menu {
     echo
     echo -e "\t\t\tOpen Jensen Developers Tools Menu"
     echo -e "\t\t\t---------------------------------" 
-    echo -e "\t0 - Recompile all files and install to public web directory"
+    echo -e "\t0 - Recompile/move all files to public web-server directory"
     echo
-    echo -e "\t1 - Copy/overwrite SRC CBL files in remote source directory"
+    echo -e "\t1 - Replace Cobol source files in remote source directory"
     echo
-    echo -e "\t2 - Copy/overwrite HTML files in remote source directory"
-    echo -e "\t3 - Copy/overwrite JS files in remote source directory"    
-    echo -e "\t4 - Copy/overwrite PNG files in remote source directory"
+    echo -e "\t2 - Replace HTML files in remote source directory"
+    echo -e "\t3 - Replace JS files in remote source directory"    
+    echo -e "\t4 - Replace PNG files in remote source directory"
     echo
-    echo -e "\t5 - Copy/overwrite LIB CBL files in remote source directory"
+    echo -e "\t5 - Replace Cobol library source files in remote source directory"
     echo
+    echo -e "\t6 - Replace Copybooks files in remote source directory"
+    echo    
     echo -e "\t9 - Exit program"
 }
 
@@ -76,12 +83,16 @@ do
             ;;
         
         4)
-            png2jense
+            png2jensen
             ;;
         
         5)
             lib2jensen
             ;;
+        
+        6)
+            cpy2jensen
+            ;;  
         
         9)
             break
