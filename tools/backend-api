@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+# This utility lists all form names to ease
+# integration between fron end and backend.
+#
+# Info: man mech-dump
+#
+test -x /usr/bin/mech-dump || exit 0
+
+cd /home/bekr/openjensen/html || exit 0
+
+for FILE in wui-* ; do
+    
+    mech-dump $FILE
+        
+done
