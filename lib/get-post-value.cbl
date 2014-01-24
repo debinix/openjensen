@@ -33,7 +33,17 @@
             03  value-is-found-switch     PIC X         VALUE 'N'.
                 88  value-is-found                      VALUE 'Y'.
             03  is-eof-input-switch      PIC X          VALUE 'N'.
-                88  is-eof-input                        VALUE 'Y'.   
+                88  is-eof-input                        VALUE 'Y'.
+                
+       01  wc-cnv-post-string   PIC X(40) VALUE SPACE.
+       01  wc-post-string       PIC X(40) VALUE SPACE.
+        
+       01  wc-urlchars          PIC X(5)  VALUE SPACE.
+       01  wn-index             PIC 9(3)  VALUE 1.
+       
+       01  wn-str-length        PIC 9(3)  VALUE ZERO.
+       01  wn-tmp-lengt         PIC 9(3)  VALUE ZERO.
+       01  wn-field-length      PIC 9(3)  VALUE ZERO.
        
        linkage section.
        01  ln-rtn-code                    PIC  S99.
@@ -79,8 +89,8 @@
               
                  IF fc-post-name = lc-post-name
                  
-                     *> TODO
                      *> restore HTML utf-8 encoded characters
+                     PERFORM B0110-convert-to-utf8
                  
                      *> restore HTML encoded space characters
                      INSPECT fc-post-value CONVERTING "+" to " " 
@@ -99,6 +109,71 @@
               END-PERFORM
               
            END-IF
+
+           .
+          
+       *>**************************************************   
+       B0110-convert-to-utf8.   
+          
+           MOVE fc-post-value TO wc-post-string
+           
+           MOVE FUNCTION LENGTH(wc-post-string) TO wn-field-length
+           
+           INSPECT wc-post-string TALLYING wn-tmp-lengt
+                                                 FOR TRAILING SPACES
+           COMPUTE wn-str-length = wn-field-length - wn-tmp-lengt.          
+        
+           PERFORM VARYING wn-index FROM 1 BY 1
+               UNTIL wn-index > wn-str-length
+
+               IF wc-post-string(wn-index:1) = '%'
+                    
+               *> DISPLAY 'Debug: Found it: ' wc-post-string(wn-index:6)
+                    
+                   *> http://en.wikipedia.org/wiki/UTF-8
+                   *> http://www.utf8-chartable.de/
+                    
+                   *> utf-8 hex codes for åäö and ÅÄÖ (U+0000-000F)
+                    
+                   EVALUATE wc-post-string(wn-index:6)
+                        
+                     *> å
+                     WHEN '%C3%A5'
+                         MOVE x'c3a5' TO wc-cnv-post-string(wn-index:2)
+                     *> ä    
+                     WHEN '%C3%A4'
+                         MOVE x'c3a4' TO wc-cnv-post-string(wn-index:2)
+                     *> ö    
+                     WHEN '%C3%B6'
+                         MOVE x'c3b6' TO wc-cnv-post-string(wn-index:2)
+                     *> Å    
+                     WHEN '%C3%85'
+                         MOVE x'c385' TO wc-cnv-post-string(wn-index:2)
+                     *> Ä    
+                     WHEN '%C3%84'
+                         MOVE x'c384' TO wc-cnv-post-string(wn-index:2)
+                     *> Ö    
+                     WHEN '%C3%96'
+                         MOVE x'c396' TO wc-cnv-post-string(wn-index:2)            
+                    
+                   END-EVALUATE
+
+                   ADD 5 TO wn-index
+                    
+               ELSE
+                
+                   MOVE wc-post-string(wn-index:1) TO
+                                wc-cnv-post-string(wn-index:1)
+                   *> DISPLAY 'Debug: ' wn-index
+                
+               END-IF
+
+
+           END-PERFORM
+           
+           *> PERFORM Compact-string (TODO)
+            
+           MOVE wc-cnv-post-string TO fc-post-value         
 
            .
           
