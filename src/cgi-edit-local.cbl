@@ -20,7 +20,10 @@
        *> used in calls to dynamic libraries
        01  wn-rtn-code             PIC  S99   VALUE ZERO.
        01  wc-post-name            PIC X(40)  VALUE SPACE.
-       01  wc-post-value           PIC X(40)  VALUE SPACE.  
+       01  wc-post-value           PIC X(40)  VALUE SPACE.
+       
+       *> always - used in error routine
+       01  wc-printscr-string      PIC X(40)  VALUE SPACE.        
        
        01  wc-pagetitle            PIC X(20) VALUE 'Uppdatera lokaler'.
        
@@ -61,6 +64,9 @@
        PROCEDURE DIVISION.
        *>**************************************************       
        0000-main.
+       
+           *> contains development environment settings for test
+           COPY setupenv_openjensen. 
        
            PERFORM A0100-init
            
@@ -109,8 +115,10 @@
             
            MOVE FUNCTION NUMVAL(wc-post-value) TO wn-lokal-id
             
-           IF wc-post-value = SPACE              
-               DISPLAY "<br>[Varning] Saknar ett angivet lokal id."                             
+           IF wc-post-value = SPACE
+               MOVE 'Saknar ett angivet lokal id'
+                    TO wc-printscr-string
+               CALL 'stop-printscr' USING wc-printscr-string      
            ELSE                 
                              
                *> *** one of these columns must change ***
@@ -147,8 +155,10 @@
                   wc-vaningsplan NOT = SPACE OR
                   wc-maxdeltagare NOT = SPACE
                         SET is-valid-init TO TRUE                  
-               ELSE   
-                   DISPLAY "<br>[Varning] Ingen kolumn att uppdatera."
+               ELSE
+                   MOVE 'Ingen kolumn att uppdatera'
+                        TO wc-printscr-string
+                   CALL 'stop-printscr' USING wc-printscr-string
                END-IF   
                   
            
@@ -185,8 +195,10 @@
                
            IF local-id-is-in-table
                PERFORM B0220-change-local-item
-           ELSE    
-               DISPLAY "<br>[Info] Denna lokal finns ej."
+           ELSE
+               MOVE 'Denna lokal finns ej'
+                    TO wc-printscr-string
+               CALL 'stop-printscr' USING wc-printscr-string
            END-IF
            
            .
@@ -292,7 +304,8 @@
                 PERFORM Z0100-error-routine
            ELSE
                 PERFORM B0230-commit-work
-                DISPLAY "<br>[Info] Lokal ändrad."
+                MOVE 'Lokal ändrad' TO wc-printscr-string
+                CALL 'ok-printscr' USING wc-printscr-string      
            END-IF
            
            .           

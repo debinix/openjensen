@@ -23,6 +23,8 @@
        01  wn-rtn-code             PIC  S99   VALUE ZERO.
        01  wc-post-name            PIC X(40)  VALUE SPACE.
        01  wc-post-value           PIC X(40)  VALUE SPACE.
+       
+       *> always - used in error routine
        01  wc-printscr-string      PIC X(40)  VALUE SPACE. 
        
        01  wc-pagetitle            PIC X(20) VALUE 'Addera lokal'.

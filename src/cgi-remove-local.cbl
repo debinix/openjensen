@@ -24,9 +24,11 @@
        
        *> used in calls to dynamic libraries
        01  wn-rtn-code             PIC  S99   VALUE ZERO.
-       
        01  wc-post-name            PIC X(40)  VALUE SPACE.
        01  wc-post-value           PIC X(40)  VALUE SPACE.
+       
+       *> always - used in error routine
+       01  wc-printscr-string      PIC X(40)  VALUE SPACE.          
        
        01  wc-pagetitle            PIC X(20)  VALUE 'Tag bort lokal'.
        
@@ -61,6 +63,9 @@
        *>**************************************************       
        0000-main.
        
+           *> contains development environment settings for test
+           COPY setupenv_openjensen. 
+           
            PERFORM A0100-init
            
            IF is-valid-post AND is-valid-init
@@ -104,7 +109,9 @@
            END-IF                                            
       
            IF wn-lokal-id = 0
-                DISPLAY "<br>[Varning] Saknar lokalens identifikation"
+                MOVE 'Saknar lokalens identifikation'
+                    TO wc-printscr-string
+                CALL 'stop-printscr' USING wc-printscr-string
            ELSE
                 SET is-valid-post TO TRUE
            END-IF           
@@ -152,7 +159,9 @@
                 END-IF
                 
                 IF  SQLCODE = ZERO
-                    DISPLAY "<br>[Info] Lokal bortagen."           
+                    MOVE 'Lokal bortagen'
+                    TO wc-printscr-string
+                    CALL 'ok-printscr' USING wc-printscr-string        
                 ELSE
                     PERFORM Z0100-error-routine
                 END-IF

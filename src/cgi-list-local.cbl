@@ -21,7 +21,10 @@
        *> used in calls to dynamic libraries
        01  wn-rtn-code             PIC  S99   VALUE ZERO.
        01  wc-post-name            PIC X(40)  VALUE SPACE.
-       01  wc-post-value           PIC X(40)  VALUE SPACE.  
+       01  wc-post-value           PIC X(40)  VALUE SPACE.
+       
+       *> always - used in error routine
+       01  wc-printscr-string      PIC X(40)  VALUE SPACE.   
        
        01  wc-pagetitle            PIC X(20) VALUE 'Lista lokaler'.
        
@@ -56,6 +59,9 @@
        *>**************************************************       
        0000-main.
        
+           *> contains development environment settings for test
+           COPY setupenv_openjensen. 
+           
            PERFORM A0100-init
            
            IF is-valid-init
