@@ -240,20 +240,37 @@
        *>**************************************************          
        B0220-get-new-row-number.
        
-           EXEC SQL 
-               SELECT MAX(:jlokal-lokal-id)
-                   INTO :jlokal-lokal-id
-                   FROM T_JLOKAL
+           *> Cursor for T_JLOKAL
+           EXEC SQL
+             DECLARE cursaddid CURSOR FOR
+                 SELECT Lokal_id
+                 FROM T_JLOKAL
+                 ORDER BY Lokal_id DESC
+           END-EXEC   
+       
+           *> Open the cursor
+           EXEC SQL
+                OPEN cursaddid
            END-EXEC
-           
+       
+           *> fetch first row (which now have the highest id)
+           EXEC SQL
+               FETCH cursaddid
+                   INTO :jlokal-lokal-id
+           END-EXEC       
+        
            IF  SQLCODE NOT = ZERO
                 PERFORM Z0100-error-routine
            ELSE
                SET is-valid-table-position TO TRUE
+               *> next number for new row in table
+               COMPUTE wn-lokal-id = jlokal-lokal-id + 1             
            END-IF
-           
-           *> next row in table
-           COMPUTE wn-lokal-id = jlokal-lokal-id + 1
+
+           *> close cursor
+           EXEC SQL 
+               CLOSE cursaddid 
+           END-EXEC            
            
            .
            
