@@ -41,9 +41,15 @@
        01  wc-urlchars          PIC X(5)  VALUE SPACE.
        01  wn-index             PIC 9(3)  VALUE 1.
        
+       *> for uft-8 perform
        01  wn-str-length        PIC 9(3)  VALUE ZERO.
        01  wn-tmp-lengt         PIC 9(3)  VALUE ZERO.
        01  wn-field-length      PIC 9(3)  VALUE ZERO.
+       
+       *> for bytecompact perform
+       01  wn-incounter         PIC 99    VALUE 1.
+       01  wn-outcounter        PIC 99    VALUE 1.
+       01  wc-final-string      PIC X(40) VALUE SPACE.
        
        linkage section.
        01  ln-rtn-code                    PIC  S99.
@@ -93,9 +99,9 @@
                      PERFORM B0110-convert-to-utf8
                  
                      *> restore HTML encoded space characters
-                     INSPECT fc-post-value CONVERTING "+" to " " 
+                     INSPECT wc-final-string CONVERTING "+" to " " 
                      
-                     MOVE fc-post-value TO lc-post-value
+                     MOVE wc-final-string TO lc-post-value
                      
                      SET value-is-found TO TRUE
                  END-IF
@@ -115,6 +121,9 @@
        *>**************************************************   
        B0110-convert-to-utf8.   
           
+           MOVE SPACE TO wc-post-string
+           MOVE SPACE TO wc-cnv-post-string
+           
            MOVE fc-post-value TO wc-post-string
            
            MOVE FUNCTION LENGTH(wc-post-string) TO wn-field-length
@@ -171,12 +180,30 @@
 
            END-PERFORM
            
-           *> PERFORM Compact-string (TODO)
-            
-           MOVE wc-cnv-post-string TO fc-post-value         
-
+           PERFORM B0120-remove-empty-bytes
            .
+           
+       *>**************************************************
+       B0120-remove-empty-bytes.
+
+           MOVE SPACE TO wc-final-string
+           MOVE 1 TO wn-outcounter
+            
+           PERFORM VARYING wn-incounter FROM 1 BY 1
+               UNTIL wn-incounter > wn-field-length
+                     
+               *> move only non-space characters
+               IF wc-cnv-post-string(wn-incounter:1) NOT = SPACE
+                   MOVE wc-cnv-post-string(wn-incounter:1) TO
+                           wc-final-string(wn-outcounter:1)
+                   ADD 1 TO wn-outcounter
+               END-IF
+                
+           END-PERFORM
+           
+           .          
           
+
        *>**************************************************
        C0100-closedown.
 
