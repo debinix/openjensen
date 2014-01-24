@@ -1,9 +1,7 @@
        *>
-       *>  Setup run-time environment - in the development environment
-       *>  This is where the executing '*.cgi' script finds any 
-       *>  dynamically loaded '*.so' files. Thus at run-time the executable
-       *>  will set this environment. This is the last chance to locate
-       *>  the *.so-file, if not in $PATH or the current executed directory.
+       *>  Setup Open Jensen environment variables
+       *<
+       *> To use in code: "COPY setupenv_openjensen." in main Cobol source.
        *>
-           DISPLAY "COB_LIBRARY_PATH" UPON ENVIRONMENT-NAME.
-           DISPLAY "../lib"           UPON ENVIRONMENT-VALUE.
+           SET ENVIRONMENT "OJ_DBG" TO "1"
+           SET ENVIRONMENT "OJ_LOG" TO "0"           

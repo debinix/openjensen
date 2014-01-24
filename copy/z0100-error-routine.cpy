@@ -1,22 +1,26 @@
-        *>   
-        *> Copybook z0100-error-routine.cpy
-        *> Put in the /copy directory.
-        *>
-           DISPLAY "<br>*** SQL ERROR ***".
-           DISPLAY "<br>*** Felstatus (SQLSTATE): " SQLSTATE.
-           
+       *>   
+       *> Copybook z0100-error-routine.cpy
+       *> Put in the /copy directory.
+       *>       
            EVALUATE SQLSTATE
-              WHEN  "02000"
-                 DISPLAY "<br>*** Data återfinns ej i databasen."
+               WHEN  "02000"
+                   MOVE 'Data återfinns ej i databasen'
+                       TO wc-printscr-string
+                   CALL 'stop-printscr' USING wc-printscr-string 
               WHEN  "08003"
               WHEN  "08001"
-                 DISPLAY "<br>*** Anslutning till databas misslyckades."
+                   MOVE 'Anslutning till databas misslyckades'
+                       TO wc-printscr-string
+                   CALL 'stop-printscr' USING wc-printscr-string 
               WHEN  "23503"
-                 DISPLAY "<br>*** Kan ej ta bort data - pga beroenden."               
+                   MOVE 'Kan ej ta bort data - pga tabellberoenden'
+                       TO wc-printscr-string
+                   CALL 'stop-printscr' USING wc-printscr-string                              
               WHEN  SPACE
-                 DISPLAY "<br>*** Obekant fel!"
+                   MOVE 'Obekant fel - kontakta leverantören'
+                       TO wc-printscr-string
+                   CALL 'stop-printscr' USING wc-printscr-string  
               WHEN  OTHER
-                 DISPLAY "<br>Felkod (SQLCODE): "   SQLCODE
-                 DISPLAY "<br>Felmeddelande (SQLERRMC): "  SQLERRMC
+                   CALL 'error-printscr' USING SQLSTATE SQLERRMC
            END-EVALUATE
            
