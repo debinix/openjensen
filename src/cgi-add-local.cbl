@@ -22,7 +22,8 @@
        *> used in calls to dynamic libraries
        01  wn-rtn-code             PIC  S99   VALUE ZERO.
        01  wc-post-name            PIC X(40)  VALUE SPACE.
-       01  wc-post-value           PIC X(40)  VALUE SPACE.  
+       01  wc-post-value           PIC X(40)  VALUE SPACE.
+       01  wc-printscr-string      PIC X(40)  VALUE SPACE. 
        
        01  wc-pagetitle            PIC X(20) VALUE 'Addera lokal'.
        
@@ -57,6 +58,9 @@
        *>**************************************************       
        0000-main.
        
+           *> contains development environment settings for test
+           COPY setupenv_openjensen. 
+           
            PERFORM A0100-init
            
            IF is-valid-init
@@ -119,7 +123,8 @@
            END-IF
 
            IF wc-lokalnamn = SPACE
-               DISPLAY "<br>[Varning] Saknar namn på lokal."
+               MOVE 'Saknar namn på lokal' TO wc-printscr-string
+               CALL 'stop-printscr' USING wc-printscr-string
            ELSE
                *> all required column input data is done
                SET is-valid-init TO TRUE
@@ -179,8 +184,10 @@
                IF is-valid-table-position
                    PERFORM B0230-add-local-to-table
                END-IF
-           ELSE    
-               DISPLAY "<br>[Varning] Denna lokal finns redan upplagd."
+           ELSE
+               MOVE 'Denna lokal finns redan upplagd'
+                    TO wc-printscr-string
+               CALL 'stop-printscr' USING wc-printscr-string
            END-IF
            
            .
@@ -293,7 +300,8 @@
                 PERFORM Z0100-error-routine
            ELSE
                 PERFORM B0240-commit-work
-                DISPLAY "<br>[Info] Lokal adderad."
+                MOVE 'Lokal adderad' TO wc-printscr-string
+                CALL 'ok-printscr' USING wc-printscr-string
            END-IF     
     
            .
