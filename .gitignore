@@ -8,8 +8,12 @@ debug/
 
 # Ignore 'backup' or 'tmp' sub-directories
 
-/*/backup
-/*/tmp
+src/*/backup
+src/*/tmp
+lib/*/backup
+lib/*/tmp
+html/*/backup
+html/*/tmp
 
 
 # Ignore binaries
