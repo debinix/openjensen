@@ -6,10 +6,10 @@ build/
 sql/
 debug/
 
-# Ignore 'backup' or 'tmp' named files/directories anywhere
+# Ignore 'backup' or 'tmp' sub-directories
 
-backup
-tmp
+/*/backup
+/*/tmp
 
 
 # Ignore binaries
