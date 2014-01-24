@@ -1,6 +1,7 @@
         IDENTIFICATION DIVISION.
         program-id. dump-string IS INITIAL.
         
+        
         ENVIRONMENT DIVISION.
         
         DATA DIVISION.
