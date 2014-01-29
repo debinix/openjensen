@@ -65,6 +65,16 @@ function cpy2jensen {
     clear    
 }
 
+function php2jensen {
+    echo "Secure copy of all PHP files...to mc-butter!"
+    scp /home/bekr/openjensen/php/*.php jensen@mc-butter.se:/home/jensen/openjensen/php/.
+    echo
+    echo "Press Enter to continue..."
+    read
+    clear    
+}
+
+
 function wui-api-names {
     echo "Show all wui-html forms backend API names (requires perl WWW::Mechanize)"
     echo "------------------------------------------------------------------------"
@@ -93,7 +103,9 @@ function menu {
     echo
     echo -e "\t6 - Replace Copybooks files in remote source directory"
     echo
-    echo -e "\t7 - Dump backend API names usen in POSTs (from wui-*.html files)"
+    echo -e "\t7 - Replace PHP files in remote source directory"
+    echo    
+    echo -e "\t8 - Dump backend API names usen in POSTs (from wui-*.html files)"
     echo        
     echo -e "\t9 - Exit program"
 }
@@ -133,9 +145,13 @@ do
         
         6)
             cpy2jensen
-            ;;  
-        
+            ;;
+            
         7)
+            php2jensen
+            ;;            
+            
+        8)
             wui-api-names
             ;;          
         
