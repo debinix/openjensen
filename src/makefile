@@ -1,5 +1,6 @@
-###########################################################
-#
+#############################################################
+# Do not edit. Managed by Puppet. Changes will be wiped out.#
+#############################################################
 # Makefile for COBOL source files (*.cbl) with or without
 # inline SQL EXEC statements using the OCESQL pre-processor.
 #
@@ -8,7 +9,7 @@
 #
 #  PROGRAM-ID.               makefile
 #  AUTHOR.                   BK.
-#  DATE-WRITTEN.             2013-12-30.
+#  DATE-REVISED.             2014-01-27.
 #
 # Pre-requsites
 #	- Open Cobol 1.1 or higher.
@@ -25,7 +26,7 @@
 # Set Copybook location in bashrc (Includes e.g. 'sqlca.cbl'):
 # export COBCPY=../copy
 #
-###########################################################
+#############################################################
 
 FIND := /usr/bin/find
 ERASE := /bin/rm -f
@@ -92,7 +93,7 @@ cleanall:
 	$(FIND) . -type f -perm /u=x -print0 | xargs -0 $(ERASE)
 	
 build:
-	$(QUIET) $(ECHO) [makefile]: Copy any binary files to build directory ../build/src
-	$(QUIET) - $(CP) *.cgi ../build/src/.
+	$(QUIET) $(ECHO) [makefile]: Copy any binary files to build directory ../build/bin
+	$(QUIET) - $(CP) *.cgi ../build/bin/.
 
 

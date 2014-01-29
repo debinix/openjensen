@@ -65,7 +65,11 @@ $(distdir):
 	$(QUIET) $(MKDIR) $(distdir)/copy
 	$(QUIET) - $(CP) copy/*.cbl $(distdir)/copy/.	
 	$(QUIET) - $(CP) copy/*.cpy $(distdir)/copy/.	
-
+#	
+	$(QUIET) $(MKDIR) $(distdir)/html
+	$(QUIET) - $(CP) html/*.html $(distdir)/html/.	
+	$(QUIET) - $(CP) html/*.png $(distdir)/html/.
+	$(QUIET) - $(CP) html/*.js $(distdir)/html/.	
 
 
 #############################################################################
