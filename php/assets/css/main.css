@@ -1,0 +1,27 @@
+body {
+	margin-top: 15px;
+	background-color: #f9f9f9;
+	color:#777777;
+}
+
+.navbar{
+	background-color: #003d70;
+	border:0px;
+}
+
+.dropdown{
+	background-color: #003d70;
+}
+
+.dropdown-menu {
+	background-color: #003d70;
+}
+
+
+
+.navbar-brand{
+	padding: 0px;
+	padding-top: 7px;
+	padding-left: 6px;
+	padding-right: 6px;
+}

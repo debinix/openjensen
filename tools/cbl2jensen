@@ -3,6 +3,9 @@
 #  Do not edit. Managed by Puppet. Changes will be wiped out! # 
 ###############################################################
 
+PHPSRC_PATH="/home/bekr/openjensen/php"
+PHPTGT_PATH="/home/jensen/openjensen/php"
+
 function make_and_install {
     ssh jensen@mc-butter.se /home/jensen/bin/remote_make_makeinstall
     echo
@@ -67,7 +70,12 @@ function cpy2jensen {
 
 function php2jensen {
     echo "Secure copy of all PHP files...to mc-butter!"
-    scp /home/bekr/openjensen/php/*.php jensen@mc-butter.se:/home/jensen/openjensen/php/.
+    scp ${PHPSRC_PATH}/*.php jensen@mc-butter.se:${PHPTGT_PATH}/.
+    scp ${PHPSRC_PATH}/assets/*.php jensen@mc-butter.se:${PHPTGT_PATH}/assets/.
+    scp ${PHPSRC_PATH}/assets/css/*.css jensen@mc-butter.se:${PHPTGT_PATH}/assets/css/.
+    scp ${PHPSRC_PATH}/assets/fonts/* jensen@mc-butter.se:${PHPTGT_PATH}/assets/fonts/.
+    scp ${PHPSRC_PATH}/assets/img/*.png jensen@mc-butter.se:${PHPTGT_PATH}/assets/img/.
+    scp ${PHPSRC_PATH}/assets/js/*.js jensen@mc-butter.se:${PHPTGT_PATH}/assets/js/.    
     echo
     echo "Press Enter to continue..."
     read
