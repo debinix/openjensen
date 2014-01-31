@@ -28,6 +28,8 @@ ALTER TABLE T_BETYG DROP CONSTRAINT betyg_kurs_id_fk ;
 
 ALTER TABLE T_BETYG DROP CONSTRAINT betyg_elev_id_fk ;
 
+ALTER TABLE T_NYHETER DROP CONSTRAINT fk_news_author ;
+
 
 --
 -- T_KONTAK (1)
@@ -349,6 +351,20 @@ INSERT INTO T_BETYG
 (Betyg,Kurs_id,Elev_id)
 VALUES ('VG',2,3);
 
+
+--
+-- T_BETYG
+--
+
+
+INSERT INTO T_NYHETER
+(News_id, News_title, News_content, News_date, News_author)
+VALUES
+(3, 'Nyhet1', 'Bacon ipsum dolor sit amet kielbasa hamburger cow pork. Cow ham jowl kevin swine. Doner filet mignon tail pork belly sausage beef ribs spare ribs shankle brisket sirloin pastrami kevin cow kielbasa jerky. Beef ribs cow spare ribs, t-bone andouille ground round prosciutto swine sausage. Swine meatball pastrami, beef tenderloin ham hock shank shankle rump strip steak beef ribs turducken fatback hamburger ribeye. Ham bresaola shoulder pork chop, sausage meatball pork rump spare ribs cow bacon filet mignon. Prosciutto pastrami pork loin, kevin kielbasa swine rump spare ribs beef ribs strip steak pork chop pork frankfurter sausage ground round.', '2013-07-27', 2);
+
+
+
+
 --
 -- Add all foreign key (FK) constraints
 --
@@ -388,3 +404,7 @@ ALTER TABLE T_BETYG ADD CONSTRAINT betyg_kurs_id_fk
 
 ALTER TABLE T_BETYG ADD CONSTRAINT betyg_elev_id_fk
 	FOREIGN KEY(Elev_id) REFERENCES T_ELEV(Elev_id);
+    
+ALTER TABLE T_NYHETER ADD CONSTRAINT fk_news_author
+    FOREIGN KEY (news_author) REFERENCES T_KONTAK(kontakt_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION;

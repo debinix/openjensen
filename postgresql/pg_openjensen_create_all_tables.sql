@@ -25,9 +25,10 @@ CREATE TABLE T_KONTAK (
 	Arbetstfn CHAR(40),
 	Mobiltfn CHAR(40),
 	Hemtfn	CHAR(40),
-	/* Keys */
+	/* Primary key */
 	CONSTRAINT t_kontakt_pk PRIMARY KEY(Kontakt_id)
-);
+)
+;
 
 
 --
@@ -43,9 +44,10 @@ CREATE TABLE T_ORT (
 	Postort CHAR(40),
 	Email CHAR(40),
 	Arbetstfn CHAR(40),
-	/* PRIMARY KEY */
+	/* Primary key */
 	CONSTRAINT t_ort_pk PRIMARY KEY(Ort_id)
-);
+)
+;
 
 
 --
@@ -57,13 +59,14 @@ CREATE TABLE T_UTBILD (
 	Utbildning CHAR(40) NOT NULL,
 	Ort_id INTEGER NOT NULL,
 	Startdatum DATE,
-	/* Keys */
+	/* Primary key */
 	CONSTRAINT t_utbild_pk PRIMARY KEY (Utbild_id)
-);
+)
+;
 
 
 --
--- T_ELEV (4) - No Serial ids, user Pnr
+-- T_ELEV (4)
 --
 
 
@@ -75,9 +78,10 @@ CREATE TABLE T_ELEV (
 	Slutbetyg CHAR(40),
 	Utbild_id INTEGER NOT NULL,
 	Kontakt_id INTEGER NOT NULL,
-	/* Keys */
+	/* Primary key */
 	CONSTRAINT t_elev_pk PRIMARY KEY(Elev_id)
-);
+)
+;
 
 --
 -- T_JLOKAL (5)
@@ -88,13 +92,14 @@ CREATE TABLE T_JLOKAL (
 	Lokalnamn CHAR(40) UNIQUE NOT NULL,
 	Vaningsplan CHAR(40),
 	Maxdeltagare CHAR(40),
-	/* Keys */
+	/* Primary key */
 	CONSTRAINT t_jlokal_pk PRIMARY KEY (Lokal_id)
-);
+)
+;
 
 
 --
--- KURS_T (6) - No Serial ids
+-- KURS_T (6)
 --
 
 CREATE TABLE T_KURS (
@@ -105,13 +110,14 @@ CREATE TABLE T_KURS (
 	Slutdatum	DATE,
 	Utbild_id INTEGER NOT NULL,
 	Lokal_id INTEGER NOT NULL,
-	/* Keys */
+	/* Primary key */
 	CONSTRAINT t_kurs_pk PRIMARY KEY (Kurs_id)
-);
+)
+;
 
 
 --
--- T_LARARE (7) - No Serial ids
+-- T_LARARE (7)
 --
 
 
@@ -119,49 +125,53 @@ CREATE TABLE T_LARARE (
 	Larar_id INTEGER NOT NULL,
 	Lon DECIMAL (10,2),
 	Kontakt_id INTEGER NOT NULL,
-	/* Keys */
+	/* Primary key */
 	CONSTRAINT t_larare_pk PRIMARY KEY (Larar_id)
-);
+)
+;
 
 
 --
--- T_KOMPET (8) - No Serial ids
+-- T_KOMPET (8)
 --
 
 CREATE TABLE T_KOMPET (
 	Kompetens_id INTEGER NOT NULL,
 	Kompetens CHAR(40) NOT NULL,
-	/* Keys */
+	/* Primary key */
 	CONSTRAINT t_kompet_pk PRIMARY KEY (Kompetens_id)
-);
+)
+;
 
 
 --
--- T_KURLAR (9) - No Serial ids
+-- T_KURLAR (9)
 --
 
 CREATE TABLE T_KURLAR (
 	Kurs_id INTEGER NOT NULL,
 	Larar_id INTEGER NOT NULL,
-	/* Keys */
+	/* Primary key */
 	CONSTRAINT t_kurlar_pk PRIMARY KEY(Kurs_id,Larar_id)
-);
+)
+;
 
 
 --
--- T_LARKOM (10) - No Serial ids
+-- T_LARKOM (10)
 --
 
 CREATE TABLE T_LARKOM (
 	Larar_id INTEGER NOT NULL,
 	Kompetens_id INTEGER NOT NULL,
-	/* Keys */
+	/* Primary key */
 	CONSTRAINT t_larkom_pk PRIMARY KEY(Larar_id,Kompetens_id)
-);
+)
+;
 
 
 --
--- T_BETYG (11) - No Serial ids
+-- T_BETYG (11)
 --
 
 CREATE TABLE T_BETYG (
@@ -170,44 +180,80 @@ CREATE TABLE T_BETYG (
 	Elev_id INTEGER NOT NULL,
 	/* Primary key */
 	CONSTRAINT t_betyg_pk PRIMARY KEY(Kurs_id,Elev_id)
-);
+)
+;
+
+
+--
+-- T_NYHETER (12)
+--
+
+CREATE TABLE T_NYHETER
+(
+   News_id INTEGER NOT NULL,
+   News_title CHAR(255) NOT NULL,
+   News_content TEXT NOT NULL,
+   News_date DATE NOT NULL,
+   News_author INTEGER NOT NULL,
+   /* Primary key */
+   CONSTRAINT pk_nyheter PRIMARY KEY(news_id)
+)
+;
+
 
 --
 -- Add all foreign key (FK) constraints
 --
 
 ALTER TABLE T_UTBILD ADD CONSTRAINT utbild_ort_id_fk
-	FOREIGN KEY (Ort_id) REFERENCES T_ORT(Ort_id);
-  
+	FOREIGN KEY (Ort_id) REFERENCES T_ORT(Ort_id)
+;
+
 ALTER TABLE T_ELEV ADD CONSTRAINT elev_kontakt_id_fk
-	FOREIGN KEY(Kontakt_id) REFERENCES T_KONTAK(Kontakt_id);
+	FOREIGN KEY(Kontakt_id) REFERENCES T_KONTAK(Kontakt_id)
+;
 
 ALTER TABLE T_ELEV ADD CONSTRAINT elev_utbild_id_fk
-    FOREIGN KEY(Utbild_id) REFERENCES T_UTBILD(Utbild_id);
- 
+    FOREIGN KEY(Utbild_id) REFERENCES T_UTBILD(Utbild_id)
+;
+
 ALTER TABLE T_KURS ADD CONSTRAINT kurs_utbild_id_fk
-	FOREIGN KEY (Utbild_id) REFERENCES T_UTBILD(Utbild_id);
+	FOREIGN KEY (Utbild_id) REFERENCES T_UTBILD(Utbild_id)
+;
 
 ALTER TABLE T_KURS ADD CONSTRAINT kurs_lokal_id_fk
-	FOREIGN KEY (Lokal_id) REFERENCES T_JLOKAL(Lokal_id);
+	FOREIGN KEY (Lokal_id) REFERENCES T_JLOKAL(Lokal_id)
+;
 
 ALTER TABLE T_LARARE ADD CONSTRAINT larare_kontakt_id_fk
-	FOREIGN KEY(Kontakt_id) REFERENCES T_KONTAK(Kontakt_id);
+	FOREIGN KEY(Kontakt_id) REFERENCES T_KONTAK(Kontakt_id)
+;
 
 ALTER TABLE T_KURLAR ADD CONSTRAINT kurlar_kurs_id_fk
-    FOREIGN KEY(Kurs_id) REFERENCES T_KURS(Kurs_id);
-  
+    FOREIGN KEY(Kurs_id) REFERENCES T_KURS(Kurs_id)
+;
+
 ALTER TABLE T_KURLAR ADD CONSTRAINT kurlar_larar_id_fk
-	FOREIGN KEY (Larar_id) REFERENCES T_LARARE(Larar_id);
+	FOREIGN KEY (Larar_id) REFERENCES T_LARARE(Larar_id)
+;
 
 ALTER TABLE T_LARKOM ADD CONSTRAINT larkom_larar_id_fk
-	FOREIGN KEY (Larar_id) REFERENCES T_LARARE(Larar_id);
+	FOREIGN KEY (Larar_id) REFERENCES T_LARARE(Larar_id)
+;
 
 ALTER TABLE T_LARKOM ADD CONSTRAINT larkom_kompetens_id_fk
-	FOREIGN KEY(Kompetens_id) REFERENCES T_KOMPET(Kompetens_id);
+	FOREIGN KEY(Kompetens_id) REFERENCES T_KOMPET(Kompetens_id)
+;
 
 ALTER TABLE T_BETYG ADD CONSTRAINT betyg_kurs_id_fk
-	FOREIGN KEY(Kurs_id) REFERENCES T_KURS(Kurs_id);
+	FOREIGN KEY(Kurs_id) REFERENCES T_KURS(Kurs_id)
+;
 
 ALTER TABLE T_BETYG ADD CONSTRAINT betyg_elev_id_fk
-	FOREIGN KEY(Elev_id) REFERENCES T_ELEV(Elev_id);
+	FOREIGN KEY(Elev_id) REFERENCES T_ELEV(Elev_id)
+;
+
+ALTER TABLE T_NYHETER ADD CONSTRAINT fk_news_author
+    FOREIGN KEY (news_author) REFERENCES T_KONTAK(kontakt_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
