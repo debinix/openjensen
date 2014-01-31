@@ -18,6 +18,34 @@ Phase 3: Replace php API pg_* solution with a solution based on Common Gateway
 Interface (CGI) and tighter integrated COBOL back-end code.
 
 
+### php API mysql-functions in current code
+
+Utility functions:
+
+```
+mysql_real_escape_string()
+
+mysql_connect()
+
+mysql_select_db()
+
+```
+
+
+SQL functions:
+
+```
+mysql_query()
+
+mysql_fetch_assoc()
+
+mysql_fetch_array()
+
+mysql_num_rows()
+
+```
+
+
 ### File dump/grep of existing php mysql_* functions in front-end code
 
 ```
@@ -132,15 +160,7 @@ while($program_row = mysql_fetch_array($program_result))
       $course_result = mysql_query("SELECT * FROM tbl_course WHERE program_id = '".$program_row['program_id']."'");
       while($course_row = mysql_fetch_array($course_result))
 -------------------------
-tst-php2cgi.php :
 
--------------------------
-tst-phpinfo.php :
-
--------------------------
-tst-phpversion.php :
-
--------------------------
 users.create.php :
 
   $result = mysql_query("SELECT * FROM tbl_program");
