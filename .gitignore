@@ -1,11 +1,9 @@
 # Git ignore for Cobol
 
-# Ignore any build, sql and debug top level directories
+# Ignore any build and debug top level directories
 
 build/
-sql/
 debug/
-
 
 # Ignore binaries
 

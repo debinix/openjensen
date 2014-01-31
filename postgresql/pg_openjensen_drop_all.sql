@@ -1,0 +1,124 @@
+--
+-- Drop all foreign constraints
+--
+
+ALTER TABLE T_UTBILD DROP CONSTRAINT utbild_ort_id_fk ;
+  
+ALTER TABLE T_ELEV DROP CONSTRAINT elev_kontakt_id_fk ;
+
+ALTER TABLE T_ELEV DROP CONSTRAINT elev_utbild_id_fk ;
+
+ALTER TABLE T_KURS DROP CONSTRAINT kurs_utbild_id_fk ;
+
+ALTER TABLE T_KURS DROP CONSTRAINT kurs_lokal_id_fk ;
+
+ALTER TABLE T_LARARE DROP CONSTRAINT larare_kontakt_id_fk ;
+
+
+ALTER TABLE T_KURLAR DROP CONSTRAINT kurlar_kurs_id_fk ;
+
+ALTER TABLE T_KURLAR DROP CONSTRAINT kurlar_larar_id_fk ;
+
+ALTER TABLE T_LARKOM DROP CONSTRAINT larkom_larar_id_fk ;
+
+ALTER TABLE T_LARKOM DROP CONSTRAINT larkom_kompetens_id_fk ;
+
+
+ALTER TABLE T_BETYG DROP CONSTRAINT betyg_kurs_id_fk ;
+
+ALTER TABLE T_BETYG DROP CONSTRAINT betyg_elev_id_fk ;
+
+
+
+--
+-- Drop T_KONTAKT
+--
+
+ALTER TABLE T_KONTAK DROP CONSTRAINT t_kontakt_pk ;
+
+DROP TABLE T_KONTAK;
+
+
+--
+-- Drop T_ORT
+--
+
+ALTER TABLE T_ORT DROP CONSTRAINT t_ort_pk ;
+
+DROP TABLE T_ORT ;
+
+--
+-- Drop T_UTBILD
+--
+
+ALTER TABLE T_UTBILD DROP CONSTRAINT t_utbild_pk ;
+
+DROP TABLE T_UTBILD;
+
+--
+-- Drop T_ELEV (drops also dependent objects)
+--
+
+ALTER TABLE T_ELEV DROP CONSTRAINT t_elev_pk ;
+
+DROP TABLE T_ELEV CASCADE ;
+
+
+--
+-- Drop T_JLOKAL
+--
+
+ALTER TABLE T_JLOKAL DROP CONSTRAINT t_jlokal_pk ;
+
+DROP TABLE T_JLOKAL;
+
+--
+-- Drop T_KURS
+--
+
+ALTER TABLE T_KURS DROP CONSTRAINT t_kurs_pk ;
+
+DROP TABLE T_KURS;
+
+
+--
+-- Drop T_LARARE
+--
+
+
+ALTER TABLE T_LARARE DROP CONSTRAINT t_larare_pk ;
+
+DROP TABLE T_LARARE;
+
+--
+-- Drop T_KOMPET
+--
+
+ALTER TABLE T_KOMPET DROP CONSTRAINT t_kompet_pk ;
+
+DROP TABLE T_KOMPET;
+
+--
+-- Drop T_KURLAR
+--
+
+ALTER TABLE T_KURLAR DROP CONSTRAINT t_kurlar_pk ;
+
+DROP TABLE T_KURLAR;
+
+--
+-- Drop T_LARKOM
+--
+
+ALTER TABLE T_LARKOM DROP CONSTRAINT t_larkom_pk ;
+
+DROP TABLE T_LARKOM;
+
+
+--
+-- Drop T_BETYG
+--
+
+ALTER TABLE T_BETYG DROP CONSTRAINT t_betyg_pk ;
+
+DROP TABLE T_BETYG;

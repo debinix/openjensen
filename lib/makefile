@@ -1,4 +1,6 @@
-###########################################################
+#############################################################
+# Do not edit. Managed by Puppet. Changes will be wiped out.#
+#############################################################
 #
 # Makefile for COBOL source files (*.cbl) with or without
 # inline SQL EXEC statements using the OCESQL pre-processor.
