@@ -12,22 +12,26 @@ a high dependency due to the pre-processor and the embedded SQL COBOL statements
 Phase 1: Replace mysql specific database php API functions mysql_* with
 corresponding PostgreSQL php pg_* functions.
 
-Phase 2: Adjust database schema. Discuss Scrum stories.
+Phase 2: Adjust database schema by just adding required front-ends columns.
 
-Phase 3: Replace php API pg_* solution with a solution based on Common Gateway
-Interface (CGI) and tighter integrated COBOL back-end code.
+Phase 3: Discuss which Scrum stories to support and which to put in backlog.
+
+Phase 4: Review database schema and decide on column/variable names.
+
+Phase 5: Gradually replace php API pg_* functions with a solution based
+on Common Gateway Interface (CGI) and use of HTML POSTs to COBOL back-end.
 
 
-### php API mysql-functions in current code
+### php mysql-functions and postgresql-function for phase 1 port
 
 Utility functions:
 
 ```
-mysql_real_escape_string()
+mysql_real_escape_string() --> pg_escape_literal()
 
-mysql_connect()
+mysql_connect() --> pg_connect()	
 
-mysql_select_db()
+mysql_select_db() --> pg_connect()
 
 ```
 
@@ -35,13 +39,13 @@ mysql_select_db()
 SQL functions:
 
 ```
-mysql_query()
+mysql_query() --> pg_query()
 
-mysql_fetch_assoc()
+mysql_fetch_assoc() --> pg_fetch_assoc()
 
-mysql_fetch_array()
+mysql_fetch_array() --> pg_fetch_array()
 
-mysql_num_rows()
+mysql_num_rows() --> pg_num_rows()
 
 ```
 
