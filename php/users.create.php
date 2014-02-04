@@ -19,9 +19,12 @@
   <input type="text" name="password" class="form-control" placeholder="Lösenord">
   <br>
   <p><strong>Program</strong></p>
-  <?php 
-  $result = mysql_query("SELECT * FROM tbl_program");
-  while($row = mysql_fetch_array($result))
+  <?php
+  // $result = mysql_query("SELECT * FROM tbl_program");
+  // while($row = mysql_fetch_array($result))
+  
+  $result = pg_query("SELECT * FROM tbl_program");
+  while($row = pg_fetch_array($result))
   {
     ?>
     <div class="radio">
@@ -35,8 +38,11 @@
   <br>
   <p><strong>Rank</strong></p>
   <?php
-  $result = mysql_query("SELECT * FROM tbl_usertype");
-  while($row = mysql_fetch_array($result))
+  // $result = mysql_query("SELECT * FROM tbl_usertype");
+  // while($row = mysql_fetch_array($result))
+  
+  $result = pg_query("SELECT * FROM tbl_usertype");
+  while($row = pg_fetch_array($result))  
   {
     ?>
     <div class="radio">

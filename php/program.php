@@ -1,8 +1,12 @@
 <?php include("assets/_header.php"); ?>
 <h1>Program</h1>
 <?php
-$program_result = mysql_query("SELECT * FROM tbl_program");
-while($program_row = mysql_fetch_array($program_result))
+
+// $program_result = mysql_query("SELECT * FROM tbl_program");
+// while($program_row = mysql_fetch_array($program_result))
+
+$program_result = pg_query("SELECT * FROM tbl_program");
+while($program_row = pg_fetch_array($program_result))
 {
   ?>
   <h3><?php echo $program_row['program_name']; ?></h3>
@@ -16,8 +20,11 @@ while($program_row = mysql_fetch_array($program_result))
     </thead>
     <tbody>
       <?php
-      $course_result = mysql_query("SELECT * FROM tbl_course WHERE program_id = '".$program_row['program_id']."'");
-      while($course_row = mysql_fetch_array($course_result))
+      // $course_result = mysql_query("SELECT * FROM tbl_course WHERE program_id = '".$program_row['program_id']."'");
+      // while($course_row = mysql_fetch_array($course_result))
+      
+      $course_result = pg_query("SELECT * FROM tbl_course WHERE program_id = '".$program_row['program_id']."'");
+      while($course_row = pg_fetch_array($course_result))
       {
         ?>
         <tr>

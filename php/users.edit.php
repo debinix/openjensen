@@ -1,9 +1,17 @@
 <?php include("assets/_header.php"); ?>
 <a href="users.php"><span class="label label-default">Tillbaka</span></a>
 <?php
-$user_id = mysql_real_escape_string($_GET['user_id']);
-$user_result = mysql_query("SELECT * FROM tbl_user WHERE user_id='".$user_id."' LIMIT 1");
-$user_row = mysql_fetch_assoc($user_result);
+
+// $user_id = mysql_escape_string($_GET['user_id']);
+// $user_result = mysql_query("SELECT * FROM tbl_user WHERE user_id='".$user_id."' LIMIT 1");
+// $user_row = mysql_fetch_assoc($user_result);
+
+$user_id = pg_escape_literal($_GET[user_id]);
+$user_result = pg_query("SELECT * FROM tbl_user WHERE user_id=".$user_id." LIMIT 1");
+$user_row = pg_fetch_assoc($user_result);
+
+
+
 ?>
 <h1><?php echo $user_row['user_firstname']." ".$user_row['user_lastname'] ?></h1>
 <form method="POST" action="./process.php?function=editUser&user_id=<?php echo $user_row['user_id']; ?>">
@@ -22,9 +30,13 @@ $user_row = mysql_fetch_assoc($user_result);
   <input type="text" name="username" class="form-control" placeholder="Användarnamn" value="<?php echo $user_row['user_username'] ?>">
   <br>
   <input type="text" name="password" class="form-control" placeholder="Lösenord" value="<?php echo $user_row['user_password'] ?>">
-  <?php 
-  $result = mysql_query("SELECT * FROM tbl_program");
-  while($row = mysql_fetch_array($result))
+  <?php
+  
+  // $result = mysql_query("SELECT * FROM tbl_program");
+  $result = pg_query("SELECT * FROM tbl_program");  
+  
+  // while($row = mysql_fetch_array($result))
+  while($row = pg_fetch_array($result))  
   {
     ?>
     <div class="radio">

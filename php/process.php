@@ -12,27 +12,40 @@ if($function == "Login")
 	}
 	else
 	{
-		$username = mysql_real_escape_string($_POST['username']);
-		$password = mysql_real_escape_string($_POST['password']);
+		$username = pg_escape_literal($_POST['username']);
+		$password = pg_escape_literal($_POST['password']);
 
-		$query = mysql_query("SELECT * FROM tbl_user WHERE user_username = '$username' AND user_password = '$password'");
-		$count = mysql_num_rows($query);
+		// $query = mysql_query("SELECT * FROM tbl_user WHERE user_username = '$username' AND user_password = '$password'");
+		// $count = mysql_num_rows($query);
+		
+		$query = pg_query("SELECT * FROM tbl_user WHERE user_username = $username AND user_password = $password");
+		$count = pg_num_rows($query);		
 
 		if($count == 1)
 		{
-			$result = mysql_query("SELECT * FROM tbl_user WHERE user_username = '$username' LIMIT 1");
-			$row = mysql_fetch_assoc($result);
-
+			// $result = mysql_query("SELECT * FROM tbl_user WHERE user_username = '$username' LIMIT 1");
+			// $row = mysql_fetch_assoc($result);
+			
+			$result = pg_query("SELECT * FROM tbl_user WHERE user_username = $username LIMIT 1");
+			$row = pg_fetch_assoc($result);			
+			
 			$date = date('Y-m-d H:i:s');
-			$sql = "UPDATE tbl_user SET user_lastlogin = '".$date."' WHERE user_id = ".$row['user_id'];
-			$result = mysql_query($sql);
+			
+			// $sql = "UPDATE tbl_user SET user_lastlogin = '".$date."' WHERE user_id = ".$row['user_id'];
+			// $result = mysql_query($sql);
 
+			$sql = "UPDATE tbl_user SET user_lastlogin = ".$date." WHERE user_id = ".$row[user_id];
+			$result = pg_query($sql);			
+			
+			
+			// why all these '''' ?
 			$_SESSION['username'] = $username;
 			$_SESSION['user_id'] = $row['user_id'];
 			$_SESSION['user_firstname'] = $row['user_firstname'];
 			$_SESSION['user_lastname'] = $row['user_lastname'];
 			$_SESSION['user_program'] = $row['user_program'];
 			$_SESSION['usertype_id'] = $row['usertype_id'];
+			
 			header('location: index.php');
 		}
 		else
@@ -44,10 +57,11 @@ if($function == "Login")
 }
 elseif($function == "editProfile")
 {
-	$fname = mysql_real_escape_string($_POST['firstname']);
-	$lname = mysql_real_escape_string($_POST['lastname']);
-	$email = mysql_real_escape_string($_POST['email']);
-	$phone = mysql_real_escape_string($_POST['phone']);
+
+	$fname = pg_escape_literal($_POST['firstname']);
+	$lname = pg_escape_literal($_POST['lastname']);
+	$email = pg_escape_literal($_POST['email']);
+	$phone = pg_escape_literal($_POST['phone']);	
 
 	if(empty($fname) OR empty($lname) OR empty($email) OR empty($phone))
 	{
@@ -58,11 +72,17 @@ elseif($function == "editProfile")
 	{
 		$user_id = $_SESSION['user_id'];
 
-		mysql_query("UPDATE tbl_user SET user_firstname = '$fname', user_lastname = '$lname', user_email = '$email', user_phonenumber = '$phone' WHERE user_id = '$user_id'") or die(mysql_error());
+		// mysql_query("UPDATE tbl_user SET user_firstname = '$fname', user_lastname = '$lname', user_email = '$email', user_phonenumber = '$phone' WHERE user_id = '$user_id'") or die(mysql_error());
 
+		pg_query("UPDATE tbl_user SET user_firstname = $fname, user_lastname = $lname, user_email = $email, user_phonenumber = $phone WHERE user_id = $user_id") or die(mysql_error());
+		
 		$username = $_SESSION['username'];
-		$result = mysql_query("SELECT * FROM tbl_user WHERE user_username = '$username' LIMIT 1");
-		$row = mysql_fetch_assoc($result);
+		
+		// $result = mysql_query("SELECT * FROM tbl_user WHERE user_username = '$username' LIMIT 1");
+		// $row = mysql_fetch_assoc($result);
+		
+		$result = pg_query("SELECT * FROM tbl_user WHERE user_username = $username LIMIT 1");
+		$row = pg_fetch_assoc($result);	
 
 		$_SESSION['user_id'] = $row['user_id'];
 		$_SESSION['user_firstname'] = $row['user_firstname'];
@@ -98,14 +118,16 @@ elseif($function == "contactSupport")
 }
 elseif($function == "editUser")
 {
-	$user_id = mysql_real_escape_string($_GET['user_id']);
-	$firstname = mysql_real_escape_string($_POST['firstname']);
-	$lastname = mysql_real_escape_string($_POST['lastname']);
-	$email = mysql_real_escape_string($_POST['email']);
-	$phone = mysql_real_escape_string($_POST['phone']);
-	$username = mysql_real_escape_string($_POST['username']);
-	$password = mysql_real_escape_string($_POST['password']);
-	$program = mysql_real_escape_string($_POST['program']);
+
+	$user_id = pg_escape_literal($_GET['user_id']);
+	$firstname = pg_escape_literal($_POST['firstname']);
+	$lastname = pg_escape_literal($_POST['lastname']);
+	$email = pg_escape_literal($_POST['email']);
+	$phone = pg_escape_literal($_POST['phone']);
+	$username = pg_escape_literal($_POST['username']);
+	$password = pg_escape_literal($_POST['password']);
+	$program = pg_escape_literal($_POST['program']);
+	
 
 	if(empty($user_id) OR empty($firstname) OR empty($lastname) OR empty($email) OR empty($phone) OR empty($username) OR empty($password) OR empty($program))
 	{
@@ -114,15 +136,25 @@ elseif($function == "editUser")
 	}
 	else
 	{
-		mysql_query("UPDATE tbl_user SET 
-			user_firstname = '$firstname',
-			user_lastname = '$lastname',
-			user_email = '$email',
-			user_phonenumber = '$phone',
-			user_username = '$username',
-			user_password = '$password',
-			user_program = '$program'
-		WHERE user_id = '$user_id'") or die(mysql_error());
+		//mysql_query("UPDATE tbl_user SET 
+		//	user_firstname = '$firstname',
+		//	user_lastname = '$lastname',
+		//	user_email = '$email',
+		//	user_phonenumber = '$phone',
+		//	user_username = '$username',
+		//	user_password = '$password',
+		//	user_program = '$program'
+		//WHERE user_id = '$user_id'") or die(mysql_error());
+		
+		pg_query("UPDATE tbl_user SET 
+			user_firstname = $firstname,
+			user_lastname = $lastname,
+			user_email = $email,
+			user_phonenumber = $phone,
+			user_username = $username,
+			user_password = $password,
+			user_program = $program
+		WHERE user_id = $user_id") or die(pg_last_error());		
 
 		$Success->set("Användarens uppgifter har nu ändrats.");
 		header('location: users.edit.php?user_id='.$user_id);
@@ -130,14 +162,14 @@ elseif($function == "editUser")
 }
 elseif($function == "addUser")
 {
-	$firstname = mysql_real_escape_string($_POST['firstname']);
-	$lastname = mysql_real_escape_string($_POST['lastname']);
-	$email = mysql_real_escape_string($_POST['email']);
-	$phone = mysql_real_escape_string($_POST['phone']);
-	$username = mysql_real_escape_string($_POST['username']);
-	$password = mysql_real_escape_string($_POST['password']);
-	$program = mysql_real_escape_string($_POST['program']);
-	$usertype = mysql_real_escape_string($_POST['usertype']);
+	$firstname = pg_escape_literal($_POST['firstname']);
+	$lastname = pg_escape_literal($_POST['lastname']);
+	$email = pg_escape_literal($_POST['email']);
+	$phone = pg_escape_literal($_POST['phone']);
+	$username = pg_escape_literal($_POST['username']);
+	$password = pg_escape_literal($_POST['password']);
+	$program = pg_escape_literal($_POST['program']);
+	$usertype = pg_escape_literal($_POST['usertype']);
 
 	if(empty($firstname) OR empty($lastname) OR empty($email) OR empty($phone) OR empty($username) OR empty($password) OR empty($program) OR empty($usertype))
 	{
@@ -146,18 +178,21 @@ elseif($function == "addUser")
 	}
 	else
 	{
-		mysql_query("INSERT INTO tbl_user (user_firstname, user_lastname, user_email, user_phonenumber, user_username, user_password, user_lastlogin, user_program, usertype_id) VALUES ('".$firstname."', '".$lastname."', '".$email."', '".$phone."', '".$username."', '".$password."', '0000-00-00 00:00:00', '".$program."', '".$usertype."')") or die(mysql_error());  
+		// mysql_query("INSERT INTO tbl_user (user_firstname, user_lastname, user_email, user_phonenumber, user_username, user_password, user_lastlogin, user_program, usertype_id) VALUES ('".$firstname."', '".$lastname."', '".$email."', '".$phone."', '".$username."', '".$password."', '0000-00-00 00:00:00', '".$program."', '".$usertype."')") or die(mysql_error());  
+		pg_query("INSERT INTO tbl_user (user_firstname, user_lastname, user_email, user_phonenumber, user_username, user_password, user_lastlogin, user_program, usertype_id)
+				 VALUES ('".$firstname."', '".$lastname."', '".$email."', '".$phone."', '".$username."', '".$password."', '1970-01-01 00:00:00', '".$program."', '".$usertype."')") or die(pg_last_error());  
 
+		
 		$Success->set("Användarens uppgifter har nu ändrats.");
 		header('location: users.php');
 	}
 }
 elseif($function == "addGrade")
 {
-	$grade = mysql_real_escape_string($_POST['grade']);
-	$grade_comment = mysql_real_escape_string($_POST['grade_comment']);
-	$user_id = mysql_real_escape_string($_GET['user_id']);
-	$course_id = mysql_real_escape_string($_GET['course_id']);
+	$grade = pg_escape_literal($_POST['grade']);
+	$grade_comment = pg_escape_literal($_POST['grade_comment']);
+	$user_id = pg_escape_literal($_GET['user_id']);
+	$course_id = pg_escape_literal($_GET['course_id']);
 
 	if(empty($user_id) OR empty($course_id))
 	{
@@ -173,8 +208,16 @@ elseif($function == "addGrade")
 		}
 		else
 		{
-			$result = mysql_query("INSERT INTO tbl_grade (grade_grade, grade_comment, user_id, course_id) VALUES ('".$grade."', '".$grade_comment."', '".$user_id."', '".$course_id."')") or die(mysql_error());
-
+			// $result = mysql_query("INSERT INTO tbl_grade (grade_grade, grade_comment, user_id, course_id) VALUES ('".$grade."', '".$grade_comment."', '".$user_id."', '".$course_id."')") or die(mysql_error());
+            
+			// BK: Syntax error when run, is code correct I separated above in two sentences
+			
+			$addgrade="INSERT INTO tbl_grade (grade_grade, grade_comment, user_id, course_id)
+			           VALUES
+					   ('$grade', '$grade_comment', '$user_id', '$course_id')";		   
+			
+			$result = pg_query($addgrade) or die(pg_last_error());
+			
 			if($result)
 			{
 				$Success->set("Betyget har nu satts.");
@@ -185,9 +228,9 @@ elseif($function == "addGrade")
 }
 elseif($function == "editGrade")
 {
-	$grade = mysql_real_escape_string($_POST['grade']);
-	$grade_comment = mysql_real_escape_string($_POST['grade_comment']);
-	$grade_id = mysql_real_escape_string($_GET['grade_id']);
+	$grade = pg_escape_literal($_POST['grade']);
+	$grade_comment = pg_escape_literal($_POST['grade_comment']);
+	$grade_id = pg_escape_literal($_GET['grade_id']);
 
 	if(empty($grade_id))
 	{
@@ -203,10 +246,19 @@ elseif($function == "editGrade")
 		}
 		else
 		{
-			mysql_query("UPDATE tbl_grade SET 
-				grade_grade = '$grade',
-				grade_comment = '$grade_comment'
-			WHERE grade_id = '$grade_id'") or die(mysql_error());
+			//mysql_query("UPDATE tbl_grade SET 
+			//	grade_grade = '$grade',
+			//	grade_comment = '$grade_comment'
+			//WHERE grade_id = '$grade_id'") or die(mysql_error());
+			
+			// BK: Syntax error when run, is code correct I separated above in two sentences			
+			
+			$editgrade="UPDATE tbl_grade
+			              SET grade_grade = '$grade',
+				            grade_comment = '$grade_comment'
+			            WHERE grade_id    = '$grade_id'";
+			
+			pg_query($editgrade) or die(pg_last_error());			
 
 			$Success->set("Betyget har nu ändrats.");
 			header('location: course.edit.php?id='.$grade_id);
@@ -215,9 +267,9 @@ elseif($function == "editGrade")
 }
 elseif($function == "addNews")
 {
-	$news_title = mysql_real_escape_string($_POST['news_title']);
-	$news_content = mysql_real_escape_string($_POST['news_content']);
-	$news_author = mysql_real_escape_string($_SESSION['user_id']);
+	$news_title = pg_escape_literal($_POST['news_title']);
+	$news_content = pg_escape_literal($_POST['news_content']);
+	$news_author = pg_escape_literal($_SESSION['user_id']);
 
 	if(empty($news_author) OR empty($news_content) OR empty($news_title))
 	{
@@ -227,7 +279,7 @@ elseif($function == "addNews")
 	else
 	{
 		$date = date('H:i:s - Y/m/d');
-		mysql_query("INSERT INTO tbl_news (news_title, news_content, news_author, news_date) VALUES ('".$news_title."', '".$news_content."', '".$news_author."', '".$date."')") or die(mysql_error());  
+		mysql_query("INSERT INTO T_NYHETER (news_title, news_content, news_author, news_date) VALUES ('".$news_title."', '".$news_content."', '".$news_author."', '".$date."')") or die(pg_last_error());  
 
 		$Success->set("Nyheten har skapats.");
 		header('location: index.php');

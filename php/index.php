@@ -4,8 +4,10 @@
 $Error->show();
 $Success->show();
 
-$news_result = mysql_query("SELECT * FROM tbl_news ORDER BY news_id DESC");
-while($news_row = mysql_fetch_array($news_result))
+//$news_result = mysql_query("SELECT * FROM tbl_news ORDER BY news_id DESC");
+//while($news_row = mysql_fetch_array($news_result))
+$news_result = pg_query("SELECT * FROM T_NYHETER ORDER BY News_id DESC");
+while($news_row = pg_fetch_array($news_result))
 {
 	?>
 	<h1><?php echo $news_row['news_title']; ?></h1>

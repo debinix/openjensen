@@ -1,7 +1,12 @@
 <?php
 include("assets/_header.php");
-$result = mysql_query("SELECT * FROM tbl_user WHERE user_id='".$_SESSION['user_id']."' LIMIT 1");
-$row = mysql_fetch_assoc($result);
+
+// $result = mysql_query("SELECT * FROM tbl_user WHERE user_id='".$_SESSION['user_id']."' LIMIT 1");
+// $row = mysql_fetch_assoc($result);
+
+$result = pg_query("SELECT * FROM tbl_user WHERE user_id='".$_SESSION['user_id']."' LIMIT 1");
+$row = pg_fetch_assoc($result);
+
 ?>
 <h1><?php echo $row['user_firstname']." ".$row['user_lastname'] ?></h1>
 <form method="POST" action="./process.php?function=editProfile">

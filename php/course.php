@@ -21,11 +21,18 @@ if($_SESSION['usertype_id'] == 1)
     </thead>
     <tbody>
       <?php
-      $course_result = mysql_query("SELECT * FROM tbl_course WHERE program_id = '".$_SESSION['user_program']."'");
-      while($course_row = mysql_fetch_array($course_result))
+      //$course_result = mysql_query("SELECT * FROM tbl_course WHERE program_id = '".$_SESSION['user_program']."'");
+      //while($course_row = mysql_fetch_array($course_result))
+ 
+      $course_result = pg_query("SELECT * FROM tbl_course WHERE program_id = '".$_SESSION['user_program']."'");
+      while($course_row = pg_fetch_array($course_result)) 
       {
-        $grade_result = mysql_query("SELECT grade_grade, grade_comment FROM tbl_grade WHERE user_id = '".$_SESSION['user_id']."' AND course_id = '".$course_row['course_id']."' LIMIT 1");
-        $grade_row = mysql_fetch_assoc($grade_result);
+        // $grade_result = mysql_query("SELECT grade_grade, grade_comment FROM tbl_grade WHERE user_id = '".$_SESSION['user_id']."' AND course_id = '".$course_row['course_id']."' LIMIT 1");
+        // $grade_row = mysql_fetch_assoc($grade_result);
+        
+        $grade_result = pg_query("SELECT grade_grade, grade_comment FROM tbl_grade WHERE user_id = '".$_SESSION['user_id']."' AND course_id = '".$course_row['course_id']."' LIMIT 1");
+        $grade_row = pg_fetch_assoc($grade_result);        
+        
         ?>
         <tr>
           <td><?php echo $course_row['course_name']; ?></td>
@@ -49,8 +56,11 @@ elseif ($_SESSION['usertype_id'] >= 2)
   $Error->show();
   $Success->show();
 
-  $course_result = mysql_query("SELECT * FROM tbl_course WHERE program_id = '".$_SESSION['user_program']."'");
-  while($course_row = mysql_fetch_array($course_result))
+  // $course_result = mysql_query("SELECT * FROM tbl_course WHERE program_id = '".$_SESSION['user_program']."'");
+  // while($course_row = mysql_fetch_array($course_result))
+  
+  $course_result = pg_query("SELECT * FROM tbl_course WHERE program_id = '".$_SESSION['user_program']."'");
+  while($course_row = pg_fetch_array($course_result))  
   {
     ?>
     <h3><?php echo $course_row['course_name']; ?></h3>
@@ -65,16 +75,24 @@ elseif ($_SESSION['usertype_id'] >= 2)
       </thead>
       <tbody>
         <?php
-        $user_result = mysql_query("SELECT user_firstname, user_lastname, user_id FROM tbl_user ORDER BY user_lastname, user_firstname");
-        while ($user_row = mysql_fetch_array($user_result))
+        
+        // $user_result = mysql_query("SELECT user_firstname, user_lastname, user_id FROM tbl_user ORDER BY user_lastname, user_firstname");
+        // while ($user_row = mysql_fetch_array($user_result))
+
+        $user_result = pg_query("SELECT user_firstname, user_lastname, user_id FROM tbl_user ORDER BY user_lastname, user_firstname");
+        while ($user_row = pg_fetch_array($user_result))        
         {
           ?>
           <tr>
             <td><?php echo $user_row['user_firstname']; ?></td>
             <td><?php echo $user_row['user_lastname']; ?></td>
             <?php
-            $grade_result = mysql_query("SELECT grade_grade, grade_id FROM tbl_grade WHERE user_id = '".$user_row['user_id']."' AND course_id = '".$course_row['course_id']."' LIMIT 1");
-            $grade_row = mysql_fetch_assoc($grade_result);
+            // $grade_result = mysql_query("SELECT grade_grade, grade_id FROM tbl_grade WHERE user_id = '".$user_row['user_id']."' AND course_id = '".$course_row['course_id']."' LIMIT 1");
+            // $grade_row = mysql_fetch_assoc($grade_result);
+            
+            $grade_result = pg_query("SELECT grade_grade, grade_id FROM tbl_grade WHERE user_id = '".$user_row['user_id']."' AND course_id = '".$course_row['course_id']."' LIMIT 1");
+            $grade_row = pg_fetch_assoc($grade_result);            
+            
             ?>
             <td><?php if($grade_row['grade_grade'] == "") { echo "Ej satt"; } else { echo $grade_row['grade_grade']; } ?></td>
             <td><?php if($grade_row['grade_grade'] == "") { ?><a href="course.add.php?user_id=<?php echo $user_row['user_id']; ?>&course_id=<?php echo $course_row['course_id']; ?>"><span class="label label-primary">Sätt betyg</span></a><?php } else { ?><a href="course.edit.php?id=<?php echo $grade_row['grade_id']; ?>"><span class="label label-primary">Ändra betyget</span></a><?php } ?></td>
