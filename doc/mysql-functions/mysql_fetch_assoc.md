@@ -9,19 +9,28 @@ mysql_fetch_assoc — Fetch a result row as an associative array
 array mysql_fetch_assoc ( resource $result )
 ```
 
-Returns an associative array that corresponds to the fetched row and moves the internal data pointer ahead. mysql_fetch_assoc() is equivalent to calling mysql_fetch_array() with MYSQL_ASSOC for the optional second parameter. It only returns an associative array.
+Returns an associative array that corresponds to the fetched row
+and moves the internal data pointer ahead. mysql_fetch_assoc() is
+equivalent to calling mysql_fetch_array() with MYSQL_ASSOC for the
+optional second parameter. It only returns an associative array.
 
 ### Parameters
 
 *result*
 
-    The result resource that is being evaluated. This result comes from a call to mysql_query().
+    The result resource that is being evaluated.
+    This result comes from a call to mysql_query().
 
 ### Return Values
 
-Returns an associative array of strings that corresponds to the fetched row, or FALSE if there are no more rows.
+Returns an associative array of strings that corresponds to the fetched
+row, or FALSE if there are no more rows.
 
-If two or more columns of the result have the same field names, the last column will take precedence. To access the other column(s) of the same name, you either need to access the result with numeric indices by using mysql_fetch_row() or add alias names. See the example at the mysql_fetch_array() description about aliases.
+If two or more columns of the result have the same field names, the
+last column will take precedence. To access the other column(s) of the
+same name, you either need to access the result with numeric indices
+by using mysql_fetch_row() or add alias names. See the example at the
+mysql_fetch_array() description about aliases.
 
 ### Examples
 
@@ -77,7 +86,9 @@ mysql_free_result($result);
 
     Note: Performance
 
-    An important thing to note is that using mysql_fetch_assoc() is not significantly slower than using mysql_fetch_row(), while it provides a significant added value.
+    An important thing to note is that using mysql_fetch_assoc() is not
+    significantly slower than using mysql_fetch_row(), while it provides a
+    significant added value.
 
     Note: Field names returned by this function are case-sensitive.
 

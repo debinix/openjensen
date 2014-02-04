@@ -5,7 +5,10 @@ mysql_connect — Open a connection to a MySQL Server
 ### Description
 
 ```php
-resource mysql_connect ([ string $server = ini_get("mysql.default_host") [, string $username = ini_get("mysql.default_user") [, string $password = ini_get("mysql.default_password") [, bool $new_link = false [, int $client_flags = 0 ]]]]] )
+resource mysql_connect ([ string $server = ini_get("mysql.default_host")
+        [, string $username = ini_get("mysql.default_user")
+        [, string $password = ini_get("mysql.default_password")
+        [, bool $new_link = false [, int $client_flags = 0 ]]]]] )
 ```
 
 Opens or reuses a connection to a MySQL server.
@@ -14,25 +17,40 @@ Opens or reuses a connection to a MySQL server.
 
 *server*
 
-    The MySQL server. It can also include a port number. e.g. "hostname:port" or a path to a local socket e.g. ":/path/to/socket" for the localhost.
+    The MySQL server. It can also include a port number. e.g. "hostname:port"
+    or a path to a local socket e.g. ":/path/to/socket" for the localhost.
 
-    If the PHP directive mysql.default_host is undefined (default), then the default value is 'localhost:3306'. In SQL safe mode, this parameter is ignored and value 'localhost:3306' is always used.
+    If the PHP directive mysql.default_host is undefined (default), then the
+    default value is 'localhost:3306'. In SQL safe mode, this parameter is
+    ignored and value 'localhost:3306' is always used.
 
 *username*
 
-    The username. Default value is defined by mysql.default_user. In SQL safe mode, this parameter is ignored and the name of the user that owns the server process is used.
+    The username. Default value is defined by mysql.default_user. In SQL safe
+    mode, this parameter is ignored and the name of the user that owns the
+    server process is used.
 
 *password*
 
-    The password. Default value is defined by mysql.default_password. In SQL safe mode, this parameter is ignored and empty password is used.
+    The password. Default value is defined by mysql.default_password. In SQL
+    safe mode, this parameter is ignored and empty password is used.
 
 *new_link*
 
-    If a second call is made to mysql_connect() with the same arguments, no new link will be established, but instead, the link identifier of the already opened link will be returned. The new_link parameter modifies this behavior and makes mysql_connect() always open a new link, even if mysql_connect() was called before with the same parameters. In SQL safe mode, this parameter is ignored.
+    If a second call is made to mysql_connect() with the same arguments, no
+    new link will be established, but instead, the link identifier of the
+    already opened link will be returned. The new_link parameter modifies
+    this behavior and makes mysql_connect() always open a new link, even if
+    mysql_connect() was called before with the same parameters. In SQL safe
+    mode, this parameter is ignored.
 
 *client_flags*
 
-    The client_flags parameter can be a combination of the following constants: 128 (enable LOAD DATA LOCAL handling), MYSQL_CLIENT_SSL, MYSQL_CLIENT_COMPRESS, MYSQL_CLIENT_IGNORE_SPACE or MYSQL_CLIENT_INTERACTIVE. Read the section about MySQL client constants for further information. In SQL safe mode, this parameter is ignored.
+    The client_flags parameter can be a combination of the following
+    constants: 128 (enable LOAD DATA LOCAL handling), MYSQL_CLIENT_SSL,
+    MYSQL_CLIENT_COMPRESS, MYSQL_CLIENT_IGNORE_SPACE or
+    MYSQL_CLIENT_INTERACTIVE. Read the section about MySQL client constants
+    for further information. In SQL safe mode, this parameter is ignored.
 
 ### Return Values
 
@@ -98,7 +116,8 @@ mysql_close($link);
 
 
 // variant 2: with localhost
-$link = mysql_connect('localhost:/tmp/mysql.sock', 'mysql_user', 'mysql_password');
+$link = mysql_connect('localhost:/tmp/mysql.sock', 'mysql_user',
+                                                    'mysql_password');
 if (!$link) {
     die('Could not connect: ' . mysql_error());
 }
@@ -111,19 +130,30 @@ mysql_close($link);
 
     Note:
 
-    Whenever you specify "localhost" or "localhost:port" as server, the MySQL client library will override this and try to connect to a local socket (named pipe on Windows). If you want to use TCP/IP, use "127.0.0.1" instead of "localhost". If the MySQL client library tries to connect to the wrong local socket, you should set the correct path as in your PHP configuration and leave the server field blank.
+    Whenever you specify "localhost" or "localhost:port" as server,
+    the MySQL client library will override this and try to connect to a
+    local socket (named pipe on Windows). If you want to use TCP/IP, use
+    "127.0.0.1" instead of "localhost". If the MySQL client library tries
+    to connect to the wrong local socket, you should set the correct path
+    as in your PHP configuration and leave the server field blank.
 
     Note:
 
-    The link to the server will be closed as soon as the execution of the script ends, unless it's closed earlier by explicitly calling mysql_close().
+    The link to the server will be closed as soon as the execution of the
+    script ends, unless it's closed earlier by explicitly calling
+    mysql_close().
 
     Note:
 
-    You can suppress the error message on failure by prepending a @ to the function name.
+    You can suppress the error message on failure by prepending a @ to
+    the function name.
 
     Note:
 
-    Error "Can't create TCP/IP socket (10106)" usually means that the variables_order configure directive doesn't contain character E. On Windows, if the environment is not copied the SYSTEMROOT environment variable won't be available and PHP will have problems loading Winsock.
+    Error "Can't create TCP/IP socket (10106)" usually means that the
+    variables_order configure directive doesn't contain character E.
+    On Windows, if the environment is not copied the SYSTEMROOT environment
+    variable won't be available and PHP will have problems loading Winsock.
 
 ### References
 

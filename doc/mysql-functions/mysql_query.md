@@ -9,7 +9,9 @@ mysql_query — Send a MySQL query
 resource mysql_query ( string $query [, resource $link_identifier = NULL ] )
 ```
 
-mysql_query() sends a unique query (multiple queries are not supported) to the currently active database on the server that's associated with the specified link_identifier.
+mysql_query() sends a unique query (multiple queries are not supported) to
+the currently active database on the server that's associated with the
+specified link_identifier.
 
 ### Parameters
 
@@ -17,29 +19,41 @@ mysql_query() sends a unique query (multiple queries are not supported) to the c
 
     An SQL query
 
-    The query string should not end with a semicolon. Data inside the query should be properly escaped.
+    The query string should not end with a semicolon. Data inside the query
+    should be properly escaped.
     
 *link_identifier*
 
-    The MySQL connection. If the link identifier is not specified, the last link opened by mysql_connect() is assumed. If no such link is found, it will try to create one as if mysql_connect() was called with no arguments. If no connection is found or established, an E_WARNING level error is generated.
+    The MySQL connection. If the link identifier is not specified, the last
+    link opened by mysql_connect() is assumed. If no such link is found,
+    it will try to create one as if mysql_connect() was called with no
+    arguments. If no connection is found or established,
+    an E_WARNING level error is generated.
 
 ### Return Values
 
-For SELECT, SHOW, DESCRIBE, EXPLAIN and other statements returning resultset, mysql_query() returns a resource on success, or FALSE on error.
+For SELECT, SHOW, DESCRIBE, EXPLAIN and other statements returning resultset,
+mysql_query() returns a resource on success, or FALSE on error.
 
-For other type of SQL statements, INSERT, UPDATE, DELETE, DROP, etc, mysql_query() returns TRUE on success or FALSE on error.
+For other type of SQL statements, INSERT, UPDATE, DELETE, DROP, etc,
+mysql_query() returns TRUE on success or FALSE on error.
 
-The returned result resource should be passed to mysql_fetch_array(), and other functions for dealing with result tables, to access the returned data.
+The returned result resource should be passed to mysql_fetch_array(), and
+other functions for dealing with result tables, to access the returned data.
 
-Use mysql_num_rows() to find out how many rows were returned for a SELECT statement or mysql_affected_rows() to find out how many rows were affected by a DELETE, INSERT, REPLACE, or UPDATE statement.
+Use mysql_num_rows() to find out how many rows were returned for a SELECT
+statement or mysql_affected_rows() to find out how many rows were affected
+by a DELETE, INSERT, REPLACE, or UPDATE statement.
 
-mysql_query() will also fail and return FALSE if the user does not have permission to access the table(s) referenced by the query.
+mysql_query() will also fail and return FALSE if the user does not have
+permission to access the table(s) referenced by the query.
 
 ### Examples
 
 Example #1 Invalid Query
 
-The following query is syntactically invalid, so mysql_query() fails and returns FALSE.
+The following query is syntactically invalid, so mysql_query() fails and
+returns FALSE.
 
 ```php
 <?php
@@ -73,7 +87,8 @@ $query = sprintf("SELECT firstname, lastname, address, age FROM friends
 $result = mysql_query($query);
 
 // Check result
-// This shows the actual query sent to MySQL, and the error. Useful for debugging.
+// This shows the actual query sent to MySQL, and the error.
+// Useful for debugging.
 if (!$result) {
     $message  = 'Invalid query: ' . mysql_error() . "\n";
     $message .= 'Whole query: ' . $query;
@@ -81,7 +96,8 @@ if (!$result) {
 }
 
 // Use result
-// Attempting to print $result won't allow access to information in the resource
+// Attempting to print $result won't allow access to
+// information in the resource
 // One of the mysql result functions must be used
 // See also mysql_result(), mysql_fetch_array(), mysql_fetch_row(), etc.
 while ($row = mysql_fetch_assoc($result)) {
