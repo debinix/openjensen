@@ -9,6 +9,85 @@
 -- Creation order is defined by FK constraints (but we load FK's
 -- at the end, and in this case the creation order is not important)
 
+
+--
+-- (A) Emilio tbl_user
+--
+
+CREATE TABLE tbl_user (
+    user_id int NOT NULL,
+    user_firstname varchar(255) NOT NULL,
+    user_lastname varchar(255) NOT NULL,
+    user_email varchar(255) NOT NULL,
+    user_phonenumber varchar(255) NOT NULL,
+    user_username varchar(255) NOT NULL,
+    user_password varchar(255) NOT NULL,
+    user_lastlogin timestamp NOT NULL,
+    usertype_id int NOT NULL,
+    user_program int NOT NULL,
+    CONSTRAINT e_tbl_user_pk PRIMARY KEY (user_id)
+)
+;
+
+
+--
+-- (B) Emilio tbl_program
+--
+
+CREATE TABLE tbl_program (
+  program_id int NOT NULL,
+  program_name varchar(255) NOT NULL,
+  program_startdate timestamp NOT NULL,
+  program_enddate timestamp NOT NULL,
+  CONSTRAINT e_tbl_program_pk PRIMARY KEY (program_id)
+)
+;
+
+
+--
+-- (C) Emilio tbl_usertype
+--
+
+CREATE TABLE tbl_usertype (
+  usertype_id int NOT NULL,
+  usertype_name varchar(255) NOT NULL,
+  usertype_rights int  NOT NULL,
+  CONSTRAINT e_tbl_usertype_pk PRIMARY KEY (usertype_id)
+)
+;
+
+
+--
+-- (D) Emilio tbl_grade
+--
+
+CREATE TABLE tbl_grade (
+  grade_id int NOT NULL,
+  grade_grade varchar(100) NOT NULL,
+  grade_comment varchar(255) NOT NULL,
+  user_id int NOT NULL,
+  course_id int NOT NULL,
+  CONSTRAINT e_tbl_grade_pk PRIMARY KEY (grade_id)
+)
+;
+
+
+--
+-- (E) Emilio tbl_course
+--
+
+
+CREATE TABLE tbl_course (
+  course_id int NOT NULL,
+  course_name varchar(255) NOT NULL,
+  course_startdate timestamp NOT NULL,
+  course_enddate timestamp NOT NULL,
+  program_id int NOT NULL,
+  CONSTRAINT e_tbl_course_pk PRIMARY KEY (course_id)
+)
+;
+
+
 --
 -- T_KONTAK (1)
 --
