@@ -1,0 +1,65 @@
+## pg_escape_literal
+
+
+pg_escape_literal — Escape a literal for insertion into a text field
+
+### Description
+
+```php
+string pg_escape_literal ([ resource $connection ], string $data )
+```
+
+pg_escape_literal() escapes a literal for querying the PostgreSQL database.
+It returns an escaped literal in the PostgreSQL format. pg_escape_literal()
+adds quotes before and after data. Users should not add quotes.
+Use of this function is recommended instead of pg_escape_string().
+If the type of the column is bytea, pg_escape_bytea() must be used instead.
+For escaping identifiers (e.g. table, field names),
+pg_escape_identifier() must be used.
+
+    Note:
+
+    This function has internal escape code and can also be used with
+    PostgreSQL 8.4 or less.
+
+### Parameters
+
+*connection*
+
+    PostgreSQL database connection resource. When connection is not present,
+    the default connection is used. The default connection is the last
+    connection made by pg_connect() or pg_pconnect().
+
+*data*
+
+    A string containing text to be escaped.
+
+### Return Values
+
+A string containing the escaped data.
+
+### Examples
+
+Example #1 pg_escape_literal() example
+
+```php
+<?php 
+  // Connect to the database
+  $dbconn = pg_connect('dbname=foo');
+  
+  // Read in a text file (containing apostrophes and backslashes)
+  $data = file_get_contents('letter.txt');
+  
+  // Escape the text data
+  $escaped = pg_escape_literal($data);
+  
+  // Insert it into the database. Note that no quotes around {$escaped}
+  pg_query("INSERT INTO correspondence (name, data)
+                   VALUES ('My letter', {$escaped})");
+?>
+```
+
+### References
+
+[PHP manual: pg_escape_literal](http://www.php.net/manual/en/function.pg-escape-literal.php)
+
