@@ -1,69 +1,63 @@
 ## OpenCobol System Development Setup
 
-### Directory Structure
 
-bekr@dell:~/openjensen (master)$ tree -L 2 -d
-.
-├── build
-│   ├── lib
-│   └── src
-├── doc
-├── html
-│   ├── backup
-│   └── tmp
-├── lib
-│   └── tmp
-├── copy
-├── sql
-├── src
-│   └── tmp
-└── tools
+Create the base for the <user>-project directory:
 
+```
+$ mkdir /home/<user>/openjensen
+```
 
-### Exports of environment variables
+### Exports of required environment variables
 
-Ensure that your bashrc have exports like so:
+Ensure that <user> ~/.bashrc have exports like so:
 
-bekr@dell:~/openjensen/src (master)$ env | grep LD_LIB
+```
 LD_LIBRARY_PATH=/usr/local/lib
-bekr@dell:~/openjensen/src (master)$ env | grep COB
-COB_LIBRARY_PATH=../lib
+COB_LIBRARY_PATH=/home/<user>/openjensen/lib
+```
+
+Confirm with:
+
+```
+$ env | grep LD_LIBRARY_PATH
+$ env | grep COB
+```
 
 1. The first is required for the pre-complier to find its library,
-(since it is istalled in /usr/local/lib, and not system
-default /usr/lib)
+(since this is a source-install which defaults to /usr/local/lib)
 
-2. The second is required for any callable subroutines we create
-and which we use CALL statements in our program. These are installed
-in a paralell directory to the source directory.(../lib) seen from
-the source directory when we build our source.
+2. The second is required for any sub-routines we create
+and which we use Cobol CALL statements in our program. These are
+installed in a paralell directory (../lib) to the source directory.
 
-Set environment path for Copy books. E.g. that include 'sqlca.cbl'
-for SQL pre-processor and other Cobol cpy-book code.
-Move Copy-files to its own directory.
+### Copybooks
 
-Set the bashrc file:
-The relative directory name were copybook are (e.g. 'copy')
+Set the environment path for Copy books. Example include is the 'sqlca.cbl'
+for the SQL pre-processor and other Cobol cpy-book code.
+Copy-files are located in its own paralell directory.
 
-export COBCPY=../copy (don't set this in the make file)
+Set in the .bashrc file:
 
-In the copy (book) directory their is symbolic link to sqlca.cbl
-from sqlca.cpy (OCESQL looks only for copybook with *.cbl).
-Poilicy is to use extension *.cpy for all copybooks.
+```
+export COBCPY=../copy
+```
+
+caveat: The OCESQL library expects copybooks to have  *.cbl as extension.
+Our policy is to use extension *.cpy for all copybooks. To solve this
+a symbolic link, points to *sqlca.cbl* from *sqlca.cpy*.
 
 
+### Run-time environment on production server
 
-### Run-time environment on server
+To avoid environment problems, all binaries are placed the same directory,
+i.e. the *.cgi and *.so files are in the /cgi-bin directory on server.
 
-To avoid path-problems, all binaries are in the same directory,
-i.e. all *.cgi and all *.so files are in the /cgi-bin directory.
+The OCESQL library, export the environment like so:
 
-For the OCESQL library, export the environment like so:
-
-    'LD_LIBRARY_PATH=/usr/local/bin
+```
+LD_LIBRARY_PATH=/usr/local/bin
+```
     
 OpenCobol is installed (by debian) in the system library directory
-(/usr/lib), thus nothing needs to be setup here.
-
-
+(/usr/lib), thus nothing needs to be setup here for run-time.
 
