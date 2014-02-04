@@ -120,3 +120,4 @@ This would allow anyone to log in without a valid password.
 
 [PHP manual: mysql_real_escape_string](http://www.php.net/manual/en/function.mysql-real-escape-string.php)
 
+Copyright © 2001-2014 The PHP Group

@@ -45,3 +45,5 @@ The above example will output:
 ### References
 
 [PHP manual: pg_num_rows](http://www.php.net/manual/en/function.pg-num-rows.php)
+
+Copyright © 2001-2014 The PHP Group

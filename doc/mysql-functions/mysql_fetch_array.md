@@ -118,3 +118,4 @@ mysql_free_result($result);
 
 [PHP manual: mysql_fetch_array](http://www.php.net/manual/en/function.mysql-fetch-array.php)
 
+Copyright © 2001-2014 The PHP Group

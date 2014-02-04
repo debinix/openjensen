@@ -63,3 +63,4 @@ if (!$db_selected) {
 
 [PHP manual: mysql_select_db](http://www.php.net/manual/en/function.mysql-select-db.php)
 
+Copyright © 2001-2014 The PHP Group

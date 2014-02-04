@@ -97,3 +97,5 @@ echo $arr[1] . " <- Row 3 E-mail\n";
 ### References
 
 [PHP manual: pg_fetch_array](http://www.php.net/manual/en/function.pg-fetch-array.php)
+
+Copyright © 2001-2014 The PHP Group

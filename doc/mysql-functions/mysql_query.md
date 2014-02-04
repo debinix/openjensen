@@ -116,3 +116,5 @@ mysql_free_result($result);
 ### References
 
 [PHP manual: mysql_query](http://www.php.net/manual/en/function.mysql-query.php)
+
+Copyright © 2001-2014 The PHP Group

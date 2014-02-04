@@ -74,3 +74,5 @@ while ($row = pg_fetch_assoc($result)) {
 ### References
 
 [PHP manual: pg_fetch_assoc](http://www.php.net/manual/en/function.pg-fetch-assoc.php)
+
+Copyright © 2001-2014 The PHP Group

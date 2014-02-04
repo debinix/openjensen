@@ -97,3 +97,5 @@ mysql_free_result($result);
 ### References
 
 [PHP manual: mysql_fetch_assoc](http://www.php.net/manual/en/function.mysql-fetch-assoc.php)
+
+Copyright © 2001-2014 The PHP Group

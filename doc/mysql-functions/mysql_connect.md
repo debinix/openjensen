@@ -159,5 +159,4 @@ mysql_close($link);
 
 [PHP manual: mysql_connect](http://www.php.net/manual/en/function.mysql-connect.php)
 
-
-
+Copyright © 2001-2014 The PHP Group

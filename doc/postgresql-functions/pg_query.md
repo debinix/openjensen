@@ -97,3 +97,4 @@ pg_query($conn, $query);
 
 [PHP manual: pg_query](http://www.php.net/manual/en/function.pg-query.php)
 
+Copyright © 2001-2014 The PHP Group

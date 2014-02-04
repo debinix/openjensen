@@ -80,3 +80,5 @@ $dbconn5 = pg_connect("host=localhost options='--client_encoding=UTF8'");
 ### References
 
 [PHP manual: pg_connect](http://www.php.net/manual/en/function.pg-connect.php)
+
+Copyright © 2001-2014 The PHP Group

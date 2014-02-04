@@ -63,3 +63,4 @@ Example #1 pg_escape_literal() example
 
 [PHP manual: pg_escape_literal](http://www.php.net/manual/en/function.pg-escape-literal.php)
 
+Copyright © 2001-2014 The PHP Group
