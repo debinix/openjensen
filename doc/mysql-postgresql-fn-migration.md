@@ -12,13 +12,16 @@ a high dependency due to the pre-processor and the embedded SQL COBOL statements
 Phase 1: Replace mysql specific database php API functions mysql_* with
 corresponding PostgreSQL php pg_* functions.
 
-Phase 2: Adjust database schema by just adding required front-ends columns.
+Phase 2: Adjust database schema by just *adding* required front-ends columns.
 
-Phase 3: Discuss which Scrum stories to support and which to put in backlog.
+Phase 3: Test the converted web application.
 
-Phase 4: Review database schema and decide on column/variable names.
+Phase 4: Discuss which Scrum stories to support and which to put in backlog.
 
-Phase 5: Gradually replace php API pg_* functions with a solution based
+Phase 5: Review database schema (i.e. merge tables) and decide on name
+for each column- and variable-name (the front-end/back-end API).
+
+Phase 6: Gradually replace php API pg_* functions with a solution based
 on Common Gateway Interface (CGI) and use of HTML POSTs to COBOL back-end.
 
 
