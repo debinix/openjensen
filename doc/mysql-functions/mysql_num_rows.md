@@ -9,13 +9,17 @@ mysql_num_rows — Get number of rows in result
 int mysql_num_rows ( resource $result )
 ```
 
-Retrieves the number of rows from a result set. This command is only valid for statements like SELECT or SHOW that return an actual result set. To retrieve the number of rows affected by a INSERT, UPDATE, REPLACE or DELETE query, use mysql_affected_rows().
+Retrieves the number of rows from a result set. This command is only
+valid for statements like SELECT or SHOW that return an actual result set.
+To retrieve the number of rows affected by a INSERT, UPDATE, REPLACE or
+DELETE query, use mysql_affected_rows().
 
 ### Parameters
 
 *result*
 
-    The result resource that is being evaluated. This result comes from a call to mysql_query().
+    The result resource that is being evaluated. This result comes from
+    a call to mysql_query().
 
 ### Return Values
 
@@ -43,11 +47,14 @@ echo "$num_rows Rows\n";
 
     Note:
 
-    If you use mysql_unbuffered_query(), mysql_num_rows() will not return the correct value until all the rows in the result set have been retrieved.
+    If you use mysql_unbuffered_query(), mysql_num_rows() will not
+    return the correct value until all the rows in the result set
+    have been retrieved.
 
     Note:
 
-    For backward compatibility, the following deprecated alias may be used: mysql_numrows()
+    For backward compatibility, the following deprecated alias may be
+    used: mysql_numrows()
 
 ### References
 
