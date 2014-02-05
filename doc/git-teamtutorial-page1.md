@@ -17,7 +17,7 @@ For a feature rich workflow albeit more complex, see nvie [4].
 
 To facilitate the description we have two team members. Alice, who code and is
 responsible for all releases. A second team developer is Bill. Their shared git
-server have the private IP address 192.168.0.100/24.
+server have the private IP address 192.168.0.100.
 
 They both work for an open source friendly company EXAMPLE with domain
 example.com. Alice have set up a project repository at Github with the
