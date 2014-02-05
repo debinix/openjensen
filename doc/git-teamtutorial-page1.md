@@ -115,8 +115,8 @@ Copy her public key to the depot server (not the private key!).
 
 Use ssh to access the depot sever at address 192.168.0.100:
 
-# ssh root@192.168.0.100
-root@192.168.0.100's password: *********
+    # ssh root@192.168.0.100
+    root@192.168.0.100's password: *********
 
 Once logged in at the server, append this key to git1 authorization_keys
 file in /home/git1/.ssh. Adding new users can be done with a shell script:
