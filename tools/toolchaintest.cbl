@@ -69,7 +69,8 @@
             
             *> LENGTH give us the declared size of the string
             IF FUNCTION LENGTH(ws-user-name) NOT = ws-num-of-spaces   
-                CALL 'bkjustdisplay' USING BY CONTENT ws-user-name
+                CALL 'toolchaindisplaytest' USING BY
+                                               CONTENT ws-user-name
             ELSE
                 DISPLAY 'Ooops..Enter your name with (1)'
                 DISPLAY 'Please enter a name first!'
