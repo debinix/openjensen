@@ -12,9 +12,9 @@ a high dependency due to the pre-processor and the embedded SQL COBOL statements
 Phase 1: Replace mysql specific database php API functions mysql_* with
 corresponding PostgreSQL php pg_* functions.
 
-Phase 2: Adjust database schema by just *adding* required front-ends columns.
+Phase 2: Adjust database schema by just *adding* required front-end tables.
 
-Phase 3: Test the converted web application.
+Phase 3: Test the converted [web application live](http://mc-butter.se/index.php)
 
 Phase 4: Discuss which Scrum stories to support and which to put in backlog.
 
