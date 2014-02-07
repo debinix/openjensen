@@ -5,7 +5,7 @@
 This is the repository for a project with the objective to create a web application
 based on COBOL, a relational database back-end and front-end based on php.
 
-The [web application]((http://mc-butter.se/index.php) can only be viewed
+The [web application](http://mc-butter.se/index.php) can only be viewed
 from school and from members IP addresses due to firewall settings.
 
 
