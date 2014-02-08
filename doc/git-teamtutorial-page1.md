@@ -8,7 +8,7 @@ a traditional version control system.
 
 One of the tutorial objectives is to show detailed steps to prepare the server
 (here called the depot because of its authoritative role) and publish the code
-on a public service like Github, Gitorius [2,3] et. al.
+on a public service like Github, Gitorious [2,3] et. al.
 
 A second objective is to introduce the Git Lite Workflow in team development.
 This serves as an introduction to gits powerful branch and merge features.
@@ -129,8 +129,8 @@ In this file add:
     #!/bin/sh
     test  !  -d  /home/$1/.ssh && mkdir  /home/$1/.ssh
     chmod  0700  /home/$1/.ssh
-    cat  /tmp/id_rsa.pub  >>  /home/$1/.ssh/authorization_keys
-    chmod  0600  /home/$1/.ssh/authorization_keys
+    cat  /tmp/id_rsa.pub  >>  /home/$1/.ssh/authorized_keys
+    chmod  0600  /home/$1/.ssh/authorized_keys
     chown  -R  $1:$1  /home/$1/.ssh
     rm  /tmp/id_rsa.pub
 
