@@ -34,11 +34,9 @@ if($function == "Login")
 			// $sql = "UPDATE tbl_user SET user_lastlogin = '".$date."' WHERE user_id = ".$row['user_id'];
 			// $result = mysql_query($sql);
 
-			$sql = "UPDATE tbl_user SET user_lastlogin = ".$date." WHERE user_id = ".$row[user_id];
+			$sql = "UPDATE tbl_user SET user_lastlogin = '".$date."' WHERE user_id = ".$row['user_id'];
 			$result = pg_query($sql);			
 			
-			
-			// why all these '''' ?
 			$_SESSION['username'] = $username;
 			$_SESSION['user_id'] = $row['user_id'];
 			$_SESSION['user_firstname'] = $row['user_firstname'];
