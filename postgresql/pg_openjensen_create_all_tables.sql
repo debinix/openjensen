@@ -16,12 +16,12 @@
 
 CREATE TABLE tbl_user (
     user_id int NOT NULL,
-    user_firstname varchar(255) NOT NULL,
-    user_lastname varchar(255) NOT NULL,
-    user_email varchar(255) NOT NULL,
-    user_phonenumber varchar(255) NOT NULL,
-    user_username varchar(255) NOT NULL,
-    user_password varchar(255) NOT NULL,
+    user_firstname char(40) NOT NULL,
+    user_lastname char(40) NOT NULL,
+    user_email char(40) NOT NULL,
+    user_phonenumber char(40) NOT NULL,
+    user_username char(40) NOT NULL,
+    user_password char(40) NOT NULL,
     user_lastlogin timestamp NOT NULL,
     usertype_id int NOT NULL,
     user_program int NOT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE tbl_user (
 
 CREATE TABLE tbl_program (
   program_id int NOT NULL,
-  program_name varchar(255) NOT NULL,
+  program_name char(40) NOT NULL,
   program_startdate timestamp NOT NULL,
   program_enddate timestamp NOT NULL,
   CONSTRAINT e_tbl_program_pk PRIMARY KEY (program_id)
@@ -50,7 +50,7 @@ CREATE TABLE tbl_program (
 
 CREATE TABLE tbl_usertype (
   usertype_id int NOT NULL,
-  usertype_name varchar(255) NOT NULL,
+  usertype_name char(40) NOT NULL,
   usertype_rights int  NOT NULL,
   CONSTRAINT e_tbl_usertype_pk PRIMARY KEY (usertype_id)
 )
@@ -63,8 +63,8 @@ CREATE TABLE tbl_usertype (
 
 CREATE TABLE tbl_grade (
   grade_id int NOT NULL,
-  grade_grade varchar(100) NOT NULL,
-  grade_comment varchar(255) NOT NULL,
+  grade_grade char(40) NOT NULL,
+  grade_comment char(40) NOT NULL,
   user_id int NOT NULL,
   course_id int NOT NULL,
   CONSTRAINT e_tbl_grade_pk PRIMARY KEY (grade_id)
@@ -79,7 +79,7 @@ CREATE TABLE tbl_grade (
 
 CREATE TABLE tbl_course (
   course_id int NOT NULL,
-  course_name varchar(255) NOT NULL,
+  course_name char(40) NOT NULL,
   course_startdate timestamp NOT NULL,
   course_enddate timestamp NOT NULL,
   program_id int NOT NULL,
