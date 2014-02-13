@@ -9,13 +9,43 @@
        IDENTIFICATION DIVISION.
        program-id. cgi-list-betygelev.
        *>**************************************************
+       ENVIRONMENT DIVISION.
+       input-output section.
+            
+       file-control.
+           SELECT fileout 
+              ASSIGN TO '../elevbetyg.txt'
+              ORGANIZATION IS LINE SEQUENTIAL.         
+       *>**************************************************
        DATA DIVISION.
+       file section.
+        
+       FD  fileout.
+       01  fd-fileout-post. 
+           03  fc-course-name             PIC X(40).
+           03  fc-sep-1                   PIC X.      
+           03  fc-course-start            PIC X(10).
+           03  fc-sep-2                   PIC X.           
+           03  fc-course-end              PIC X(10).
+           03  fc-sep-3                   PIC X.     
+           03  fc-grade                   PIC X(40).    
+           03  fc-sep-4                   PIC X.      
+           03  fc-grade-comment           PIC X(40).            
+           
+       *>--------------------------------------------------
        working-storage section.
        01   switches.
             03  is-db-connected-switch      PIC X   VALUE 'N'.
                 88  is-db-connected                 VALUE 'Y'.
             03  is-valid-init-switch        PIC X   VALUE 'N'.
-                88  is-valid-init                   VALUE 'Y'.            
+                88  is-valid-init                   VALUE 'Y'.
+            03  is-grade-done-switch        PIC X   VALUE 'N'.
+                88  is-grade-done                   VALUE 'Y'.
+                
+       01   tbl-grade                         VALUE ZERO.
+            03 grade OCCURS 25 TIMES.
+                05  wn-tbl-user-id              PIC  9(4).
+       01   wn-tbl-cnt                      PIC  9(2) VALUE ZERO.                   
                 
        *> used in calls to dynamic libraries
        01  wn-rtn-code             PIC  S99   VALUE ZERO.
@@ -76,13 +106,7 @@
        *> receiving variables for data passed from php
        01 wn-user_id                 PIC  9(4) VALUE ZERO.
        01 wn-program_id              PIC  9(4) VALUE ZERO.
-       
-       *> string manipulation variables
-       01 wc-raw-string              PIC  X(40) VALUE SPACE.
-       01 wn-field-length            PIC  9(2) VALUE ZERO.
-       01 wn-real-length             PIC  9(2) VALUE ZERO.
-       01 wn-tmp-length              PIC  9(2) VALUE ZERO.       
-       
+              
        *>**************************************************
        PROCEDURE DIVISION.
        *>**************************************************       
@@ -104,6 +128,7 @@
            PERFORM C0100-closedown
            
            GOBACK
+           
            .
            
        *>**************************************************          
@@ -136,7 +161,10 @@
                MOVE 'user_id' TO wc-post-name
                CALL 'get-post-value' USING wn-rtn-code
                                            wc-post-name wc-post-value
-               MOVE FUNCTION NUMVAL(wc-post-value) TO wn-user_id        
+               MOVE FUNCTION NUMVAL(wc-post-value) TO wn-user_id
+               
+               *> open outfile
+               OPEN OUTPUT fileout
   
            END-IF
 
@@ -175,6 +203,7 @@
        B0210-process-given-grades.
            
            MOVE wn-user_id TO wn-grade-user_id
+           MOVE ZERO TO wn-tbl-cnt
            
        *>  declare cursor
            EXEC SQL 
@@ -235,18 +264,30 @@
        *>  close cursor
            EXEC SQL 
                CLOSE cursgrade 
-           END-EXEC 
+           END-EXEC
            
-           .       
+           .
+                  
        *>**************************************************
        B0220-write-grade-row.            
            
-           *> display to STDOUT
-           DISPLAY
-             "<br><br>|" wn-grade-course_id "|" wc-course_name "|"
-             wc-course_startdate "|" wc-course_enddate "|"
-             wc-grade_grade "|" wc-grade_comment "|" 
-           END-DISPLAY
+           
+           MOVE wc-course_name TO fc-course-name
+           MOVE '|' TO fc-sep-1
+           MOVE wc-course_startdate TO fc-course-start
+           MOVE '|' TO fc-sep-2           
+           MOVE wc-course_enddate TO fc-course-end
+           MOVE '|' TO fc-sep-3           
+           MOVE wc-grade_grade TO fc-grade
+           MOVE '|' TO fc-sep-4           
+           MOVE wc-grade_comment TO fc-grade-comment       
+           
+           *> Rememeber which user-id have completed their grades
+           ADD 1 TO wn-tbl-cnt
+           MOVE wn-grade-course_id TO wn-tbl-user-id(wn-tbl-cnt)
+           
+           WRITE fd-fileout-post
+           
            .    
 
        *>**************************************************          
@@ -312,15 +353,38 @@
        *>**************************************************
        B0260-write-program-row.            
            
-           *> display to STDOUT
-           DISPLAY
-             "<br>|" wn-course_id "|" wc-course_name "|"
-             wc-course_startdate "|" wc-course_enddate "|"
-           END-DISPLAY
+
+           *> write non-completed courses (check user-id for completed)
+           MOVE 1 TO wn-tbl-cnt
+           PERFORM WITH TEST AFTER
+               VARYING wn-tbl-cnt FROM 1 BY 1
+               UNTIL wn-tbl-cnt >= 25 OR is-grade-done
+        
+               IF wn-tbl-user-id(wn-tbl-cnt) = wn-course_id
+                   SET is-grade-done TO TRUE
+               END-IF
+           END-PERFORM
+           
+           IF NOT is-grade-done
+           
+               MOVE wc-course_name TO fc-course-name
+               MOVE '|' TO fc-sep-1
+               MOVE wc-course_startdate TO fc-course-start
+               MOVE '|' TO fc-sep-2           
+               MOVE wc-course_enddate TO fc-course-end
+               MOVE '|' TO fc-sep-3           
+               MOVE SPACE TO fc-grade
+               MOVE '|' TO fc-sep-4           
+               MOVE SPACE TO fc-grade-comment
+               
+               WRITE fd-fileout-post
+           
+           END-IF
+           
+           *> reset found switch for next line
+           MOVE 'N' TO is-grade-done-switch
            
            .                
-
- 
 
        *>**************************************************
        B0300-disconnect. 
@@ -330,6 +394,9 @@
                DISCONNECT ALL
            END-EXEC
            
+           *> close outfile
+           CLOSE fileout
+           
            .
 
        *>**************************************************
@@ -338,7 +405,7 @@
            CALL 'wui-end-html' USING wn-rtn-code 
            
            .
-
+           
        *>**************************************************
        Z0100-error-routine.
                   
@@ -347,20 +414,5 @@
            
            .
            
-       *>**************************************************
-       Z0200-set-string-length.
-           
-           MOVE ZERO TO wn-real-length
-           MOVE ZERO TO wn-field-length
-           MOVE ZERO TO wn-tmp-length
-           
-           MOVE FUNCTION LENGTH(wc-raw-string) TO wn-field-length
-           
-           INSPECT wc-raw-string TALLYING wn-tmp-length
-                                 FOR TRAILING SPACES
-           COMPUTE wn-real-length = wn-field-length - wn-tmp-length                         
-       
-           .
-
        *>**************************************************    
        *> END PROGRAM  
