@@ -4,6 +4,10 @@ include("assets/_header.php");
 if($_SESSION['usertype_id'] == 1)
 {
   ?>
+  <!--<script language="Javascript" type="text/javascript">
+  onload="document.createElement('form').submit.call(document.getElementById('submitbetygform'))"> 
+  </script>
+  -->
   <h1>Betyg</h1>
   <?php
   $Error->show();
@@ -20,15 +24,19 @@ if($_SESSION['usertype_id'] == 1)
       </tr>
     </thead>
     <tbody>
-      <?php
-      //$course_result = mysql_query("SELECT * FROM tbl_course WHERE program_id = '".$_SESSION['user_program']."'");
-      //while($course_row = mysql_fetch_array($course_result))
- 
-      $course_result = pg_query("SELECT * FROM tbl_course WHERE program_id = '".$_SESSION['user_program']."'");
+
+      <!-- $course_result = pg_query("SELECT * FROM tbl_course WHERE program_id =  '".$_SESSION['user_program']."'"); -->
+      
+      <form id="submitbetygform" name="submitbetygform" method="POST" action="http://www.mc-butter.se/cgi-bin/listenv.cgi">
+        <input type="hidden" name="user_program" value="<?php echo $_SESSION['user_program'];?>" >
+        <input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id'];?>" >
+        <button type="submit">Skicka text till CGI</button>
+        <!--<input type="hidden" name="submit" id="submit" value="continue" >  -->        
+      </form>
+      
+      <?php     
       while($course_row = pg_fetch_array($course_result)) 
       {
-        // $grade_result = mysql_query("SELECT grade_grade, grade_comment FROM tbl_grade WHERE user_id = '".$_SESSION['user_id']."' AND course_id = '".$course_row['course_id']."' LIMIT 1");
-        // $grade_row = mysql_fetch_assoc($grade_result);
         
         $grade_result = pg_query("SELECT grade_grade, grade_comment FROM tbl_grade WHERE user_id = '".$_SESSION['user_id']."' AND course_id = '".$course_row['course_id']."' LIMIT 1");
         $grade_row = pg_fetch_assoc($grade_result);        
@@ -55,9 +63,6 @@ elseif ($_SESSION['usertype_id'] >= 2)
   <?php
   $Error->show();
   $Success->show();
-
-  // $course_result = mysql_query("SELECT * FROM tbl_course WHERE program_id = '".$_SESSION['user_program']."'");
-  // while($course_row = mysql_fetch_array($course_result))
   
   $course_result = pg_query("SELECT * FROM tbl_course WHERE program_id = '".$_SESSION['user_program']."'");
   while($course_row = pg_fetch_array($course_result))  
@@ -75,9 +80,6 @@ elseif ($_SESSION['usertype_id'] >= 2)
       </thead>
       <tbody>
         <?php
-        
-        // $user_result = mysql_query("SELECT user_firstname, user_lastname, user_id FROM tbl_user ORDER BY user_lastname, user_firstname");
-        // while ($user_row = mysql_fetch_array($user_result))
 
         $user_result = pg_query("SELECT user_firstname, user_lastname, user_id FROM tbl_user ORDER BY user_lastname, user_firstname");
         while ($user_row = pg_fetch_array($user_result))        
