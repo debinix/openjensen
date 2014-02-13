@@ -22,7 +22,7 @@ CREATE TABLE tbl_user (
     user_phonenumber char(40) NOT NULL,
     user_username char(40) NOT NULL,
     user_password char(40) NOT NULL,
-    user_lastlogin timestamp NOT NULL,
+    user_lastlogin DATE NOT NULL,
     usertype_id int NOT NULL,
     user_program int NOT NULL,
     CONSTRAINT e_tbl_user_pk PRIMARY KEY (user_id)
@@ -37,8 +37,8 @@ CREATE TABLE tbl_user (
 CREATE TABLE tbl_program (
   program_id int NOT NULL,
   program_name char(40) NOT NULL,
-  program_startdate timestamp NOT NULL,
-  program_enddate timestamp NOT NULL,
+  program_startdate DATE NOT NULL,
+  program_enddate DATE NOT NULL,
   CONSTRAINT e_tbl_program_pk PRIMARY KEY (program_id)
 )
 ;
@@ -80,8 +80,8 @@ CREATE TABLE tbl_grade (
 CREATE TABLE tbl_course (
   course_id int NOT NULL,
   course_name char(40) NOT NULL,
-  course_startdate timestamp NOT NULL,
-  course_enddate timestamp NOT NULL,
+  course_startdate DATE NOT NULL,
+  course_enddate DATE NOT NULL,
   program_id int NOT NULL,
   CONSTRAINT e_tbl_course_pk PRIMARY KEY (course_id)
 )

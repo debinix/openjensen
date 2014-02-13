@@ -37,15 +37,15 @@ ALTER TABLE T_NYHETER DROP CONSTRAINT fk_news_author ;
 
 INSERT INTO tbl_user (user_id, user_firstname, user_lastname, user_email, user_phonenumber, user_username, user_password, user_lastlogin, usertype_id, user_program)
 VALUES
-(1, 'Samuel', 'Johansson', 'test@test.se', '070123123', 'samuel', 'samuel', '2013-12-18 21:49:51', 2, 1),
-(2, 'Robert', 'Karlsson', 'test@test.se', '070321321', 'robert', 'robert', '2013-12-18 21:49:51', 2, 1),
-(3, 'Pelle', 'Pellsson', 'test@test.se', '070111111', 'ppp', 'ppp', '2013-12-19 23:22:55', 1, 2),
-(4, 'Bosse', 'Boss', 'test@test.se', '070111111', 'bbb', 'bbb', '1970-01-01 00:00:00', 1, 1),
-(5, 'Mia', 'Yoo', 'test@test.se', '070111111', 'mmm', 'mmm', '1970-01-01 00:00:00', 1, 1),
-(6, 'Frida', 'Falkman', 'test@test.se', '070111111', 'fff', 'fff', '1970-01-01 00:00:00', 1, 2),
-(7, 'Woody', 'Wood', 'test@test.se', '070111111', 'www', 'www', '1970-01-01 00:00:00', 1, 2),
-(8, 'Elin', 'Testsson', 'test@test.se', '070888888', 'eee', 'eee', '1970-01-01 00:00:00', 3, 2),
-(9, 'Jens', 'Jensen', 'test@test.se', '070999999', 'jjj', 'jjj', '1970-01-01 00:00:00', 4, 2)
+(1, 'Samuel', 'Johansson', 'test@test.se', '070123123', 'samuel', 'samuel', '2013-12-18', 2, 1),
+(2, 'Robert', 'Karlsson', 'test@test.se', '070321321', 'robert', 'robert', '2013-12-18', 2, 1),
+(3, 'Pelle', 'Pellsson', 'test@test.se', '070111111', 'ppp', 'ppp', '2013-12-19', 1, 2),
+(4, 'Bosse', 'Boss', 'test@test.se', '070111111', 'bbb', 'bbb', '1970-01-01', 1, 1),
+(5, 'Mia', 'Yoo', 'test@test.se', '070111111', 'mmm', 'mmm', '1970-01-01', 1, 1),
+(6, 'Frida', 'Falkman', 'test@test.se', '070111111', 'fff', 'fff', '1970-01-01', 1, 2),
+(7, 'Woody', 'Wood', 'test@test.se', '070111111', 'www', 'www', '1970-01-01', 1, 2),
+(8, 'Elin', 'Testsson', 'test@test.se', '070888888', 'eee', 'eee', '1970-01-01', 3, 2),
+(9, 'Jens', 'Jensen', 'test@test.se', '070999999', 'jjj', 'jjj', '1970-01-01', 4, 2)
 ;
 
 
@@ -55,8 +55,8 @@ VALUES
 
 INSERT INTO tbl_program (program_id, program_name, program_startdate, program_enddate)
 VALUES
-(1, 'Testprogram 1', '2013-11-26 00:00:00', '2014-08-27 00:00:00'),
-(2, 'Testprogram 2', '2014-01-01 00:00:00', '2014-12-18 00:00:00')
+(1, 'Testprogram 1', '2013-11-26', '2014-08-27'),
+(2, 'Testprogram 2', '2014-01-01', '2014-12-18')
 ;
 
 
@@ -93,11 +93,11 @@ VALUES
 
 INSERT INTO tbl_course (course_id, course_name, course_startdate, course_enddate, program_id)
 VALUES
-(1, 'Testkurs 1', '2013-11-26 00:00:00', '2014-03-26 00:00:00', 1),
-(2, 'Testkurs 2', '2014-03-30 00:00:00', '2014-06-26 00:00:00', 1),
-(3, 'Testkurs 3', '2014-01-01 00:00:00', '2014-06-30 00:00:00', 2),
-(4, 'Testkurs 4', '2014-07-01 00:00:00', '2014-12-31 00:00:00', 2),
-(5, 'Fristående kurs 1', '2013-11-01 00:00:00', '2013-11-30 00:00:00', 0)
+(1, 'Testkurs 1', '2013-11-26', '2014-03-26', 1),
+(2, 'Testkurs 2', '2014-03-30', '2014-06-26', 1),
+(3, 'Testkurs 3', '2014-01-01', '2014-06-30', 2),
+(4, 'Testkurs 4', '2014-07-01', '2014-12-31', 2),
+(5, 'Fristående kurs 1', '2013-11-01', '2013-11-30', 0)
 ;
 
 --
@@ -292,8 +292,12 @@ VALUES
 ;
 
 
+--
+-- 
+--
 
 
+    
 --
 -- Add all foreign key (FK) constraints
 --
