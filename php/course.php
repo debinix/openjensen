@@ -4,15 +4,12 @@ include("assets/_header.php");
 if($_SESSION['usertype_id'] == 1)
 {
   ?>
-  <!--<script language="Javascript" type="text/javascript">
-  onload="document.createElement('form').submit.call(document.getElementById('submitbetygform'))"> 
-  </script>
-  -->
   <h1>Betyg</h1>
   <?php
   $Error->show();
   $Success->show();
-  ?>
+  $betyg_elev_file = 'betyg-elev.txt';
+  ?>    
   <table class="table table-hover">
     <thead>
       <tr>
@@ -24,24 +21,18 @@ if($_SESSION['usertype_id'] == 1)
       </tr>
     </thead>
     <tbody>
-
-      <!-- $course_result = pg_query("SELECT * FROM tbl_course WHERE program_id =  '".$_SESSION['user_program']."'"); -->
       
-      <form id="submitbetygform" name="submitbetygform" method="POST" action="http://www.mc-butter.se/cgi-bin/listenv.cgi">
-        <input type="hidden" name="user_program" value="<?php echo $_SESSION['user_program'];?>" >
-        <input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id'];?>" >
-        <button type="submit">Skicka text till CGI</button>
-        <!--<input type="hidden" name="submit" id="submit" value="continue" >  -->        
-      </form>
-      
-      <?php     
-      while($course_row = pg_fetch_array($course_result)) 
+      <?php
+      $course_row = file($betyg_elev_file);
+      // loop through the array
+      for ($i = 0; $i < count($course_row); $i++)
       {
-        
-        $grade_result = pg_query("SELECT grade_grade, grade_comment FROM tbl_grade WHERE user_id = '".$_SESSION['user_id']."' AND course_id = '".$course_row['course_id']."' LIMIT 1");
-        $grade_row = pg_fetch_assoc($grade_result);        
-        
+        // separate each field
+        $tmp = explode(',', $course_row[i]);
+        // assign each field into a named array key
+        $course_row[i] = array('course_name' => rtrim($tmp[0]), 'course_startdate' => $tmp[1], 'course_enddate' => $tmp[2], 'grade_grade' => rtrim($tmp[3])), 'grade_comment' => rtrim($tmp[4]));
         ?>
+      
         <tr>
           <td><?php echo $course_row['course_name']; ?></td>
           <td><?php echo $course_row['course_startdate']; ?></td>
@@ -49,9 +40,10 @@ if($_SESSION['usertype_id'] == 1)
           <td><?php if($grade_row['grade_grade'] == "") { echo "Ej satt"; } else { echo $grade_row['grade_grade']; } ?></td>
           <td><?php echo $grade_row['grade_comment']; ?></td>
         </tr>
-        <?php
+      <?php
       }
       ?>
+      
     </tbody>
   </table>
   <?php

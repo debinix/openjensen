@@ -4,7 +4,7 @@
 pg_connect("host=localhost dbname=openjensen user=jensen options='--client_encoding=UTF8'") or die('Could not connect: ' . pg_last_error());
 
 // mysql_query("SET NAMES utf8");
-pg_query("SET NAMES UTF8");
+// pg_query("SET NAMES UTF8");
 
 // mysql_query("SET CHARACTER SET utf8");
 

@@ -14,7 +14,7 @@
             
        file-control.
            SELECT fileout 
-              ASSIGN TO '../elevbetyg.txt'
+              ASSIGN TO '../betyg-elev.txt'
               ORGANIZATION IS LINE SEQUENTIAL.         
        *>**************************************************
        DATA DIVISION.
@@ -273,13 +273,13 @@
            
            
            MOVE wc-course_name TO fc-course-name
-           MOVE '|' TO fc-sep-1
+           MOVE ',' TO fc-sep-1
            MOVE wc-course_startdate TO fc-course-start
-           MOVE '|' TO fc-sep-2           
+           MOVE ',' TO fc-sep-2           
            MOVE wc-course_enddate TO fc-course-end
-           MOVE '|' TO fc-sep-3           
+           MOVE ',' TO fc-sep-3           
            MOVE wc-grade_grade TO fc-grade
-           MOVE '|' TO fc-sep-4           
+           MOVE ',' TO fc-sep-4           
            MOVE wc-grade_comment TO fc-grade-comment       
            
            *> Rememeber which user-id have completed their grades
@@ -353,8 +353,9 @@
        *>**************************************************
        B0260-write-program-row.            
            
-
-           *> write non-completed courses (check user-id for completed)
+           *> write non-completed courses
+           
+           *> check user-id for completed courses
            MOVE 1 TO wn-tbl-cnt
            PERFORM WITH TEST AFTER
                VARYING wn-tbl-cnt FROM 1 BY 1
@@ -365,16 +366,17 @@
                END-IF
            END-PERFORM
            
+           *> move SPACE into the grade fields
            IF NOT is-grade-done
            
                MOVE wc-course_name TO fc-course-name
-               MOVE '|' TO fc-sep-1
+               MOVE ',' TO fc-sep-1
                MOVE wc-course_startdate TO fc-course-start
-               MOVE '|' TO fc-sep-2           
+               MOVE ',' TO fc-sep-2           
                MOVE wc-course_enddate TO fc-course-end
-               MOVE '|' TO fc-sep-3           
+               MOVE ',' TO fc-sep-3           
                MOVE SPACE TO fc-grade
-               MOVE '|' TO fc-sep-4           
+               MOVE ',' TO fc-sep-4           
                MOVE SPACE TO fc-grade-comment
                
                WRITE fd-fileout-post
