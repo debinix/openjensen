@@ -43,6 +43,10 @@ In that case, these can be un-staged with:
 
     $ git reset HEAD <file>
     
+Since *git add* recurse down in sub-directories, changing to the sub-
+directory where the source files are will effectively limit which
+are included in the *lazy* way of adding files.
+    
 Finally commit the files to git *index* (the stage) with a comment:
 
     $ git commit -m 'Initial version'
@@ -64,7 +68,7 @@ Switch to the integration branch *next* with:
     
 Merge in the changes in branch *git-tutorial* with:
 
-    git mer git-tutorial
+    $ git mer git-tutorial
     
 An editor will pop-up and ask for a merge comment.
 Save and exit.
@@ -74,7 +78,7 @@ Save and exit.
 
 Update the remote depot/next with our updates with:
 
-    git push
+    $ git push
     
 If push fails a local file needs to be edited. Git places markers
 to guide you which text lines needs to changed.
@@ -104,17 +108,17 @@ commit history viewer) or *git vhi* to show full history:
 or to limit to last 5 commits:
 
     $ git vhi -n5
-    $ git vhi -n 5    
 
 After the integration of the topic branch DO NOT switch back to the
 old branch, dispose it an create a new branch off the current point
 in the commit history to avoid a very confusing history.
 
 Thus first dispose the old branch (now merged), and with the second
-command create a new fresh start. This may also help not confuse some
-graphical editor file caches.
+command create a new fresh start. This may also prevent to confuse any
+graphical editors due to their file caches. Open files in the left pane
+(places) in Komodo Edit and don't use *File Open*. Use file refresh.
 
-    $ git branch -d git-tutorial
+    $ git dbr git-tutorial
     $ git nbr git-tutorial-part-2
 
 Happy coding.
