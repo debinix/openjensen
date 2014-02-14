@@ -106,6 +106,9 @@
        *> receiving variables for data passed from php
        01 wn-user_id                 PIC  9(4) VALUE ZERO.
        01 wn-program_id              PIC  9(4) VALUE ZERO.
+       
+       *> constant to signal to php - no value
+       01 WC-NO-SQLVALUE-TO-PHP      PIC X(1)  VALUE '-'.   
               
        *>**************************************************
        PROCEDURE DIVISION.
@@ -366,7 +369,7 @@
                END-IF
            END-PERFORM
            
-           *> move SPACE into the grade fields
+           *> move constant into the grade fields
            IF NOT is-grade-done
            
                MOVE wc-course_name TO fc-course-name
@@ -375,9 +378,9 @@
                MOVE ',' TO fc-sep-2           
                MOVE wc-course_enddate TO fc-course-end
                MOVE ',' TO fc-sep-3           
-               MOVE SPACE TO fc-grade
+               MOVE WC-NO-SQLVALUE-TO-PHP TO fc-grade
                MOVE ',' TO fc-sep-4           
-               MOVE SPACE TO fc-grade-comment
+               MOVE WC-NO-SQLVALUE-TO-PHP TO fc-grade-comment
                
                WRITE fd-fileout-post
            
