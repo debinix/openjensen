@@ -24,21 +24,22 @@ if($_SESSION['usertype_id'] == 1)
       
       <?php
       $course_row = file($betyg_elev_file);
+           
       // loop through the array
       for ($i = 0; $i < count($course_row); $i++)
       {
         // separate each field
-        $tmp = explode(',', $course_row[i]);
+        $tmp = preg_split("/\s*,\s*/", trim($course_row[$i]), -1, PREG_SPLIT_NO_EMPTY);
         // assign each field into a named array key
-        $course_row[i] = array('course_name' => rtrim($tmp[0]), 'course_startdate' => $tmp[1], 'course_enddate' => $tmp[2], 'grade_grade' => rtrim($tmp[3])), 'grade_comment' => rtrim($tmp[4]));
+        $course_row[$i] = array('course_name' => $tmp[0], 'course_startdate' => $tmp[1], 'course_enddate' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_comment' => $tmp[4]);
         ?>
       
         <tr>
-          <td><?php echo $course_row['course_name']; ?></td>
-          <td><?php echo $course_row['course_startdate']; ?></td>
-          <td><?php echo $course_row['course_enddate']; ?></td>
-          <td><?php if($grade_row['grade_grade'] == "") { echo "Ej satt"; } else { echo $grade_row['grade_grade']; } ?></td>
-          <td><?php echo $grade_row['grade_comment']; ?></td>
+          <td><?php echo $course_row[$i]['course_name']; ?></td>
+          <td><?php echo $course_row[$i]['course_startdate']; ?></td>
+          <td><?php echo $course_row[$i]['course_enddate']; ?></td>
+          <td><?php if($course_row[$i]['grade_grade'] == '-') { echo "Ej satt"; } else { echo $course_row[$i]['grade_grade']; } ?></td>
+          <td><?php echo $course_row[$i]['grade_comment']; ?></td>
         </tr>
       <?php
       }
