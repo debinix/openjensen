@@ -29,7 +29,7 @@ if($function == "Login")
 			$result = pg_query("SELECT * FROM tbl_user WHERE user_username = $username LIMIT 1");
 			$row = pg_fetch_assoc($result);			
 			
-			$date = date('Y-m-d H:i:s');
+			$date = date('Y-m-d');
 			
 			// $sql = "UPDATE tbl_user SET user_lastlogin = '".$date."' WHERE user_id = ".$row['user_id'];
 			// $result = mysql_query($sql);
