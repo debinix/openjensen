@@ -96,15 +96,26 @@ Save the updated file. Prepare as usual:
     
     $ git push
 
-This time, the depot/next push will be successful. Use gitk (graphic
-commit history viewer) or git vhi to show recent history:
+This time, the *depot/next* push will be successful. Use gitk (graphic
+commit history viewer) or *git vhi* to show full history:
 
     $ git vhi
+    
+or to limit to last 5 commits:
 
-If more work needs to be done, switch back to the previous branch
-and continue to work. 
+    $ git vhi -n5
+    $ git vhi -n 5    
 
-    $git sw2 git-tutorial
+After the integration of the topic branch DO NOT switch back to the
+old branch, dispose it an create a new branch off the current point
+in the commit history to avoid a very confusing history.
+
+Thus first dispose the old branch (now merged), and with the second
+command create a new fresh start. This may also help not confuse some
+graphical editor file caches.
+
+    $ git branch -d git-tutorial
+    $ git nbr git-tutorial-part-2
 
 Happy coding.
     
