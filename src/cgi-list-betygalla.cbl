@@ -311,6 +311,7 @@
               ON c.program_id = u.user_program
               AND   u.usertype_id = :wn-user-typeid
               AND   u.user_program = :wn-course-program_id
+              ORDER BY c.course_name, u.user_lastname
            END-EXEC           
              
            *> never, never use a dash in cursor names!

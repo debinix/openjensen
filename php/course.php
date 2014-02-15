@@ -24,6 +24,14 @@ if($_SESSION['usertype_id'] == 1)
     <tbody>
       
       <?php
+      
+      //
+      // POST data with: name="user_id" (i.e. $_SESSION['user_id']) 
+      //                 and name="program_id" (i.e. $_SESSION['user_program'])
+      // to url: http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi
+      // wait until file is written at server before continue to read it.
+      //
+      
       $course_row = file($betyg_elev_file);
            
       // loop through the array
@@ -57,6 +65,16 @@ elseif ($_SESSION['usertype_id'] >= 2)
   <?php
   $Error->show();
   $Success->show();
+  $betyg_all_file = 'betyg-all.txt';
+  
+  //
+  // POST data with: name="program_id" (i.e. $_SESSION['user_program'])
+  // to url: http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi
+  // wait until file is written at server before continue to read it.
+  //  
+  
+  $course_row = file($betyg_all_file);
+  
   
   $course_result = pg_query("SELECT * FROM tbl_course WHERE program_id = '".$_SESSION['user_program']."'");
   while($course_row = pg_fetch_array($course_result))  
@@ -88,7 +106,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
             $grade_row = pg_fetch_assoc($grade_result);            
             
             ?>
-            <td><?php if($grade_row['grade_grade'] == "") { echo "Ej satt"; } else { echo $grade_row['grade_grade']; } ?></td>
+            <td><?php if($grade_row['grade_grade'] == "-") { echo "Ej satt"; } else { echo $grade_row['grade_grade']; } ?></td>
             <td><?php if($grade_row['grade_grade'] == "") { ?><a href="course.add.php?user_id=<?php echo $user_row['user_id']; ?>&course_id=<?php echo $course_row['course_id']; ?>"><span class="label label-primary">Sätt betyg</span></a><?php } else { ?><a href="course.edit.php?id=<?php echo $grade_row['grade_id']; ?>"><span class="label label-primary">Ändra betyget</span></a><?php } ?></td>
           </tr>
           <?php
