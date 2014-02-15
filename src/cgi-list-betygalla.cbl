@@ -307,7 +307,6 @@
               ON c.program_id = u.user_program
               AND   u.usertype_id = :wn-user-typeid
               AND   u.user_program = :wn-course-program_id
-              ORDER BY c.course_name, u.user_lastname, u.user_firstname
            END-EXEC           
              
            *> never, never use a dash in cursor names!
@@ -384,15 +383,15 @@
            
               PERFORM UNTIL is-eof-input OR value-is-found
               
-                 DISPLAY '<br> Record id: ' fc-tmp-user-id
+                 DISPLAY '<br> Record user id: ' fc-tmp-user-id
                  DISPLAY '<br> Record course: ' fc-tmp-course-id
-                 DISPLAY '<br> Record program: ' fc-tmp-program-id                 
+                 DISPLAY '<br><br> Record program: ' fc-tmp-program-id                 
               
                  IF ( fc-tmp-user-id = wn-user_id AND
                       fc-tmp-course-id = wn-course_id AND
                       fc-tmp-program-id = wn-user-program )
                      
-                    DISPLAY '<br> One match: ' wn-user_id
+                    DISPLAY '<br> One match: ' wc-grade_grade
                  
                     MOVE fc-tmp-user-grade TO wc-grade_grade 
                      
@@ -429,10 +428,7 @@
            
            *> reset found switch for next time
            MOVE 'N' TO value-is-found-switch
-           
-           *> clear
-           MOVE SPACE TO tbl_grade-grade_grade
-           
+                      
            .                
 
        *>**************************************************
