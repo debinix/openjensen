@@ -14,7 +14,13 @@
        file-control.
            SELECT fileout 
               ASSIGN TO '../betyg-all.txt'
-              ORGANIZATION IS LINE SEQUENTIAL.         
+              ORGANIZATION IS LINE SEQUENTIAL.
+           
+           SELECT tmpfileout 
+              ASSIGN TO '/tmp/gradetmp.dat'
+              ORGANIZATION IS LINE SEQUENTIAL.  
+              
+              
        *>**************************************************
        DATA DIVISION.
        file section.
@@ -27,7 +33,17 @@
            03  fc-sep-2                   PIC X.           
            03  fc-user-lastname           PIC X(40).
            03  fc-sep-3                   PIC X.     
-           03  fc-grade                   PIC X(40).           
+           03  fc-grade                   PIC X(40).
+           
+       FD  tmpfileout.    
+       01  fd-tmpfileout-post. 
+           03  fc-tmp-user-id             PIC 9(4).
+           03  FILLER                     PIC X VALUE SPACE.      
+           03  fc-tmp-user-grade          PIC X(40).
+           03  FILLER                     PIC X VALUE SPACE.          
+           03  fc-tmp-course-id           PIC 9(4).
+           03  FILLER                     PIC X VALUE SPACE. 
+           03  fc-tmp-program-id          PIC 9(4).           
            
        *>--------------------------------------------------
        working-storage section.
@@ -119,7 +135,8 @@
            
            IF is-valid-init
                 PERFORM B0100-connect
-                IF is-db-connected              
+                IF is-db-connected
+                    PERFORM B0200-create-students-gradefile
                     PERFORM B0250-write-all-courses-in-pgrm
                     PERFORM B0300-disconnect
                 END-IF
@@ -156,6 +173,7 @@
                
                *> open outfile
                OPEN OUTPUT fileout
+               OPEN OUTPUT tmpfileout
   
            END-IF
 
@@ -181,6 +199,90 @@
            END-IF  
 
            .       
+       
+       *>**************************************************          
+       B0200-create-students-gradefile.       
+           
+           *> 1 is 'students'
+           MOVE 1 TO wn-user-typeid
+           
+           *>  get all students with a grade        
+           EXEC SQL  
+                DECLARE cursgrade CURSOR FOR
+                SELECT g.grade_grade, g.course_id,
+                       u.user_id, u.user_program
+                FROM tbl_user u
+                LEFT JOIN tbl_grade g
+                ON u.user_id = g.user_id
+                JOIN tbl_course c
+                ON g.course_id = c.course_id 
+                AND u.usertype_id = :wn-user-typeid
+                ORDER BY u.user_id, g.course_id
+           END-EXEC
+           
+           *> never, never use a dash in cursor names!
+           EXEC SQL
+               OPEN cursgrade
+           END-EXEC
+       
+       *>  fetch first row       
+           EXEC SQL 
+               FETCH cursgrade INTO :tbl_grade-grade_grade,
+                                    :tbl_grade-course_id,
+                                    :tbl_user-user_id,
+                                    :tbl_user-user_program
+           END-EXEC
+       
+           PERFORM UNTIL SQLCODE NOT = ZERO
+           
+              MOVE tbl_grade-grade_grade TO wc-grade_grade
+              MOVE tbl_grade-course_id TO wn-grade-course_id
+              MOVE tbl_user-user_id TO wn-user_id
+              MOVE tbl_user-user_program TO wn-user-program
+              
+              PERFORM B0210-write-grade-to-file
+
+              INITIALIZE tbl_grade-rec-vars
+              INITIALIZE tbl_user-rec-vars
+
+              *> fetch next row  
+               EXEC SQL 
+               FETCH cursgrade INTO :tbl_grade-grade_grade,
+                                    :tbl_grade-course_id,
+                                    :tbl_user-user_id,
+                                    :tbl_user-user_program
+               END-EXEC
+              
+           END-PERFORM       
+       
+           *> end of data
+           IF  SQLSTATE NOT = '02000'
+                PERFORM Z0100-error-routine
+           END-IF              
+             
+       *>  close cursor
+           EXEC SQL 
+               CLOSE cursgrade 
+           END-EXEC
+           
+           *> close temp file
+           CLOSE tmpfileout           
+            
+           .
+       
+       *>**************************************************          
+       B0210-write-grade-to-file.       
+       
+           *> Write user grade information to temp file
+           
+           MOVE wc-grade_grade TO fc-tmp-user-grade
+           MOVE wn-grade-course_id TO fc-tmp-course-id
+           MOVE wn-user_id TO fc-tmp-user-id
+           MOVE wn-user-program TO fc-tmp-program-id
+
+           WRITE fd-tmpfileout-post
+
+           .
        
        *>**************************************************          
        B0250-write-all-courses-in-pgrm.
@@ -228,7 +330,7 @@
               MOVE tbl_course-course_id TO wn-course_id
               MOVE tbl_user-user_program TO wn-user-program
               
-              PERFORM B0260-write-course-row
+              *> PERFORM B0260-write-course-row
 
               INITIALIZE tbl_user-rec-vars
               INITIALIZE tbl_course-rec-vars
@@ -328,6 +430,7 @@
            
            *> close outfile
            CLOSE fileout
+           CLOSE tmpfileout
            
            .
 

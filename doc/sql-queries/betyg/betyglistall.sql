@@ -93,3 +93,8 @@ join tbl_course c
 on g.course_id = c.course_id 
 and (u.usertype_id = 1 and u.user_id = 4 and c.course_id = 3)
 ;
+
+select count(*)
+from tbl_user
+where usertype_id = 1
+;
