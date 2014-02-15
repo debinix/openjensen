@@ -9,7 +9,8 @@ if($_SESSION['usertype_id'] == 1)
   $Error->show();
   $Success->show();
   $betyg_elev_file = 'betyg-elev.txt';
-  ?>    
+  ?>
+    
   <table class="table table-hover">
     <thead>
       <tr>
@@ -82,8 +83,6 @@ elseif ($_SESSION['usertype_id'] >= 2)
             <td><?php echo $user_row['user_firstname']; ?></td>
             <td><?php echo $user_row['user_lastname']; ?></td>
             <?php
-            // $grade_result = mysql_query("SELECT grade_grade, grade_id FROM tbl_grade WHERE user_id = '".$user_row['user_id']."' AND course_id = '".$course_row['course_id']."' LIMIT 1");
-            // $grade_row = mysql_fetch_assoc($grade_result);
             
             $grade_result = pg_query("SELECT grade_grade, grade_id FROM tbl_grade WHERE user_id = '".$user_row['user_id']."' AND course_id = '".$course_row['course_id']."' LIMIT 1");
             $grade_row = pg_fetch_assoc($grade_result);            

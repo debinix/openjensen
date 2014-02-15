@@ -66,14 +66,16 @@
        01  tbl_user-rec-vars.       
            05  tbl_user-user_id          PIC  9(4).
            05  tbl_user-user_firstname   PIC  X(40).
-           05  tbl_user-user_lastname    PIC  X(40).           
+           05  tbl_user-user_lastname    PIC  X(40).
+           05  tbl_user-usertype_id      PIC  9(4).            
            05  tbl_user-user_program     PIC  9(4).           
 
        *> table data
        01  wr-rec-vars.
            05  wn-user_id               PIC  9(4)  VALUE ZERO.          
            05  wc-user_firstname        PIC  X(40) VALUE SPACE.
-           05  wc-user_lastname         PIC  X(40) VALUE SPACE.           
+           05  wc-user_lastname         PIC  X(40) VALUE SPACE.
+           05  wn-user-typeid           PIC  9(4)  VALUE ZERO.                
            05  wn-user-program          PIC  9(4)  VALUE ZERO.         
        
        *>*******************************************************
@@ -125,7 +127,10 @@
            IF is-valid-init
                 PERFORM B0100-connect
                 IF is-db-connected
-                    PERFORM B0200-list-all-betyg
+                
+                    DISPLAY '<br> We are connected - continue'
+                
+                    *> PERFORM B0200-list-all-betyg
                     PERFORM B0300-disconnect
                 END-IF
            END-IF
@@ -144,12 +149,16 @@
            *>  start html doc
            CALL 'wui-start-html' USING wc-pagetitle
            
+           DISPLAY '<br> Inside init'
+           
            *> decompose and save current post string
            CALL 'write-post-string' USING wn-rtn-code
            
            IF wn-rtn-code = ZERO
            
                SET is-valid-init TO TRUE
+               
+               DISPLAY '<br> Getting POST data'
                
                *>  get program_id          
                MOVE ZERO TO wn-rtn-code
@@ -160,7 +169,7 @@
                MOVE FUNCTION NUMVAL(wc-post-value) TO wn-program_id  
                
                *> open outfile
-               OPEN OUTPUT fileout
+               *> OPEN OUTPUT fileout
   
            END-IF
 
@@ -190,8 +199,8 @@
        *>**************************************************          
        B0200-list-all-betyg.
 
-           PERFORM B0210-process-given-grades
-           *> PERFORM B0250-process-all-programs
+           *> PERFORM B0210-process-given-grades
+           PERFORM B0250-fetch-all-courses-in-pgrm
        
            .
 
@@ -280,43 +289,71 @@
            .    
 
        *>**************************************************          
-       B0250-process-all-programs.
+       B0250-fetch-all-courses-in-pgrm.
            
-           MOVE wn-program_id TO wn-course-program_id
+           DISPLAY '<br> Received program id: ' wn-program_id
            
-       *>  declare cursor
-           EXEC SQL 
-               DECLARE cursprog CURSOR FOR
-               SELECT course_id, course_name, course_startdate,
-                      course_enddate
-               FROM tbl_course
-               WHERE program_id = :wn-course-program_id
-           END-EXEC
+           *> 1 is 'students'
+           MOVE 1 TO wn-user-typeid
+           MOVE wn-program_id TO wn-course-program_id           
            
+       *>  get all courses for all users regardless if a grade is given
+       
+       *>  declare cursor          
+           EXEC SQL            
+              DECLARE cursall CURSOR FOR           
+              SELECT c.course_name, u.user_firstname, u.user_lastname,
+                     u.user_id, c.course_id, u.user_program
+              FROM tbl_user u
+              JOIN tbl_course c
+              ON c.program_id = u.user_program
+              AND   u.usertype_id = :wn-user-typeid
+              AND   u.user_program = :wn-course-program_id
+              ORDER BY c.course_name, u.user_lastname, u.user_firstname
+           END-EXEC           
+             
            *> never, never use a dash in cursor names!
            EXEC SQL
-               OPEN cursprog
+               OPEN cursall
            END-EXEC
        
        *>  fetch first row       
            EXEC SQL 
-               FETCH cursprog INTO :tbl_course-course_id,
-                                   :tbl_course-course_name,
+               FETCH cursall INTO :tbl_course-course_name,
+                                  :tbl_user-user_firstname,
+                                  :tbl_user-user_lastname,                       
+                                  :tbl_user-user_id,
+                                  :tbl_course-course_id,
+                                  :tbl_user-user_program
            END-EXEC
+                 
+           DISPLAY '<br> SQLCODE: ' SQLCODE
+           DISPLAY '<br> SQLSTATE: ' SQLSTATE           
+                 
                       
            PERFORM UNTIL SQLCODE NOT = ZERO
            
-              MOVE  tbl_course-course_id TO wn-course_id              
-              MOVE  tbl_course-course_name TO wc-course_name
+              MOVE tbl_course-course_name TO wc-course_name
+              MOVE tbl_user-user_firstname TO wc-user_firstname
+              MOVE tbl_user-user_lastname TO wc-user_lastname              
+              MOVE tbl_user-user_id TO wn-user_id
+              MOVE tbl_course-course_id TO wn-course_id
+              MOVE tbl_user-user_program TO wn-user-program
               
-              PERFORM B0260-write-program-row
+              PERFORM B0260-write-course-row
 
+              INITIALIZE tbl_user-rec-vars
               INITIALIZE tbl_course-rec-vars
+              
            
               *> fetch next row  
                EXEC SQL 
-                    FETCH cursprog INTO :tbl_course-course_id,
-                                        :tbl_course-course_name,
+               FETCH cursall INTO :tbl_course-course_name,
+                                  :tbl_user-user_firstname,
+                                  :tbl_user-user_lastname,                       
+                                  :tbl_user-user_id,
+                                  :tbl_course-course_id,
+                                  :tbl_user-user_program
                END-EXEC
               
            END-PERFORM
@@ -328,42 +365,51 @@
              
        *>  close cursor
            EXEC SQL 
-               CLOSE cursprog 
+               CLOSE cursall 
            END-EXEC 
            
            .
            
        *>**************************************************
-       B0260-write-program-row.            
+       B0260-write-course-row.            
            
-           *> write non-completed courses
+
+           *> STDOUT
+              DISPLAY '<br> ' wc-course_name
+              DISPLAY '<br> ' wc-user_firstname
+              DISPLAY '<br> ' wc-user_lastname              
+              DISPLAY '<br> ' wn-user_id
+              DISPLAY '<br> ' wn-course_id
+              DISPLAY '<br> ' wn-user-program           
            
-           *> check user-id for completed courses
-           MOVE 1 TO wn-tbl-cnt
-           PERFORM WITH TEST AFTER
-               VARYING wn-tbl-cnt FROM 1 BY 1
-               UNTIL wn-tbl-cnt >= 25 OR is-grade-done
+           
+           
+
+           *> MOVE 1 TO wn-tbl-cnt
+           *> PERFORM WITH TEST AFTER
+           *>     VARYING wn-tbl-cnt FROM 1 BY 1
+           *>    UNTIL wn-tbl-cnt >= 25 OR is-grade-done
         
-               IF wn-tbl-user-id(wn-tbl-cnt) = wn-course_id
-                   SET is-grade-done TO TRUE
-               END-IF
-           END-PERFORM
+           *>    IF wn-tbl-user-id(wn-tbl-cnt) = wn-course_id
+           *>         SET is-grade-done TO TRUE
+           *>     END-IF
+           *> END-PERFORM
            
            *> move constant into the grade fields
-           IF NOT is-grade-done
+           *> IF NOT is-grade-done
            
-               MOVE wc-course_name TO fc-course-name
-               MOVE ',' TO fc-sep-1
-               MOVE ',' TO fc-sep-2           
-               MOVE ',' TO fc-sep-3           
-               MOVE WC-NO-SQLVALUE-TO-PHP TO fc-grade         
-               
-               WRITE fd-fileout-post
+           *>     MOVE wc-course_name TO fc-course-name
+           *>     MOVE ',' TO fc-sep-1
+           *>    MOVE ',' TO fc-sep-2           
+           *>     MOVE ',' TO fc-sep-3           
+           *>     MOVE WC-NO-SQLVALUE-TO-PHP TO fc-grade         
+           *>     
+           *>     WRITE fd-fileout-post
            
-           END-IF
+           *> END-IF
            
            *> reset found switch for next line
-           MOVE 'N' TO is-grade-done-switch
+           *> MOVE 'N' TO is-grade-done-switch
            
            .                
 
@@ -376,7 +422,7 @@
            END-EXEC
            
            *> close outfile
-           CLOSE fileout
+           *> CLOSE fileout
            
            .
 
