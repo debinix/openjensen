@@ -371,7 +371,7 @@
            OPEN INPUT gradetmpfile
            
            *>  Read first record
-           READ gradetmpfile
+           READ gradetmpfile INTO fd-tmpfile-post
               AT END
                    SET is-eof-input TO TRUE
                    *> no user grades exists
@@ -384,8 +384,13 @@
            
               PERFORM UNTIL is-eof-input OR value-is-found
               
+                 DISPLAY '<br> Record id: ' fc-tmp-user-id
+                 DISPLAY '<br> Record course: ' fc-tmp-course-id
+                 DISPLAY '<br> Record program: ' fc-tmp-program-id                 
+              
                  IF ( fc-tmp-user-id = wn-user_id AND
-                     fc-tmp-course-id = wn-course_id )
+                      fc-tmp-course-id = wn-course_id AND
+                      fc-tmp-program-id = wn-user-program )
                      
                     DISPLAY '<br> One match: ' wn-user_id
                  
@@ -399,7 +404,7 @@
                  END-IF
                  
                  *>  Read next record                 
-                 READ gradetmpfile
+                 READ gradetmpfile INTO fd-tmpfile-post
                       AT END
                           SET is-eof-input TO TRUE
                  END-READ              
