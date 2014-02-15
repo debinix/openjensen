@@ -379,13 +379,13 @@
            
            IF NOT is-eof-input
            
-              DISPLAY '<br> Reading temp file...'
+              DISPLAY '<br><br> Reading temp file...'
            
               PERFORM UNTIL is-eof-input OR value-is-found
               
                  DISPLAY '<br> Record user id: ' fc-tmp-user-id
                  DISPLAY '<br> Record course: ' fc-tmp-course-id
-                 DISPLAY '<br><br> Record program: ' fc-tmp-program-id                 
+                 DISPLAY '<br> Record program: ' fc-tmp-program-id                 
               
                  IF ( fc-tmp-user-id = wn-user_id AND
                       fc-tmp-course-id = wn-course_id AND
@@ -428,6 +428,7 @@
            
            *> reset found switch for next time
            MOVE 'N' TO value-is-found-switch
+           MOVe 'N' TO is-eof-input-switch
                       
            .                
 
