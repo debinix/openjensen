@@ -79,10 +79,10 @@ VALUES
 
 INSERT INTO tbl_grade (grade_id, grade_grade, grade_comment, user_id, course_id)
 VALUES
-(1, 'G', 'Blablabla men klarade G', 6, 1),
-(2, 'VG', 'Blablabla jobbat bra ', 7, 3),
-(3, 'VG', 'Ett test betyg', 3, 3),
-(8, 'IG', 'Inte bra bosse.', 4, 3)
+(1, 'G', 'Frida lite mer flit så blir det VG', 6, 3),
+(2, 'VG', 'Woody du har jobbat bra', 7, 3),
+(3, 'VG', 'Pelle ett test betyg', 3, 3),
+(8, 'IG', 'Inte bra Bosse', 4, 1)
 ;
 
 
