@@ -130,7 +130,7 @@
                 
                     DISPLAY '<br> We are connected - continue'
                 
-                    *> PERFORM B0200-list-all-betyg
+                    PERFORM B0200-list-all-betyg
                     PERFORM B0300-disconnect
                 END-IF
            END-IF
