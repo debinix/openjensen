@@ -380,11 +380,14 @@
            
            IF NOT is-eof-input
            
+              DISPLAY '<br> Reading temp file...'
+           
               PERFORM UNTIL is-eof-input OR value-is-found
               
-                 IF fc-tmp-user-id = wn-user_id     AND
-                    fc-tmp-course-id = wn-course_id AND
-                    fc-tmp-program-id = wn-user-program
+                 IF ( fc-tmp-user-id = wn-user_id AND
+                     fc-tmp-course-id = wn-course_id )
+                     
+                    DISPLAY '<br> One match: ' wn-user_id
                  
                     MOVE fc-tmp-user-grade TO wc-grade_grade 
                      
