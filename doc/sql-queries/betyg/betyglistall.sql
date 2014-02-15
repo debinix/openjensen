@@ -17,7 +17,7 @@ and g.user_id = 3
 
 
 --
--- All courses without grade (but exclude if already given - see above) 
+-- All courses in program 1 
 -- 
 
 select course_id, course_name, course_startdate,
@@ -52,7 +52,7 @@ order by c.course_name, u.user_lastname, u.user_firstname
 ;
 
 -- All students, courses and programs with given grade
-select u.user_id, u.user_firstname, u.user_lastname, g.grade_grade, g.course_id, c.course_name, u.user_program
+select u.user_id, u.user_firstname, u.user_lastname, g.grade_grade, g.course_id, c.course_name, u.user_program, g.grade_comment
 from tbl_user u
 left join tbl_grade g
 on u.user_id = g.user_id
@@ -69,7 +69,7 @@ left join tbl_grade g
 on u.user_id = g.user_id
 join tbl_course c
 on g.course_id = c.course_id 
-and (u.usertype_id = 1 and u.user_id = 6 and c.course_id = 1)
+and (u.usertype_id = 1 and u.user_id = 6 and c.course_id = 3)
 order by c.course_name, u.user_lastname, u.user_firstname
 ;
 
@@ -80,7 +80,7 @@ left join tbl_grade g
 on u.user_id = g.user_id
 join tbl_course c
 on g.course_id = c.course_id 
-and (u.usertype_id = 1 and u.user_id = 4 and c.course_id = 3)
+and (u.usertype_id = 1 and u.user_id = 4 and c.course_id = 1)
 order by c.course_name, u.user_lastname, u.user_firstname
 ;
 
@@ -91,7 +91,7 @@ left join tbl_grade g
 on u.user_id = g.user_id
 join tbl_course c
 on g.course_id = c.course_id 
-and (u.usertype_id = 1 and u.user_id = 4 and c.course_id = 3)
+and (u.usertype_id = 1 and u.user_id = 4 and c.course_id = 1)
 ;
 
 select count(*)

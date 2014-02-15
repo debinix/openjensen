@@ -381,20 +381,11 @@
            
            IF NOT is-eof-input
            
-              DISPLAY '<br><br> --------- Reading temp file...'
-           
-              PERFORM UNTIL is-eof-input OR value-is-found
-              
-                 DISPLAY '<br> Record user id: ' fc-tmp-user-id
-                 DISPLAY '<br> Record course: ' fc-tmp-course-id
-                 DISPLAY '<br> Record program: ' fc-tmp-program-id                 
+              PERFORM UNTIL is-eof-input OR value-is-found             
               
                  IF ( fc-tmp-user-id = wn-user_id AND
                       fc-tmp-course-id = wn-course_id AND
                       fc-tmp-program-id = wn-user-program )
-                     
-                    DISPLAY '<br> >>>>>>> Match: ' fc-tmp-user-id ' '
-                                                fc-tmp-user-grade
                  
                     MOVE fc-tmp-user-grade TO wc-grade_grade 
                      
