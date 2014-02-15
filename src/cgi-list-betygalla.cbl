@@ -221,7 +221,6 @@
                 JOIN tbl_course c
                 ON g.course_id = c.course_id 
                 AND u.usertype_id = :wn-user-typeid
-                ORDER BY u.user_id, g.course_id
            END-EXEC
            
            *> never, never use a dash in cursor names!
@@ -278,13 +277,18 @@
        B0210-write-grade-to-file.       
        
            *> Write user grade information to tmpfile
+           *> but only for actual program
            
-           MOVE wc-grade_grade TO fc-tmp-user-grade
-           MOVE wn-grade-course_id TO fc-tmp-course-id
-           MOVE wn-user_id TO fc-tmp-user-id
-           MOVE wn-user-program TO fc-tmp-program-id
-
-           WRITE fd-tmpfile-post
+           IF wn-user-program = wn-program_id
+           
+               MOVE wc-grade_grade TO fc-tmp-user-grade
+               MOVE wn-grade-course_id TO fc-tmp-course-id
+               MOVE wn-user_id TO fc-tmp-user-id
+               MOVE wn-user-program TO fc-tmp-program-id
+        
+               WRITE fd-tmpfile-post
+           
+           END-IF
 
            .
        
@@ -366,7 +370,7 @@
        *>**************************************************
        B0260-write-course-row.            
              
-           *> open tmpfile with given existing grades
+           *> open tmpfile with already given grades for users
            OPEN INPUT gradetmpfile
            
            *>  Read first record
