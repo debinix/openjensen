@@ -16,7 +16,7 @@
               ASSIGN TO '../betyg-all.txt'
               ORGANIZATION IS LINE SEQUENTIAL.
            
-           SELECT tmpfileout 
+           SELECT gradetmpfile 
               ASSIGN TO '/tmp/gradetmp.dat'
               ORGANIZATION IS LINE SEQUENTIAL.  
               
@@ -36,7 +36,7 @@
            03  fc-grade                   PIC X(40).
        
        *> holds temporary query results of existing grades    
-       FD  tmpfileout.    
+       FD  gradetmpfile.    
        01  fd-tmpfile-post. 
            03  fc-tmp-user-id             PIC 9(4).
            03  fc-tmp-course-id           PIC 9(4).
@@ -205,7 +205,7 @@
        B0200-create-students-gradefile.       
            
            *> open tmpfile
-           OPEN OUTPUT tmpfileout
+           OPEN OUTPUT gradetmpfile
            
            *> 1 is 'students'
            MOVE 1 TO wn-user-typeid
@@ -270,7 +270,7 @@
            END-EXEC
            
            *> close tmp file
-           CLOSE tmpfileout
+           CLOSE gradetmpfile
            
            .
        
@@ -368,15 +368,14 @@
        B0260-write-course-row.            
              
            *> open tmpfile with given existing grades
-           OPEN INPUT tmpfileout
-           
-           *> default set user grade does not exist
-           MOVE WC-NO-SQLVALUE-TO-PHP TO wc-grade_grade
+           OPEN INPUT gradetmpfile
            
            *>  Read first record
-           READ tmpfileout
+           READ gradetmpfile
               AT END
                    SET is-eof-input TO TRUE
+                   *> no user grades exists
+                   MOVE WC-NO-SQLVALUE-TO-PHP TO wc-grade_grade
            END-READ
            
            IF NOT is-eof-input
@@ -391,10 +390,13 @@
                      
                     SET value-is-found TO TRUE
                     
+                 ELSE
+                    *> grade does not exist for this user
+                    MOVE WC-NO-SQLVALUE-TO-PHP TO wc-grade_grade
                  END-IF
                  
                  *>  Read next record                 
-                 READ tmpfileout
+                 READ gradetmpfile
                       AT END
                           SET is-eof-input TO TRUE
                  END-READ              
@@ -415,7 +417,7 @@
            WRITE fd-fileout-post
            
            *> close tmp file
-           CLOSE tmpfileout
+           CLOSE gradetmpfile
            
            *> reset found switch for next time
            MOVE 'N' TO value-is-found-switch
