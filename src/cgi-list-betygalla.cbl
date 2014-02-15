@@ -36,13 +36,6 @@
                88  is-db-connected                 VALUE 'Y'.
            03  is-valid-init-switch        PIC X   VALUE 'N'.
                88  is-valid-init                   VALUE 'Y'.
-           03  is-grade-done-switch        PIC X   VALUE 'N'.
-               88  is-grade-done                   VALUE 'Y'.
-                
-       01  tbl-grade                         VALUE ZERO.
-           03 grade OCCURS 25 TIMES.
-               05  wn-tbl-user-id           PIC  9(4).
-       01   wn-tbl-cnt                      PIC  9(2) VALUE ZERO.
        
        *> used in calls to dynamic libraries
        01  wn-rtn-code             PIC  S99   VALUE ZERO.
@@ -126,10 +119,7 @@
            
            IF is-valid-init
                 PERFORM B0100-connect
-                IF is-db-connected
-                
-                    DISPLAY '<br> We are connected - continue'
-                
+                IF is-db-connected              
                     PERFORM B0200-list-all-betyg
                     PERFORM B0300-disconnect
                 END-IF
@@ -149,16 +139,12 @@
            *>  start html doc
            CALL 'wui-start-html' USING wc-pagetitle
            
-           DISPLAY '<br> Inside init'
-           
            *> decompose and save current post string
            CALL 'write-post-string' USING wn-rtn-code
            
            IF wn-rtn-code = ZERO
            
                SET is-valid-init TO TRUE
-               
-               DISPLAY '<br> Getting POST data'
                
                *>  get program_id          
                MOVE ZERO TO wn-rtn-code
@@ -169,7 +155,7 @@
                MOVE FUNCTION NUMVAL(wc-post-value) TO wn-program_id  
                
                *> open outfile
-               *> OPEN OUTPUT fileout
+               OPEN OUTPUT fileout
   
            END-IF
 
@@ -208,7 +194,7 @@
        B0210-process-given-grades.
            
 
-           MOVE ZERO TO wn-tbl-cnt
+           *> MOVE ZERO TO wn-tbl-cnt
            
        *>  declare cursor
            EXEC SQL 
@@ -290,9 +276,7 @@
 
        *>**************************************************          
        B0250-fetch-all-courses-in-pgrm.
-           
-           DISPLAY '<br> Received program id: ' wn-program_id
-           
+               
            *> 1 is 'students'
            MOVE 1 TO wn-user-typeid
            MOVE wn-program_id TO wn-course-program_id           
@@ -326,11 +310,7 @@
                                   :tbl_course-course_id,
                                   :tbl_user-user_program
            END-EXEC
-                 
-           DISPLAY '<br> SQLCODE: ' SQLCODE
-           DISPLAY '<br> SQLSTATE: ' SQLSTATE           
-                 
-                      
+                            
            PERFORM UNTIL SQLCODE NOT = ZERO
            
               MOVE tbl_course-course_name TO wc-course_name
@@ -375,41 +355,26 @@
            
 
            *> STDOUT
-              DISPLAY '<br> ' wc-course_name
-              DISPLAY '<br> ' wc-user_firstname
-              DISPLAY '<br> ' wc-user_lastname              
-              DISPLAY '<br> ' wn-user_id
-              DISPLAY '<br> ' wn-course_id
-              DISPLAY '<br> ' wn-user-program           
+           *>    DISPLAY '<br> ' wc-course_name
+           *>    DISPLAY '<br> ' wc-user_firstname
+           *>    DISPLAY '<br> ' wc-user_lastname
+           
+           *>   DISPLAY '<br> ' wn-user_id
+           *>   DISPLAY '<br> ' wn-course_id
+           *>   DISPLAY '<br> ' wn-user-program           
+           
+           MOVE WC-NO-SQLVALUE-TO-PHP TO wc-grade_grade
            
            
-           
+           MOVE wc-course_name TO fc-course-name
+           MOVE ',' TO fc-sep-1
+           MOVE wc-user_firstname TO fc-user-firstname
+           MOVE ',' TO fc-sep-2
+           MOVE wc-user_lastname TO fc-user-lastname
+           MOVE ',' TO fc-sep-3
+           MOVE wc-grade_grade TO fc-grade
 
-           *> MOVE 1 TO wn-tbl-cnt
-           *> PERFORM WITH TEST AFTER
-           *>     VARYING wn-tbl-cnt FROM 1 BY 1
-           *>    UNTIL wn-tbl-cnt >= 25 OR is-grade-done
-        
-           *>    IF wn-tbl-user-id(wn-tbl-cnt) = wn-course_id
-           *>         SET is-grade-done TO TRUE
-           *>     END-IF
-           *> END-PERFORM
-           
-           *> move constant into the grade fields
-           *> IF NOT is-grade-done
-           
-           *>     MOVE wc-course_name TO fc-course-name
-           *>     MOVE ',' TO fc-sep-1
-           *>    MOVE ',' TO fc-sep-2           
-           *>     MOVE ',' TO fc-sep-3           
-           *>     MOVE WC-NO-SQLVALUE-TO-PHP TO fc-grade         
-           *>     
-           *>     WRITE fd-fileout-post
-           
-           *> END-IF
-           
-           *> reset found switch for next line
-           *> MOVE 'N' TO is-grade-done-switch
+           WRITE fd-fileout-post
            
            .                
 
@@ -422,7 +387,7 @@
            END-EXEC
            
            *> close outfile
-           *> CLOSE fileout
+           CLOSE fileout
            
            .
 
