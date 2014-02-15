@@ -73,24 +73,28 @@ elseif ($_SESSION['usertype_id'] >= 2)
   // wait until file is written at server before continue to read it.
   //  
   
-  $course_row = file($betyg_all_file);
+  $user_row = file($betyg_all_file);
   
-  
-  $course_result = pg_query("SELECT * FROM tbl_course WHERE program_id = '".$_SESSION['user_program']."'");
-  while($course_row = pg_fetch_array($course_result))  
-  {
-    ?>
-    <h3><?php echo $course_row['course_name']; ?></h3>
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <td><strong>Förnamn</strong></td>
-          <td><strong>Efternamn</strong></td>
-          <td><strong>Betyg</strong></td>
-          <td></td>
-        </tr>
-      </thead>
-      <tbody>
+    // loop through the array
+    for ($i = 0; $i < count($user_row); $i++)
+       {
+        // separate each field
+        $tmp = preg_split("/\s*,\s*/", trim($user_row[$i]), -1, PREG_SPLIT_NO_EMPTY);
+        // assign each field into a named array key
+        $user_row[$i] = array('course_name' => $tmp[0], 'user_firstname' => $tmp[1], 'user_lastname' => $tmp[2], 'grade_grade' => $tmp[3]);
+  ?>
+    
+        <h3><?php echo $user_row[$i]['course_name']; ?></h3>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <td><strong>Förnamn</strong></td>
+              <td><strong>Efternamn</strong></td>
+              <td><strong>Betyg</strong></td>
+              <td></td>
+            </tr>
+          </thead>
+          <tbody>
         <?php
 
         $user_result = pg_query("SELECT user_firstname, user_lastname, user_id FROM tbl_user ORDER BY user_lastname, user_firstname");
