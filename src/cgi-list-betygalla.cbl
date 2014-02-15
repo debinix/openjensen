@@ -373,13 +373,11 @@
            READ gradetmpfile INTO fd-tmpfile-post
               AT END
                    SET is-eof-input TO TRUE
-                   *> no user grades exists
-                   MOVE WC-NO-SQLVALUE-TO-PHP TO wc-grade_grade
            END-READ
            
            IF NOT is-eof-input
            
-              DISPLAY '<br><br> Reading temp file...'
+              DISPLAY '<br><br> --------- Reading temp file...'
            
               PERFORM UNTIL is-eof-input OR value-is-found
               
@@ -391,7 +389,8 @@
                       fc-tmp-course-id = wn-course_id AND
                       fc-tmp-program-id = wn-user-program )
                      
-                    DISPLAY '<br> One match: ' wc-grade_grade
+                    DISPLAY '<br> >>>>>>> Match: ' fc-tmp-user-id ' '
+                                                fc-tmp-user-grade
                  
                     MOVE fc-tmp-user-grade TO wc-grade_grade 
                      
