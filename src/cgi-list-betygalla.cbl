@@ -120,7 +120,7 @@
            IF is-valid-init
                 PERFORM B0100-connect
                 IF is-db-connected              
-                    PERFORM B0200-list-all-betyg
+                    PERFORM B0250-write-all-courses-in-pgrm
                     PERFORM B0300-disconnect
                 END-IF
            END-IF
@@ -183,99 +183,7 @@
            .       
        
        *>**************************************************          
-       B0200-list-all-betyg.
-
-           *> PERFORM B0210-process-given-grades
-           PERFORM B0250-fetch-all-courses-in-pgrm
-       
-           .
-
-       *>**************************************************          
-       B0210-process-given-grades.
-           
-
-           *> MOVE ZERO TO wn-tbl-cnt
-           
-       *>  declare cursor
-           EXEC SQL 
-               DECLARE cursgrade CURSOR FOR
-               SELECT g.course_id, c.course_name, 
-                      c.course_startdate, c.course_enddate,
-                      g.grade_grade, g.grade_comment
-                      FROM tbl_course c
-                      INNER JOIN tbl_grade g
-                      ON c.course_id = g.course_id
-                      AND g.user_id = :wn-grade-user_id
-           END-EXEC
-           
-           *> never never use a dash in cursor names!
-           EXEC SQL
-               OPEN cursgrade
-           END-EXEC
-       
-       *>  fetch first row       
-           EXEC SQL 
-                FETCH cursgrade INTO :tbl_grade-course_id,
-                                     :tbl_course-course_name,
-                                     :tbl_grade-grade_grade,
-           END-EXEC
-           
-           PERFORM UNTIL SQLCODE NOT = ZERO
-           
-              MOVE  tbl_grade-course_id TO wn-grade-course_id
-              MOVE  tbl_course-course_name TO wc-course_name
-
-
-              MOVE  tbl_grade-grade_grade TO wc-grade_grade
-              
-              PERFORM B0220-write-grade-row
-
-              INITIALIZE tbl_grade-rec-vars
-           
-              *> fetch next row  
-               EXEC SQL 
-                FETCH cursgrade INTO :tbl_course-course_name,
-                                     :tbl_grade-grade_grade,
-               END-EXEC
-              
-           END-PERFORM
-           
-           *> end of data
-           IF  SQLSTATE NOT = '02000'
-                PERFORM Z0100-error-routine
-           END-IF              
-             
-       *>  close cursor
-           EXEC SQL 
-               CLOSE cursgrade 
-           END-EXEC
-           
-           .
-                  
-       *>**************************************************
-       B0220-write-grade-row.            
-           
-           *> STDOUT
-           
-           
-           
-           
-           *> MOVE wc-course_name TO fc-course-name
-           *> MOVE ',' TO fc-sep-1
-           *> MOVE ',' TO fc-sep-2           
-           *> MOVE ',' TO fc-sep-3           
-           *> MOVE wc-grade_grade TO fc-grade       
-           
-           *> Rememeber which user-id have completed their grades
-           *> ADD 1 TO wn-tbl-cnt
-           *> MOVE wn-grade-course_id TO wn-tbl-user-id(wn-tbl-cnt)
-           
-           *> WRITE fd-fileout-post
-           
-           .    
-
-       *>**************************************************          
-       B0250-fetch-all-courses-in-pgrm.
+       B0250-write-all-courses-in-pgrm.
                
            *> 1 is 'students'
            MOVE 1 TO wn-user-typeid
@@ -353,19 +261,51 @@
        *>**************************************************
        B0260-write-course-row.            
            
+           *> 1 is 'students'
+           MOVE 1 TO wn-user-typeid
+           
+           *>  declare cursor to find have grades         
+           EXEC SQL  
+                DECLARE cursgrade CURSOR FOR
+                SELECT g.grade_grade
+                FROM tbl_user u
+                LEFT JOIN tbl_grade g
+                ON u.user_id = g.user_id
+                JOIN tbl_course c
+                ON g.course_id = c.course_id 
+                AND u.usertype_id = :wn-user-typeid
+                AND u.user_id = :wn-user_id
+                AND c.course_id = :wn-course_id
+           END-EXEC
+           
+           *> never, never use a dash in cursor names!
+           EXEC SQL
+               OPEN cursgrade
+           END-EXEC
+       
+       *>  fetch first row       
+           EXEC SQL 
+               FETCH cursgrade INTO :tbl_grade-grade_grade
+           END-EXEC
+       
+           IF SQLCODE NOT < ZERO
 
-           *> STDOUT
-           *>    DISPLAY '<br> ' wc-course_name
-           *>    DISPLAY '<br> ' wc-user_firstname
-           *>    DISPLAY '<br> ' wc-user_lastname
+               *> Did we found a grade for this user/course
+               EVALUATE SQLSTATE
+                   WHEN '00000'                   
+                       MOVE tbl_grade-grade_grade TO wc-grade_grade
+                   WHEN '02000'
+                       MOVE WC-NO-SQLVALUE-TO-PHP TO wc-grade_grade
+               END-EVALUATE
+            
+           ELSE
+               PERFORM Z0100-error-routine
+           END-IF
+
+           *> reinitilize
+           MOVE SPACE TO tbl_grade-grade_grade
            
-           *>   DISPLAY '<br> ' wn-user_id
-           *>   DISPLAY '<br> ' wn-course_id
-           *>   DISPLAY '<br> ' wn-user-program           
-           
-           MOVE WC-NO-SQLVALUE-TO-PHP TO wc-grade_grade
-           
-           
+           *> Write user information including grade to file
            MOVE wc-course_name TO fc-course-name
            MOVE ',' TO fc-sep-1
            MOVE wc-user_firstname TO fc-user-firstname

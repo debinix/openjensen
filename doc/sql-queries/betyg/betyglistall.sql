@@ -83,3 +83,13 @@ on g.course_id = c.course_id
 and (u.usertype_id = 1 and u.user_id = 4 and c.course_id = 3)
 order by c.course_name, u.user_lastname, u.user_firstname
 ;
+
+-- Find a specific users grade (Bosse) with minimal information
+select g.grade_grade
+from tbl_user u
+left join tbl_grade g
+on u.user_id = g.user_id
+join tbl_course c
+on g.course_id = c.course_id 
+and (u.usertype_id = 1 and u.user_id = 4 and c.course_id = 3)
+;
