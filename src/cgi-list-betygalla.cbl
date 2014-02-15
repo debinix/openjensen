@@ -16,7 +16,7 @@
               ASSIGN TO '../betyg-all.txt'
               ORGANIZATION IS LINE SEQUENTIAL.
            
-           SELECT tmpfileout 
+           SELECT tmpfile 
               ASSIGN TO '/tmp/gradetmp.dat'
               ORGANIZATION IS LINE SEQUENTIAL.  
               
@@ -34,17 +34,15 @@
            03  fc-user-lastname           PIC X(40).
            03  fc-sep-3                   PIC X.     
            03  fc-grade                   PIC X(40).
-           
-       FD  tmpfileout.    
-       01  fd-tmpfileout-post. 
+       
+       *> holds temporary query results of existing grades    
+       FD  tmpfile.    
+       01  fd-tmpfile-post. 
            03  fc-tmp-user-id             PIC 9(4).
-           03  FILLER                     PIC X VALUE SPACE.      
-           03  fc-tmp-user-grade          PIC X(40).
-           03  FILLER                     PIC X VALUE SPACE.          
            03  fc-tmp-course-id           PIC 9(4).
-           03  FILLER                     PIC X VALUE SPACE. 
            03  fc-tmp-program-id          PIC 9(4).           
-           
+           03  fc-tmp-user-grade          PIC X(40).       
+       
        *>--------------------------------------------------
        working-storage section.
        01   switches.
@@ -52,6 +50,10 @@
                88  is-db-connected                 VALUE 'Y'.
            03  is-valid-init-switch        PIC X   VALUE 'N'.
                88  is-valid-init                   VALUE 'Y'.
+           03  is-eof-input-switch         PIC X   VALUE 'N'.
+               88  is-eof-input                    VALUE 'Y'.
+           03  value-is-found-switch       PIC X   VALUE 'N'.
+               88  value-is-found                  VALUE 'Y'.
        
        *> used in calls to dynamic libraries
        01  wn-rtn-code             PIC  S99   VALUE ZERO.
@@ -173,7 +175,6 @@
                
                *> open outfile
                OPEN OUTPUT fileout
-               OPEN OUTPUT tmpfileout
   
            END-IF
 
@@ -202,6 +203,9 @@
        
        *>**************************************************          
        B0200-create-students-gradefile.       
+           
+           *> open tmpfile
+           OPEN OUTPUT tmpfile
            
            *> 1 is 'students'
            MOVE 1 TO wn-user-typeid
@@ -265,22 +269,22 @@
                CLOSE cursgrade 
            END-EXEC
            
-           *> close temp file
-           CLOSE tmpfileout           
-            
+           *> close tmp file
+           CLOSE tmpfile
+           
            .
        
        *>**************************************************          
        B0210-write-grade-to-file.       
        
-           *> Write user grade information to temp file
+           *> Write user grade information to tmpfile
            
            MOVE wc-grade_grade TO fc-tmp-user-grade
            MOVE wn-grade-course_id TO fc-tmp-course-id
            MOVE wn-user_id TO fc-tmp-user-id
            MOVE wn-user-program TO fc-tmp-program-id
 
-           WRITE fd-tmpfileout-post
+           WRITE fd-tmpfile-post
 
            .
        
@@ -362,50 +366,42 @@
            
        *>**************************************************
        B0260-write-course-row.            
+             
+           *> open tmpfile with given existing grades
+           OPEN INPUT tmpfile
            
-           *> 1 is 'students'
-           MOVE 1 TO wn-user-typeid
+           *> default set user grade does not exist
+           MOVE WC-NO-SQLVALUE-TO-PHP TO wc-grade_grade
            
-           *>  declare cursor to find have grades         
-           EXEC SQL  
-                DECLARE cursgrade CURSOR FOR
-                SELECT g.grade_grade
-                FROM tbl_user u
-                LEFT JOIN tbl_grade g
-                ON u.user_id = g.user_id
-                JOIN tbl_course c
-                ON g.course_id = c.course_id 
-                AND u.usertype_id = :wn-user-typeid
-                AND u.user_id = :wn-user_id
-                AND c.course_id = :wn-course_id
-           END-EXEC
+           *>  Read first record
+           READ tmpfile
+              AT END
+                   SET is-eof-input TO TRUE
+           END-READ
            
-           *> never, never use a dash in cursor names!
-           EXEC SQL
-               OPEN cursgrade
-           END-EXEC
-       
-       *>  fetch first row       
-           EXEC SQL 
-               FETCH cursgrade INTO :tbl_grade-grade_grade
-           END-EXEC
-       
-           IF SQLCODE NOT < ZERO
-
-               *> Did we found a grade for this user/course
-               EVALUATE SQLSTATE
-                   WHEN '00000'                   
-                       MOVE tbl_grade-grade_grade TO wc-grade_grade
-                   WHEN '02000'
-                       MOVE WC-NO-SQLVALUE-TO-PHP TO wc-grade_grade
-               END-EVALUATE
-            
-           ELSE
-               PERFORM Z0100-error-routine
-           END-IF
-
-           *> reinitilize
-           MOVE SPACE TO tbl_grade-grade_grade
+           IF NOT is-eof-input
+           
+              PERFORM UNTIL is-eof-input OR value-is-found
+              
+                 IF fc-tmp-user-id = wn-user_id     AND
+                    fc-tmp-course-id = wn-course_id AND
+                    fc-tmp-program-id = wn-user-program
+                 
+                    MOVE fc-tmp-user-grade TO wc-grade_grade 
+                     
+                    SET value-is-found TO TRUE
+                    
+                 END-IF
+                 
+                 *>  Read next record                 
+                 READ tmpfile
+                      AT END
+                          SET is-eof-input TO TRUE
+                 END-READ              
+                  
+              END-PERFORM
+              
+           END-IF           
            
            *> Write user information including grade to file
            MOVE wc-course_name TO fc-course-name
@@ -417,6 +413,15 @@
            MOVE wc-grade_grade TO fc-grade
 
            WRITE fd-fileout-post
+           
+           *> close tmp file
+           CLOSE tmpfile
+           
+           *> reset found switch for next time
+           MOVE 'N' TO value-is-found-switch
+           
+           *> clear
+           MOVE SPACE TO tbl_grade-grade_grade
            
            .                
 
@@ -430,7 +435,6 @@
            
            *> close outfile
            CLOSE fileout
-           CLOSE tmpfileout
            
            .
 
