@@ -114,7 +114,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
               <td><?php echo $user_row[$i]['user_firstname']; ?></td>
               <td><?php echo $user_row[$i]['user_lastname']; ?></td>
               <td><?php if($user_row[$i]['grade_grade'] == "-") { echo "Ej satt"; } else { echo $user_row[$i]['grade_grade']; } ?></td>
-              <td><?php if($user_row[$i]['grade_grade'] == "-") { ?><a href="course.edit.php?user_id=<?php echo $user_row[$i]['user_id']; ?>&course_id=<?php echo $user_row[$i]['course_id']; ?>"><span class="label label-primary">Ändra betyg</span></a><?php } else { ?><a href="course.add.php?id=<?php echo $user_row[$i]['grade_id']; ?>"><span class="label label-primary">Sätt betyg</span></a><?php } ?></td>
+              <td><?php if($user_row[$i]['grade_grade'] == "-") { ?><a href="course.edit.php?user_id=<?php echo $user_row[$i]['user_id']; ?>&course_id=<?php echo $user_row[$i]['course_id']; ?>"><span class="label label-primary">Sätt betyg</span></a><?php } else { ?><a href="course.add.php?id=<?php echo $user_row[$i]['grade_id']; ?>"><span class="label label-primary">Ändra betyg</span></a><?php } ?></td>
             </tr>
           </tbody>           
         
