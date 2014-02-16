@@ -105,11 +105,10 @@ elseif ($_SESSION['usertype_id'] >= 2)
                 <td></td>
               </tr>
             </thead>
-            <tbody>
           <?php  
           }
           ?>
-        
+          <tbody>        
           <tr>   
             <td><?php echo $user_row[$i]['user_firstname']; ?></td>
             <td><?php echo $user_row[$i]['user_lastname']; ?></td>
