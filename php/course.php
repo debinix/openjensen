@@ -83,23 +83,9 @@ elseif ($_SESSION['usertype_id'] >= 2)
         // assign each field into a named array key
         $user_row[$i] = array('course_name' => $tmp[0], 'user_firstname' => $tmp[1], 'user_lastname' => $tmp[2], 'grade_grade' => $tmp[3]);
     }
-    // initilize to rememeber previous group of the course name
-    $lastcoursename = $user_row[0]['course_name'];
-  ?>
-    
-        <h3><?php echo $user_row[0]['course_name']; ?></h3>
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <td><strong>Förnamn</strong></td>
-              <td><strong>Efternamn</strong></td>
-              <td><strong>Betyg</strong></td>
-              <td></td>
-            </tr>
-          </thead>
-          <tbody>
-        
-        <?php
+        // initilize to rememeber previous group of the course names
+        $lastcoursename = '';
+
         // iterate through all course user data
         for ($i = 0; $i < count($user_row); $i++)
         { 
@@ -109,7 +95,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
           {
         ?>
         
-          <h3><?php echo $user_row[0]['course_name']; ?></h3>
+          <h3><?php echo $user_row[$i]['course_name']; ?></h3>
           <table class="table table-hover">
             <thead>
               <tr>
