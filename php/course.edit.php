@@ -1,13 +1,13 @@
 <?php include("assets/_header.php"); ?>
 <a href="course.php"><span class="label label-default">Tillbaka</span></a>
 <?php
-$grade_id = pg_escape_literal($_GET['id']);
-$grade_grade = pg_escape_literal($_GET['grade_grade']);
+$grade_id = $_GET['id'];
+$grade_grade = $_GET['grade_grade'];
 
 // $grade_result = mysql_query("SELECT * FROM tbl_grade WHERE grade_id = '".$grade_id."' LIMIT 1");
 // $grade_row = mysql_fetch_assoc($grade_result);
 
-$grade_result = pg_query("SELECT grade_comment FROM tbl_grade WHERE grade_id = '".$grade_id."' LIMIT 1");
+$grade_result = pg_query("SELECT grade_comment FROM tbl_grade WHERE grade_id = '".$grade_id."'");
 $grade_row = pg_fetch_assoc($grade_result);
 
 ?>
