@@ -10,7 +10,7 @@
 
 $first_name = 'Open';    
 $last_name = 'Jensen';
-$country_code = 'SE';
+$country_code = 'åäö';
 
     
 //set POST variables
@@ -35,9 +35,14 @@ curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
 
 //execute post
 $result = curl_exec($ch);
+if($result === false)
+    echo "We have a problem to reach $url" ;
 
 //close connection
-curl_close($ch);    
+curl_close($ch);
+
+// sleep to make sure we can continue with our php code
+sleep(2);
 
 ?>
 </body>
