@@ -81,7 +81,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
         // separate each field
         $tmp = preg_split("/\s*,\s*/", trim($user_row[$i]), -1, PREG_SPLIT_NO_EMPTY);
         // assign each field into a named array key
-        $user_row[$i] = array('course_name' => $tmp[0], 'user_firstname' => $tmp[1], 'user_lastname' => $tmp[2], 'grade_grade' => $tmp[3]);
+        $user_row[$i] = array('course_name' => $tmp[0], 'user_firstname' => $tmp[1], 'user_lastname' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_id' => $tmp[4],'user_id' => $tmp[5],'course_id' => $tmp[6], 'grade_comment' => $tmp[7]);
     }
         // initilize to rememeber previous group of the course names
         $lastcoursename = '';
@@ -114,9 +114,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
               <td><?php echo $user_row[$i]['user_firstname']; ?></td>
               <td><?php echo $user_row[$i]['user_lastname']; ?></td>
               <td><?php if($user_row[$i]['grade_grade'] == "-") { echo "Ej satt"; } else { echo $user_row[$i]['grade_grade']; } ?></td>
-              
-               <!--<td><?php if($user_row[$i]['grade_grade'] != "-") { ?><a href="course.add.php?user_id=<?php echo $user_row['user_id']; ?>&course_id=<?php echo $course_row['course_id']; ?>"><span class="label label-primary">Sätt betyg</span></a><?php } else { ?><a href="course.edit.php?id=<?php echo $grade_row['grade_id']; ?>"><span class="label label-primary">Ändra betyget</span></a><?php } ?></td>-->
-  
+              <td><?php if($user_row[$i]['grade_grade'] == "-") { ?><a href="course.add.php?user_id=<?php echo $user_row[$i]['user_id']; ?>&course_id=<?php echo $user_row[$i]['course_id']; ?>&user_firstname=<?php echo $user_row[$i]['user_firstname']; ?>&user_lastname=<?php echo $user_row[$i]['user_lastname']; ?>"><span class="label label-primary">Sätt betyg</span></a><?php } else { ?><a href="course.edit.php?id=<?php echo $user_row[$i]['grade_id']; ?>&grade_grade=<?php echo $user_row[$i]['grade_grade']; ?>&grade_comment=<?php echo $user_row[$i]['grade_comment']; ?>"><span class="label label-primary">Ändra betyg</span></a><?php } ?></td>
             </tr>
           </tbody>           
         
@@ -126,7 +124,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
         }
         ?>
     </table>
-    
+  
   <?php
 }
 include("assets/_footer.php");
