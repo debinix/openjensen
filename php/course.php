@@ -62,6 +62,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
 {
   ?>
   <h1>Betyg</h1>
+  
   <?php
   $Error->show();
   $Success->show();
@@ -76,15 +77,17 @@ elseif ($_SESSION['usertype_id'] >= 2)
   $user_row = file($betyg_all_file);
   
     // loop through the array
-    for ($i = 0; $i < count($user_row); $i++)
-       {
+    for ($i = 0; $i < count($user_row); $i++) {
         // separate each field
         $tmp = preg_split("/\s*,\s*/", trim($user_row[$i]), -1, PREG_SPLIT_NO_EMPTY);
         // assign each field into a named array key
         $user_row[$i] = array('course_name' => $tmp[0], 'user_firstname' => $tmp[1], 'user_lastname' => $tmp[2], 'grade_grade' => $tmp[3]);
+    }
+    // initilize to rememeber previous group of the course name
+    $lastcoursename = $user_row[0]['course_name'];
   ?>
     
-        <h3><?php echo $user_row[$i]['course_name']; ?></h3>
+        <h3><?php echo $user_row[0]['course_name']; ?></h3>
         <table class="table table-hover">
           <thead>
             <tr>
@@ -95,33 +98,48 @@ elseif ($_SESSION['usertype_id'] >= 2)
             </tr>
           </thead>
           <tbody>
+        
         <?php
-
-        $user_result = pg_query("SELECT user_firstname, user_lastname, user_id FROM tbl_user ORDER BY user_lastname, user_firstname");
-        while ($user_row = pg_fetch_array($user_result))        
-        {
+        // iterate through all course user data
+        for ($i = 0; $i < count($user_row); $i++)
+        { 
+        
+          // only echo if course name different from previous iteration
+          if ( $lastcoursename !=  $user_row[$i]['course_name'] )
+          {
+        ?>
+        
+          <h3><?php echo $user_row[0]['course_name']; ?></h3>
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <td><strong>Förnamn</strong></td>
+                <td><strong>Efternamn</strong></td>
+                <td><strong>Betyg</strong></td>
+                <td></td>
+              </tr>
+            </thead>
+            <tbody>
+          <?php  
+          }
           ?>
-          <tr>
-            <td><?php echo $user_row['user_firstname']; ?></td>
-            <td><?php echo $user_row['user_lastname']; ?></td>
-            <?php
+        
+          <tr>   
+            <td><?php echo $user_row[$i]['user_firstname']; ?></td>
+            <td><?php echo $user_row[$i]['user_lastname']; ?></td>
+            <td><?php if($user_row[$i]['grade_grade'] == "-") { echo "Ej satt"; } else { echo $user_row[$i]['grade_grade']; } ?></td>
             
-            $grade_result = pg_query("SELECT grade_grade, grade_id FROM tbl_grade WHERE user_id = '".$user_row['user_id']."' AND course_id = '".$course_row['course_id']."' LIMIT 1");
-            $grade_row = pg_fetch_assoc($grade_result);            
-            
-            ?>
-            <td><?php if($grade_row['grade_grade'] == "-") { echo "Ej satt"; } else { echo $grade_row['grade_grade']; } ?></td>
-            <td><?php if($grade_row['grade_grade'] == "") { ?><a href="course.add.php?user_id=<?php echo $user_row['user_id']; ?>&course_id=<?php echo $course_row['course_id']; ?>"><span class="label label-primary">Sätt betyg</span></a><?php } else { ?><a href="course.edit.php?id=<?php echo $grade_row['grade_id']; ?>"><span class="label label-primary">Ändra betyget</span></a><?php } ?></td>
+             <!--<td><?php if($user_row[$i]['grade_grade'] != "-") { ?><a href="course.add.php?user_id=<?php echo $user_row['user_id']; ?>&course_id=<?php echo $course_row['course_id']; ?>"><span class="label label-primary">Sätt betyg</span></a><?php } else { ?><a href="course.edit.php?id=<?php echo $grade_row['grade_id']; ?>"><span class="label label-primary">Ändra betyget</span></a><?php } ?></td>-->
+
           </tr>
-          <?php
+        <?php
+          // assign current course name for next iteration
+          $lastcoursename =  $user_row[$i]['course_name']; 
         }
         ?>
       </tbody>
     </table>
-    <?php
-  }
-  ?>
-  
+    
   <?php
 }
 include("assets/_footer.php");
