@@ -34,13 +34,21 @@
            03  fc-user-lastname           PIC X(40).
            03  fc-sep-3                   PIC X.     
            03  fc-grade                   PIC X(40).
+           03  fc-sep-4                   PIC X.
+           03  fc-grade-id                PIC 9(4).
+           03  fc-sep-5                   PIC X.           
+           03  fc-user-id                 PIC 9(4).
+           03  fc-sep-6                   PIC X.           
+           03  fc-course-id               PIC 9(4).
+           
        
        *> holds temporary query results of existing grades    
        FD  gradetmpfile.    
-       01  fd-tmpfile-post. 
+       01  fd-tmpfile-post.
+           03  fc-tmp-user-grade-id       PIC 9(4).       
            03  fc-tmp-user-id             PIC 9(4).
            03  fc-tmp-course-id           PIC 9(4).
-           03  fc-tmp-program-id          PIC 9(4).           
+           03  fc-tmp-program-id          PIC 9(4).         
            03  fc-tmp-user-grade          PIC X(40).       
        
        *>--------------------------------------------------
@@ -102,14 +110,16 @@
            05  wn-course-program_id  PIC  9(4)  VALUE ZERO.  
        
        *>*******************************************************
-       01  tbl_grade-rec-vars.       
+       01  tbl_grade-rec-vars.
+           05  tbl_grade-grade_id         PIC  9(4).          
            05  tbl_grade-grade_grade      PIC  X(40).
            05  tbl_grade-user_id          PIC  9(4).
            05  tbl_grade-course_id        PIC  9(4).           
        *>    
 
        *> table data
-       01  wr-rec-vars.    
+       01  wr-rec-vars.
+           05  wn-grade-grade_id     PIC  9(4)  VALUE ZERO.       
            05  wc-grade_grade        PIC  X(40) VALUE SPACE.
            05  wn-grade-user_id      PIC  9(4)  VALUE ZERO.
            05  wn-grade-course_id    PIC  9(4)  VALUE ZERO. 
@@ -213,7 +223,7 @@
            *>  get all students with a grade        
            EXEC SQL  
                 DECLARE cursgrade CURSOR FOR
-                SELECT g.grade_grade, g.course_id,
+                SELECT g.grade_id, g.grade_grade, g.course_id,
                        u.user_id, u.user_program
                 FROM tbl_user u
                 LEFT JOIN tbl_grade g
@@ -230,7 +240,8 @@
        
        *>  fetch first row       
            EXEC SQL 
-               FETCH cursgrade INTO :tbl_grade-grade_grade,
+               FETCH cursgrade INTO :tbl_grade-grade_id,
+                                    :tbl_grade-grade_grade,
                                     :tbl_grade-course_id,
                                     :tbl_user-user_id,
                                     :tbl_user-user_program
@@ -238,6 +249,7 @@
        
            PERFORM UNTIL SQLCODE NOT = ZERO
            
+              MOVE tbl_grade-grade_id TO wn-grade-grade_id
               MOVE tbl_grade-grade_grade TO wc-grade_grade
               MOVE tbl_grade-course_id TO wn-grade-course_id
               MOVE tbl_user-user_id TO wn-user_id
@@ -250,7 +262,8 @@
 
               *> fetch next row  
                EXEC SQL 
-               FETCH cursgrade INTO :tbl_grade-grade_grade,
+               FETCH cursgrade INTO :tbl_grade-grade_id,
+                                    :tbl_grade-grade_grade,
                                     :tbl_grade-course_id,
                                     :tbl_user-user_id,
                                     :tbl_user-user_program
@@ -281,6 +294,7 @@
            
            IF wn-user-program = wn-program_id
            
+               MOVE wn-grade-grade_id TO fc-tmp-user-grade-id
                MOVE wc-grade_grade TO fc-tmp-user-grade
                MOVE wn-grade-course_id TO fc-tmp-course-id
                MOVE wn-user_id TO fc-tmp-user-id
@@ -379,6 +393,7 @@
               AT END
                    SET is-eof-input TO TRUE
                    MOVE WC-NO-SQLVALUE-TO-PHP TO wc-grade_grade
+                   MOVE ZERO TO wn-grade-grade_id
            END-READ
            
            IF NOT is-eof-input
@@ -389,13 +404,15 @@
                       fc-tmp-course-id = wn-course_id AND
                       fc-tmp-program-id = wn-user-program )
                  
-                    MOVE fc-tmp-user-grade TO wc-grade_grade 
+                    MOVE fc-tmp-user-grade TO wc-grade_grade
+                    MOVE fc-tmp-user-grade-id TO wn-grade-grade_id
                      
                     SET value-is-found TO TRUE
                     
                  ELSE
                     *> grade does not exist for this user
                     MOVE WC-NO-SQLVALUE-TO-PHP TO wc-grade_grade
+                    MOVE ZERO TO wn-grade-grade_id
                  END-IF
                  
                  *>  Read next record                 
@@ -416,6 +433,12 @@
            MOVE wc-user_lastname TO fc-user-lastname
            MOVE ',' TO fc-sep-3
            MOVE wc-grade_grade TO fc-grade
+           MOVE ',' TO fc-sep-4
+           MOVE wn-grade-grade_id TO fc-grade-id           
+           MOVE ',' TO fc-sep-5
+           MOVE wn-user_id TO fc-user-id           
+           MOVE ',' TO fc-sep-6
+           MOVE wn-course_id TO fc-course-id
 
            WRITE fd-fileout-post
            
