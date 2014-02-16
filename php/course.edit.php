@@ -3,12 +3,7 @@
 <?php
 $grade_id = $_GET['id'];
 $grade_grade = $_GET['grade_grade'];
-
-// $grade_result = mysql_query("SELECT * FROM tbl_grade WHERE grade_id = '".$grade_id."' LIMIT 1");
-// $grade_row = mysql_fetch_assoc($grade_result);
-
-$grade_result = pg_query("SELECT grade_comment FROM tbl_grade WHERE grade_id = '".$grade_id."'");
-$grade_row = pg_fetch_assoc($grade_result);
+$grade_comment = $_GET['grade_comment'];
 
 ?>
 <form method="POST" action="./process.php?function=editGrade&grade_id=<?php echo $grade_id; ?>">
@@ -26,7 +21,7 @@ $grade_row = pg_fetch_assoc($grade_result);
     <label><input type="radio" name="grade" id="grade" value="VG" <?php if($grade_grade == "VG") { echo "checked"; } ?>>VG</label>
   </div>
   <br>
-  <input type="text" name="grade_comment" class="form-control" placeholder="Kommentar" value="<?php echo $grade_row['grade_comment']; ?>">
+  <input type="text" name="grade_comment" class="form-control" placeholder="Kommentar" value="<?php echo $grade_comment; ?>">
   <br>
   <button class="btn btn-lg btn-primary" type="submit">Spara ändringar</button>
 </form>
