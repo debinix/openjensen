@@ -378,6 +378,7 @@
            READ gradetmpfile INTO fd-tmpfile-post
               AT END
                    SET is-eof-input TO TRUE
+                   MOVE WC-NO-SQLVALUE-TO-PHP TO wc-grade_grade
            END-READ
            
            IF NOT is-eof-input
