@@ -17,7 +17,7 @@ and g.user_id = 3
 
 
 --
--- All courses without grade (but exclude if already given - see above) 
+-- All courses in program 1 
 -- 
 
 select course_id, course_name, course_startdate,
@@ -33,30 +33,68 @@ where program_id = 1
 ----------------------------------------------------------------------------
 
 
--- All students on program 1 - and the corresponding courses (with/without info about grade)
-select u.user_firstname, u.user_lastname, u.user_id, u.user_program, c.course_name
+-- All students on program 1 - and the corresponding courses (without info about grade)
+select c.course_name, u.user_firstname, u.user_lastname, u.user_id, c.course_id, u.user_program
 from tbl_user u
 join tbl_course c
 on c.program_id = u.user_program
 and ( u.usertype_id = 1 and u.user_program = 1 )
+order by c.course_name, u.user_lastname, u.user_firstname
 ;
 
--- All students on program 2 - and the corresponding courses (with/without info about grade)
-select u.user_firstname, u.user_lastname, u.user_id, u.user_program, c.course_name
+-- All students on program 2 - and the corresponding courses (without info about grade)
+select c.course_name, u.user_firstname, u.user_lastname, u.user_id, c.course_id, u.user_program
 from tbl_user u
 join tbl_course c
 on c.program_id = u.user_program
 and ( u.usertype_id = 1 and u.user_program = 2 )
+order by c.course_name, u.user_lastname, u.user_firstname
 ;
 
 -- All students, courses and programs with given grade
-select u.user_firstname, u.user_lastname, g.grade_grade, g.course_id, c.course_name, u.user_program
+select u.user_id, u.user_firstname, u.user_lastname, g.grade_grade, g.course_id, c.course_name, u.user_program, g.grade_comment
 from tbl_user u
 left join tbl_grade g
 on u.user_id = g.user_id
 join tbl_course c
 on g.course_id = c.course_id 
 and u.usertype_id = 1
+order by c.course_name, u.user_lastname, u.user_firstname
 ;
 
+-- Find a specific users grade (Frida)
+select u.user_id, u.user_firstname, u.user_lastname, g.grade_grade, g.course_id, c.course_name, u.user_program
+from tbl_user u
+left join tbl_grade g
+on u.user_id = g.user_id
+join tbl_course c
+on g.course_id = c.course_id 
+and (u.usertype_id = 1 and u.user_id = 6 and c.course_id = 3)
+order by c.course_name, u.user_lastname, u.user_firstname
+;
 
+-- Find a specific users grade (Bosse)
+select u.user_id, u.user_firstname, u.user_lastname, g.grade_grade, g.course_id, c.course_name, u.user_program
+from tbl_user u
+left join tbl_grade g
+on u.user_id = g.user_id
+join tbl_course c
+on g.course_id = c.course_id 
+and (u.usertype_id = 1 and u.user_id = 4 and c.course_id = 1)
+order by c.course_name, u.user_lastname, u.user_firstname
+;
+
+-- Find a specific users grade (Bosse) with minimal information
+select g.grade_grade
+from tbl_user u
+left join tbl_grade g
+on u.user_id = g.user_id
+join tbl_course c
+on g.course_id = c.course_id 
+and (u.usertype_id = 1 and u.user_id = 4 and c.course_id = 1)
+;
+
+select count(*)
+from tbl_user
+where usertype_id = 1
+;
