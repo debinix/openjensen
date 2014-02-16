@@ -259,7 +259,11 @@ elseif($function == "editGrade")
 			pg_query($editgrade) or die(pg_last_error());			
 
 			$Success->set("Betyget har nu ändrats.");
-			header('location: course.edit.php?id='.$grade_id);
+			// header('location: course.edit.php?id='.$grade_id);
+			// move back to main course to re-read sql status
+			header('location: course.php');	
+			
+
 		}
 	}
 }
