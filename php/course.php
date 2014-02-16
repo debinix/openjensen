@@ -108,21 +108,23 @@ elseif ($_SESSION['usertype_id'] >= 2)
           <?php  
           }
           ?>
+          
           <tbody>        
-          <tr>   
-            <td><?php echo $user_row[$i]['user_firstname']; ?></td>
-            <td><?php echo $user_row[$i]['user_lastname']; ?></td>
-            <td><?php if($user_row[$i]['grade_grade'] == "-") { echo "Ej satt"; } else { echo $user_row[$i]['grade_grade']; } ?></td>
-            
-             <!--<td><?php if($user_row[$i]['grade_grade'] != "-") { ?><a href="course.add.php?user_id=<?php echo $user_row['user_id']; ?>&course_id=<?php echo $course_row['course_id']; ?>"><span class="label label-primary">Sätt betyg</span></a><?php } else { ?><a href="course.edit.php?id=<?php echo $grade_row['grade_id']; ?>"><span class="label label-primary">Ändra betyget</span></a><?php } ?></td>-->
-
-          </tr>
+            <tr>   
+              <td><?php echo $user_row[$i]['user_firstname']; ?></td>
+              <td><?php echo $user_row[$i]['user_lastname']; ?></td>
+              <td><?php if($user_row[$i]['grade_grade'] == "-") { echo "Ej satt"; } else { echo $user_row[$i]['grade_grade']; } ?></td>
+              
+               <!--<td><?php if($user_row[$i]['grade_grade'] != "-") { ?><a href="course.add.php?user_id=<?php echo $user_row['user_id']; ?>&course_id=<?php echo $course_row['course_id']; ?>"><span class="label label-primary">Sätt betyg</span></a><?php } else { ?><a href="course.edit.php?id=<?php echo $grade_row['grade_id']; ?>"><span class="label label-primary">Ändra betyget</span></a><?php } ?></td>-->
+  
+            </tr>
+          </tbody>           
+        
         <?php
           // assign current course name for next iteration
           $lastcoursename =  $user_row[$i]['course_name']; 
         }
         ?>
-      </tbody>
     </table>
     
   <?php
