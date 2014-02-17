@@ -32,6 +32,10 @@ if($_SESSION['usertype_id'] == 1)
       // wait until file is written at server before continue to read it.
       //
       
+      if (file_exists($betyg_elev_file)) {
+          unlink($betyg_elev_file);
+      }
+      
       $user_id = $_SESSION['user_id'];
       $user_program = $_SESSION['user_program'];
       $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi';
@@ -55,8 +59,15 @@ if($_SESSION['usertype_id'] == 1)
       
       //close connection
       curl_close($ch);
-      // sleep to make sure we can continue with our php code below
-      sleep(2);
+      // sleep max 5s to make before continue with our php code below
+      for ($f=0; $f <= 5; $f++) {
+        $file_exists=file_exists($betyg_elev_file);
+        if($file_exists) {
+            break;
+        }
+        sleep(1);      
+      }
+      if($f === 5) $Error->set("Saknar fil: $betyg_elev_file") ; 
       
       $course_row = file($betyg_elev_file);
            
@@ -100,6 +111,10 @@ elseif ($_SESSION['usertype_id'] >= 2)
   // wait until file is written at server before continue to read it.
   //
   
+  if (file_exists($betyg_all_file)) {
+      unlink($betyg_all_file);
+  }
+  
   $user_program = $_SESSION['user_program'];
   $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi';
   $fields = array( 'user_program' => urlencode($user_program)
@@ -116,13 +131,20 @@ elseif ($_SESSION['usertype_id'] >= 2)
   
   //execute post
   $result = curl_exec($ch);
-  if($result === false)
-      $Error->set("Curl have a problem to reach $url") ;
+  if($result === false) $Error->set("Kan ej kontakta servern: $url") ;
   
   //close connection
   curl_close($ch);
-  // sleep to make sure we can continue with our php code below
-  sleep(2);  
+  // sleep max 5s to make before continue with our php code below
+  for ($f=0; $f <= 5; $f++) {
+    $file_exists=file_exists($betyg_all_file);
+    if($file_exists) {
+        break;
+    }
+    sleep(1);      
+  }
+  if($f === 5) $Error->set("Saknar fil: $betyg_all_file") ; 
+  
   
   $user_row = file($betyg_all_file);
   
