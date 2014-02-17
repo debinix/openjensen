@@ -6,7 +6,7 @@ $grade_grade = $_GET['grade_grade'];
 $grade_comment = $_GET['grade_comment'];
 
 ?>
-<form method="POST" action="./process.php?function=editGrade&grade_id=<?php echo $grade_id; ?>&grade_grade=<?php echo $grade_grade; ?>">
+<form method="POST" action="./process.php?function=editGrade&grade_id=<?php echo $grade_id; ?>">
   <?php
   $Error->show();
   $Success->show();

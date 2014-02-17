@@ -187,10 +187,10 @@ elseif($function == "addUser")
 }
 elseif($function == "addGrade")
 {
-	$grade = pg_escape_literal($_POST['grade']);
+	$grade = $_POST['grade'];
 	$grade_comment = pg_escape_literal($_POST['grade_comment']);
-	$user_id = pg_escape_literal($_GET['user_id']);
-	$course_id = pg_escape_literal($_GET['course_id']);
+	$user_id = $_GET['user_id'];
+	$course_id = $_GET['course_id'];
 
 	if(empty($user_id) OR empty($course_id))
 	{
@@ -226,9 +226,9 @@ elseif($function == "addGrade")
 }
 elseif($function == "editGrade")
 {
-	$grade = pg_escape_literal($_POST['grade']);
+	$grade = $_POST['grade'];
 	$grade_comment = pg_escape_literal($_POST['grade_comment']);
-	$grade_id = pg_escape_literal($_GET['grade_id']);
+	$grade_id = $_GET['grade_id'];
 
 	if(empty($grade_id))
 	{
