@@ -226,9 +226,9 @@ elseif($function == "addGrade")
 }
 elseif($function == "editGrade")
 {
-	$grade = $_POST['grade'];
+	$grade = pg_escape_literal($_POST['grade']);
 	$grade_comment = pg_escape_literal($_POST['grade_comment']);
-	$grade_id = $_GET['grade_id'];
+	$grade_id = pg_escape_literal($_GET['grade_id']);
 
 	if(empty($grade_id))
 	{
@@ -258,6 +258,10 @@ elseif($function == "editGrade")
 			
 			pg_query($editgrade) or die(pg_last_error());			
 
+			
+			
+			
+			// We dont really now (TODO implement)
 			$Success->set("Betyget har nu ändrats.");
 			// header('location: course.edit.php?id='.$grade_id);
 			// move back to main course to re-read sql status
