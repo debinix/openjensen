@@ -124,7 +124,7 @@
                *> update grade?           
                MOVE ZERO TO wn-rtn-code
                MOVE SPACE TO wc-post-value
-               MOVE 'grade' TO wc-post-name
+               MOVE 'grade_grade' TO wc-post-name
                CALL 'get-post-value' USING wn-rtn-code
                                     wc-post-name wc-post-value
                      
@@ -184,7 +184,7 @@
            IF grade-id-is-in-table
                PERFORM B0220-change-grade-item
            ELSE
-               MOVE 'Denna lokal finns ej'
+               MOVE 'Denna student finns ej'
                     TO wc-printscr-string
                CALL 'stop-printscr' USING wc-printscr-string
            END-IF
@@ -232,7 +232,7 @@
            
               *> fetch next row  
                EXEC SQL
-                   FETCH curseditlocal
+                   FETCH cursedit
                        INTO :tbl-grade-grade-id, :tbl-grade-grade,
                             :tbl-grade-comment
                END-EXEC
