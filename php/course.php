@@ -34,7 +34,7 @@ if($_SESSION['usertype_id'] == 1)
       
       $user_id = $_SESSION['user_id'];
       $user_program = $_SESSION['user_program'];
-      $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi';
+      $url = 'http://www.mc-butter.se/cgi-bin/listenv.cgi';
       $fields = array( 'user_id' => urlencode($user_id),
                        'user_program' => urlencode($user_program)
                       );
