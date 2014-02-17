@@ -34,24 +34,18 @@ if($_SESSION['usertype_id'] == 1)
       
       $user_id = $_SESSION['user_id'];
       $user_program = $_SESSION['user_program'];
-      // $url = 'http://www.mc-butter.se/cgi-bin/listenv.cgi';
       $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi';
       $fields = array( 'user_id' => urlencode($user_id),
                        'user_program' => urlencode($user_program)
                       );
       
-      //url-ify the data for the POST 8with php built-in function
+      //url-ify the data for the POST with php built-in function
       $fields_string = http_build_query($fields);
-      
-      // foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
-      // rtrim($fields_string, '&');
-      //open connection
       $ch = curl_init();
       
       //set the url, number of POST vars, POST data
       curl_setopt($ch,CURLOPT_URL, $url);
       curl_setopt($ch,CURLOPT_POST, count($fields));
-      // curl_setopt($ch,CURLOPT_POSTFIELDS, "user_id=3&user_program=2");
       curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
       
       //execute post
@@ -110,9 +104,8 @@ elseif ($_SESSION['usertype_id'] >= 2)
   $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi';
   $fields = array( 'user_program' => urlencode($user_program)
                   );
-  //url-ify the data for the POST
-  foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
-  rtrim($fields_string, '&');
+  //url-ify the data for the POST with php built-in function
+  $fields_string = http_build_query($fields);
   //open connection
   $ch = curl_init();
   
