@@ -276,7 +276,7 @@
            EXEC SQL
                UPDATE tbl_grade
                    SET grade_grade = :tbl-grade-grade,
-                       grade_comment = :tbl-grade-comment,
+                       grade_comment = :tbl-grade-comment
                WHERE grade_id = :tbl-grade-grade-id
            END-EXEC
             
