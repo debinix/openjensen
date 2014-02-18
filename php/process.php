@@ -247,9 +247,9 @@ elseif($function == "editGrade")
 		else
 		{				
 			$url = 'http://www.mc-butter.se/cgi-bin/cgi-edit-betyg.cgi';
-			$fields = array( 'grade_id' => urlencode($grade_id),
-							 'grade_grade' => urlencode($grade_grade),
-							 'grade_comment' => urlencode($grade_comment)
+			$fields = array( 'grade_id' => $grade_id,
+							 'grade_grade' => $grade_grade,
+							 'grade_comment' => $grade_comment
 							);
 			//url-ify the data for the POST with php built-in function
 			$fields_string = http_build_query($fields);
