@@ -62,6 +62,7 @@ Add these lines in the file:
         mer = merge --no-ff
         mef = merge --ff-only
         dif = diff --staged
+        dbr = branch -d
 
 
 ### vhi alias

@@ -37,7 +37,8 @@ The OCESQL pre-processor is downloaded from OSS Consortium site.
     http://www.osscons.jp/osscobol/download/addtools/
 
 Click to the right 'Open COBOL ESQL v1.0.0' text and download the archive.
-Then install with ./configure, make and make install.
+Then install with ./configure, make and make install. See a detailed description
+how to re-compile the pre-processor with experimental UTF-8 support in folder /doc.
 
 
 ### Komodo Edit (free) or Komodo IDE.
