@@ -217,6 +217,10 @@
        B0210-does-user-course-exist.
            
            *> Cursor for tbl_grade
+           
+           DISPLAY '<br> ' wn-grade-user-id
+           DISPLAY '<br> ' wn-grade-course-id
+                     
            EXEC SQL
              DECLARE cursadd CURSOR FOR
                  SELECT user_id, course_id
