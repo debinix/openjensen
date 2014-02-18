@@ -32,9 +32,6 @@ if($_SESSION['usertype_id'] == 1)
       // wait until file is written at server before continue to read it.
       //
       
-      if (file_exists($betyg_elev_file)) {
-          unlink($betyg_elev_file);
-      }
       
       $user_id = $_SESSION['user_id'];
       $user_program = $_SESSION['user_program'];
@@ -112,10 +109,6 @@ elseif ($_SESSION['usertype_id'] >= 2)
   // to url: http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi
   // wait until file is written at server before continue to read it.
   //
-  
-  if (file_exists($betyg_all_file)) {
-      unlink($betyg_all_file);
-  }
   
   $user_program = $_SESSION['user_program'];
   $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi';
