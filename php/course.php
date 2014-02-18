@@ -44,7 +44,9 @@ if($_SESSION['usertype_id'] == 1)
                       );
       
       //url-ify the data for the POST with php built-in function
-      $fields_string = http_build_query($fields);
+      $php_url_string = http_build_query($fields);
+      // remove %27 i.e. the ' which php may add around post string :-( 
+      $fields_string = preg_replace('/%27/', '', $php_url_string);
       $ch = curl_init();
       
       //set the url, number of POST vars, POST data
@@ -120,7 +122,9 @@ elseif ($_SESSION['usertype_id'] >= 2)
   $fields = array( 'user_program' => $user_program
                   );
   //url-ify the data for the POST with php built-in function
-  $fields_string = http_build_query($fields);
+  $php_url_string = http_build_query($fields);
+  // remove %27 i.e. the ' which php may add around post string :-( 
+  $fields_string = preg_replace('/%27/', '', $php_url_string);
   //open connection
   $ch = curl_init();
   
