@@ -38,7 +38,7 @@
        *>#######################################################
        EXEC SQL BEGIN DECLARE SECTION END-EXEC.
        *>
-       01  jlocal-rec-vars.       
+       01  tbl-grade-rec-vars.       
            05  tbl-grade-grade-id        PIC  9(4).
            05  tbl-grade-grade-grade     PIC  X(40).
            05  tbl-grade-grade-comment   PIC  X(40).
@@ -218,8 +218,8 @@
            
            *> Cursor for tbl_grade
            
-           DISPLAY '<br> ' wn-grade-user-id
-           DISPLAY '<br> ' wn-grade-course-id
+           DISPLAY '<br> User:' wn-grade-user-id
+           DISPLAY '<br> Course:' wn-grade-course-id
                      
            EXEC SQL
              DECLARE cursadd CURSOR FOR
@@ -284,8 +284,13 @@
                 PERFORM Z0100-error-routine
            ELSE
                SET is-valid-table-position TO TRUE
+               MOVE tbl-grade-grade-id TO wn-next-grade-id
+               
                *> next number for new row in table
-               COMPUTE wn-next-grade-id = tbl-grade-grade-id + 1             
+               COMPUTE wn-next-grade-id = wn-next-grade-id + 1
+               
+               DISPLAY '<br> Next grade id: ' wn-next-grade-id
+               
            END-IF
 
            *> close cursor
@@ -297,6 +302,8 @@
            
        *>**************************************************          
        B0230-add-new-grade-to-table.
+       
+           DISPLAY '<br> Add new grade id: ' wn-next-grade-id
        
             
            MOVE wn-next-grade-id TO tbl-grade-grade-id
