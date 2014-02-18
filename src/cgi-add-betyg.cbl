@@ -297,10 +297,9 @@
                 PERFORM Z0100-error-routine
            ELSE
                SET is-valid-table-position TO TRUE
-               MOVE tbl-grade-grade-id TO wn-next-grade-id
                
                *> next number for new row in table
-               COMPUTE wn-next-grade-id = wn-next-grade-id + 1
+               COMPUTE wn-next-grade-id = tbl-grade-grade-id + 1
                
                DISPLAY '<br> Next grade id: ' wn-next-grade-id
                
@@ -331,9 +330,11 @@
             
            EXEC SQL
                INSERT INTO tbl_grade
-               VALUES (:tbl-grade-grade-id, :tbl-grade-grade-grade,
-                       :tbl-grade-grade-comment, :tbl-grade-user-id,
-                       :tbl-grade-course-id )
+               VALUES ( :tbl-grade-grade-id,
+                        :tbl-grade-grade-grade,
+                        :tbl-grade-grade-comment,
+                        :tbl-grade-user-id,
+                        :tbl-grade-course-id )
            END-EXEC 
             
            IF  SQLCODE NOT = ZERO
