@@ -162,7 +162,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
         $user_row[$i] = array('course_name' => $tmp[0], 'user_firstname' => $tmp[1], 'user_lastname' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_id' => $tmp[4],'user_id' => $tmp[5],'course_id' => $tmp[6], 'grade_comment' => $tmp[7]);
     }
         // initilize to rememeber previous group of the course names
-        $lastcoursename = '';
+        $lastcoursename = '-';
 
         // iterate through all course user data
         for ($i = 0; $i < count($user_row); $i++)
