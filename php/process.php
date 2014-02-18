@@ -187,10 +187,13 @@ elseif($function == "addUser")
 }
 elseif($function == "addGrade")
 {
-	$grade = $_POST['grade'];
-	$grade_comment = pg_escape_literal($_POST['grade_comment']);
-	$user_id = $_GET['user_id'];
-	$course_id = $_GET['course_id'];
+
+	$user_id = pg_escape_literal($_GET['user_id']);
+	$course_id = pg_escape_literal($_GET['course_id']);
+	
+	// POST data via form
+	$grade_grade = pg_escape_literal($_POST['grade']);
+	$grade_comment = pg_escape_literal($_POST['grade_comment']);	
 
 	if(empty($user_id) OR empty($course_id))
 	{
@@ -199,28 +202,46 @@ elseif($function == "addGrade")
 	}
 	else
 	{
-		if(empty($grade) OR empty($grade_comment))
+		if(empty($grade_grade) OR empty($grade_comment))
 		{
 			$Error->set("Du måste sätta ett betyg och lämna en kommentar på eleven.");
 			header('location: users.create.php');	
 		}
 		else
 		{
-			// $result = mysql_query("INSERT INTO tbl_grade (grade_grade, grade_comment, user_id, course_id) VALUES ('".$grade."', '".$grade_comment."', '".$user_id."', '".$course_id."')") or die(mysql_error());
-            
-			// BK: Syntax error when run, is code correct I separated above in two sentences
 			
-			$addgrade="INSERT INTO tbl_grade (grade_grade, grade_comment, user_id, course_id)
-			           VALUES
-					   ('$grade', '$grade_comment', '$user_id', '$course_id')";		   
+			$url = 'http://www.mc-butter.se/cgi-bin/cgi-add-betyg.cgi';
+			$fields = array( 'grade_grade' => $grade_grade,
+							 'grade_comment' => $grade_comment,
+							 'user_id' => $user_id,
+							 'course_id' => $course_id
+							);
+			// url-ify the data for the POST with php built-in function
+			$php_url_string = http_build_query($fields);
+			// remove %27 i.e. the ' which php adds around post string :-( 
+			$fields_string = preg_replace('/%27/', '', $php_url_string);
+			//open connection
+			$ch = curl_init();
 			
-			$result = pg_query($addgrade) or die(pg_last_error());
+			//set the url, number of POST vars, POST data
+			curl_setopt($ch,CURLOPT_URL, $url);
+			curl_setopt($ch,CURLOPT_POST, count($fields));
+			curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
 			
-			if($result)
-			{
-				$Success->set("Betyget har nu satts.");
-				header('location: course.php');
-			}
+			//execute post
+			$result = curl_exec($ch);
+			if($result === false) $Error->set("Kan ej kontakta servern: $url") ;
+			
+			// We dont really know status (TODO implement)
+			$Success->set("Ett nytt betyget har nu satts.");
+			
+			//close connection
+			curl_close($ch);
+			
+			// move back to main course page to re-read change
+			header('location: course.php');				
+			
+			
 		}
 	}
 }
@@ -267,14 +288,12 @@ elseif($function == "editGrade")
 			$result = curl_exec($ch);
 			if($result === false) $Error->set("Kan ej kontakta servern: $url") ;
 			
-			//close connection
-			curl_close($ch);
-			
-
 			// We dont really know status (TODO implement)
 			$Success->set("Betyget har nu ändrats.");
 			
-			// header('location: course.edit.php?id='.$grade_id);
+			//close connection
+			curl_close($ch);
+			
 			// move back to main course page to re-read change
 			header('location: course.php');	
 			
