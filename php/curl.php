@@ -10,7 +10,7 @@
 
 $first_name = 'Open';    
 $last_name = 'Jensen';
-$country_code = 'åäö';
+$country_code = 'SE';
 
     
 //set POST variables
@@ -21,9 +21,8 @@ $fields = array(
             'country' => urlencode($country_code)
 				);
 
-//url-ify the data for the POST
-foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
-rtrim($fields_string, '&');
+//url-ify the data for the POST with php built-in function
+$fields_string = http_build_query($fields);
 
 //open connection
 $ch = curl_init();

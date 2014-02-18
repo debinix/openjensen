@@ -152,7 +152,7 @@
                *>  get program_id          
                MOVE ZERO TO wn-rtn-code
                MOVE SPACE TO wc-post-value
-               MOVE 'program_id' TO wc-post-name
+               MOVE 'user_program' TO wc-post-name
                CALL 'get-post-value' USING wn-rtn-code
                                            wc-post-name wc-post-value
                MOVE FUNCTION NUMVAL(wc-post-value) TO wn-program_id   

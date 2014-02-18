@@ -32,6 +32,46 @@ if($_SESSION['usertype_id'] == 1)
       // wait until file is written at server before continue to read it.
       //
       
+      $file_exists=file_exists($betyg_elev_file);
+      if($file_exists) {
+        unlink($betyg_elev_file);
+      }
+      
+            $user_id = $_SESSION['user_id'];
+      $user_program = $_SESSION['user_program'];
+      $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi';
+      $fields = array( 'user_id' => $user_id,
+                       'user_program' => $user_program
+                      );
+      
+      //url-ify the data for the POST with php built-in function
+      $php_url_string = http_build_query($fields);
+      // remove %27 i.e. the ' which php may add around post string :-( 
+      $fields_string = preg_replace('/%27/', '', $php_url_string);
+      $ch = curl_init();
+      
+      //set the url, number of POST vars, POST data
+      curl_setopt($ch,CURLOPT_URL, $url);
+      curl_setopt($ch,CURLOPT_POST, count($fields));
+      curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
+      
+      //execute post
+      $result = curl_exec($ch);
+      if($result === false)
+          $Error->set("Curl have a problem to reach $url") ;
+      
+      //close connection
+      curl_close($ch);
+      // sleep max 5s to make before continue with our php code below
+      for ($f=0; $f <= 5; $f++) {
+        $file_exists=file_exists($betyg_elev_file);
+        if($file_exists) {
+            break;
+        }
+        sleep(1);      
+      }
+      if($f === 5) $Error->set("Saknar fil: $betyg_elev_file") ; 
+      
       $course_row = file($betyg_elev_file);
            
       // loop through the array
@@ -70,9 +110,47 @@ elseif ($_SESSION['usertype_id'] >= 2)
   
   //
   // POST data with: name="program_id" (i.e. $_SESSION['user_program'])
-  // to url: http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi
+  // to url: http://www.mc-butter.se/cgi-bin/cgi-list-betygalla.cgi
   // wait until file is written at server before continue to read it.
-  //  
+  //
+  
+  $file_exists=file_exists($betyg_all_file);
+  if($file_exists) {
+    unlink($betyg_all_file);
+  }
+  
+  $user_program = $_SESSION['user_program'];
+  $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygalla.cgi';
+  $fields = array( 'user_program' => $user_program
+                  );
+  //url-ify the data for the POST with php built-in function
+  $php_url_string = http_build_query($fields);
+  // remove %27 i.e. the ' which php may add around post string :-( 
+  $fields_string = preg_replace('/%27/', '', $php_url_string);
+  //open connection
+  $ch = curl_init();
+  
+  //set the url, number of POST vars, POST data
+  curl_setopt($ch,CURLOPT_URL, $url);
+  curl_setopt($ch,CURLOPT_POST, count($fields));
+  curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
+  
+  //execute post
+  $result = curl_exec($ch);
+  if($result === false) $Error->set("Kan ej kontakta servern: $url") ;
+  
+  //close connection
+  curl_close($ch);
+  // sleep max 5s to make before continue with our php code below
+  for ($f=0; $f <= 5; $f++) {
+    $file_exists=file_exists($betyg_all_file);
+    if($file_exists) {
+        break;
+    }
+    sleep(1);      
+  }
+  if($f === 5) $Error->set("Saknar fil: $betyg_all_file") ; 
+  
   
   $user_row = file($betyg_all_file);
   
