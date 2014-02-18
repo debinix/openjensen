@@ -58,9 +58,6 @@
 
        EXEC SQL INCLUDE SQLCA END-EXEC.
        
-       *> next free grade_id to insert into table tbl_grade
-       05  wn-next-grade-id              PIC  9(4) VALUE ZERO.
-       
        *>**************************************************
        PROCEDURE DIVISION.
        *>**************************************************       
@@ -299,9 +296,9 @@
                SET is-valid-table-position TO TRUE
                
                *> next number for new row in table
-               COMPUTE wn-next-grade-id = tbl-grade-grade-id + 1
+               COMPUTE tbl-grade-grade-id = tbl-grade-grade-id + 1
                
-               DISPLAY '<br> Next grade id: ' wn-next-grade-id
+               DISPLAY '<br> Next grade id: ' tbl-grade-grade-id
                
            END-IF
 
@@ -315,7 +312,6 @@
        *>**************************************************          
        B0230-add-new-grade-to-table.
                   
-           MOVE wn-next-grade-id TO tbl-grade-grade-id
            MOVE wc-grade-grade-grade TO tbl-grade-grade-grade
            MOVE wc-grade-grade-comment TO tbl-grade-grade-comment
            MOVE wn-grade-user-id TO tbl-grade-user-id
