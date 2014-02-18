@@ -239,7 +239,7 @@ elseif($function == "editGrade")
 	}
 	else
 	{
-		if(empty($grade) OR empty($grade_comment))
+		if(empty($grade_grade) OR empty($grade_comment))
 		{
 			$Error->set("Du måste sätta ett betyg och lämna en kommentar på eleven.");
 			header('location: course.edit.php?id='.$grade_id);	
