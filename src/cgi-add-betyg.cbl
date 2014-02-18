@@ -222,11 +222,9 @@
            DISPLAY '<br> Course:' wn-grade-course-id
                      
            EXEC SQL
-             DECLARE ADDCHK CURSOR FOR
+              DECLARE ADDCHK CURSOR FOR
                  SELECT user_id, course_id
                  FROM tbl_grade
-                 WHERE user_id = : wn-grade-user-id
-                 AND course_id = : wn-grade-course-id
            END-EXEC      
 
            *> Open the cursor
@@ -240,17 +238,31 @@
                    INTO :tbl-grade-user-id, :tbl-grade-course-id
            END-EXEC
            
-           IF SQLCODE = ZERO
-               *> grade already exist for course-id and user-id !
-               SET grade-is-in-table TO TRUE
-           ELSE
-               
-               *> check for errors if query returned no rows
-               IF  SQLSTATE NOT = '02000'
-                   PERFORM Z0100-error-routine
+           
+           PERFORM UNTIL SQLCODE NOT = ZERO
+           
+               *> set flag if already in the table
+               IF ( tbl-grade-user-id = wn-grade-user-id
+                    AND tbl-grade-course-id = wn-grade-course-id )
+                  
+                    SET grade-is-in-table TO TRUE
+                        
                END-IF
-               
-           END-IF   
+           
+              *> fetch next row  
+              EXEC SQL
+                  FETCH ADDCHK
+                      INTO :tbl-grade-user-id, :tbl-grade-course-id
+              END-EXEC
+              
+           END-PERFORM           
+           
+                      
+           *> check for errors if query returned no rows
+           IF  SQLSTATE NOT = '02000'
+               PERFORM Z0100-error-routine
+           END-IF
+                 
              
            *> close cursor
            EXEC SQL 
@@ -326,7 +338,7 @@
                 MOVE 'Nytt betyg adderat' TO wc-printscr-string
                 CALL 'ok-printscr' USING wc-printscr-string
            END-IF     
-    
+
            .
 
        *>**************************************************       
