@@ -214,9 +214,6 @@
        B0210-does-user-course-exist.
            
            *> Cursor for tbl_grade
-           
-           DISPLAY '<br> User:' wn-grade-user-id
-           DISPLAY '<br> Course:' wn-grade-course-id
                      
            EXEC SQL
               DECLARE ADDCHK CURSOR FOR
@@ -298,8 +295,6 @@
                *> next number for new row in table
                COMPUTE tbl-grade-grade-id = tbl-grade-grade-id + 1
                
-               DISPLAY '<br> Next grade id: ' tbl-grade-grade-id
-               
            END-IF
 
            *> close cursor
@@ -316,14 +311,7 @@
            MOVE wc-grade-grade-comment TO tbl-grade-grade-comment
            MOVE wn-grade-user-id TO tbl-grade-user-id
            MOVE wn-grade-course-id TO tbl-grade-course-id
-           
-           DISPLAY '<br> Add new grade id: ' tbl-grade-grade-id
-           DISPLAY '<br> Add grade: ' tbl-grade-grade-grade
-           DISPLAY '<br> Add grade comment: 'tbl-grade-grade-comment
-           DISPLAY '<br> Add user id: ' tbl-grade-user-id
-           DISPLAY '<br> Add course id: ' tbl-grade-course-id
-           
-            
+                     
            EXEC SQL
                INSERT INTO tbl_grade
                VALUES ( :tbl-grade-grade-id,
