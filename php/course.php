@@ -106,12 +106,12 @@ elseif ($_SESSION['usertype_id'] >= 2)
   
   //
   // POST data with: name="program_id" (i.e. $_SESSION['user_program'])
-  // to url: http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi
+  // to url: http://www.mc-butter.se/cgi-bin/cgi-list-betygalla.cgi
   // wait until file is written at server before continue to read it.
   //
   
   $user_program = $_SESSION['user_program'];
-  $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi';
+  $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygalla.cgi';
   $fields = array( 'user_program' => $user_program
                   );
   //url-ify the data for the POST with php built-in function
