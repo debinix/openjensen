@@ -206,7 +206,7 @@
                    PERFORM B0230-add-new-grade-to-table
                END-IF
            ELSE
-               MOVE 'Denna student har redan ett betyg på denna kurs.'
+               MOVE 'Denna student har redan ett kursbetyg.'
                     TO wc-printscr-string
                CALL 'stop-printscr' USING wc-printscr-string
            END-IF
@@ -315,14 +315,19 @@
            
        *>**************************************************          
        B0230-add-new-grade-to-table.
-       
-           DISPLAY '<br> Add new grade id: ' wn-next-grade-id
-       
+                  
            MOVE wn-next-grade-id TO tbl-grade-grade-id
            MOVE wc-grade-grade-grade TO tbl-grade-grade-grade
            MOVE wc-grade-grade-comment TO tbl-grade-grade-comment
            MOVE wn-grade-user-id TO tbl-grade-user-id
-           MOVE wn-grade-course-id TO tbl-grade-course-id           
+           MOVE wn-grade-course-id TO tbl-grade-course-id
+           
+           DISPLAY '<br> Add new grade id: ' tbl-grade-grade-id
+           DISPLAY '<br> Add new grade: ' tbl-grade-grade-grade
+           DISPLAY '<br> Add new grade comment: ' tbl-grade-grade-comment
+           DISPLAY '<br> Add new user id: ' tbl-grade-user-id
+           DISPLAY '<br> Add new course id: ' tbl-grade-course-id
+           
             
            EXEC SQL
                INSERT INTO tbl_grade
