@@ -222,7 +222,7 @@
            DISPLAY '<br> Course:' wn-grade-course-id
                      
            EXEC SQL
-             DECLARE cursadd CURSOR FOR
+             DECLARE ADDCHK CURSOR FOR
                  SELECT user_id, course_id
                  FROM tbl_grade
                  WHERE user_id = : wn-grade-user-id
@@ -231,12 +231,12 @@
 
            *> Open the cursor
            EXEC SQL
-                OPEN cursadd
+                OPEN ADDCHK
            END-EXEC
                       
            *> fetch first row
            EXEC SQL
-               FETCH cursadd
+               FETCH ADDCHK
                    INTO :tbl-grade-user-id, :tbl-grade-course-id
            END-EXEC
            
@@ -244,6 +244,7 @@
                *> grade already exist for course-id and user-id !
                SET grade-is-in-table TO TRUE
            ELSE
+               
                *> check for errors if query returned no rows
                IF  SQLSTATE NOT = '02000'
                    PERFORM Z0100-error-routine
@@ -253,7 +254,7 @@
              
            *> close cursor
            EXEC SQL 
-               CLOSE cursadd 
+               CLOSE ADDCHK 
            END-EXEC 
            
            .       
@@ -263,7 +264,7 @@
        
            *> Cursor for tbl_grade
            EXEC SQL
-             DECLARE cursaddid CURSOR FOR
+             DECLARE NEWROW CURSOR FOR
                  SELECT grade_id
                  FROM tbl_grade
                  ORDER BY grade_id DESC
@@ -271,12 +272,12 @@
        
            *> Open the cursor
            EXEC SQL
-                OPEN cursaddid
+                OPEN NEWROW
            END-EXEC
        
            *> fetch first row (which now have the highest id)
            EXEC SQL
-               FETCH cursaddid
+               FETCH NEWROW
                    INTO :tbl-grade-grade-id
            END-EXEC       
         
@@ -295,7 +296,7 @@
 
            *> close cursor
            EXEC SQL 
-               CLOSE cursaddid 
+               CLOSE NEWROW 
            END-EXEC            
            
            .
@@ -305,7 +306,6 @@
        
            DISPLAY '<br> Add new grade id: ' wn-next-grade-id
        
-            
            MOVE wn-next-grade-id TO tbl-grade-grade-id
            MOVE wc-grade-grade-grade TO tbl-grade-grade-grade
            MOVE wc-grade-grade-comment TO tbl-grade-grade-comment
