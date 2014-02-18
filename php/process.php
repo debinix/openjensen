@@ -272,9 +272,9 @@ elseif($function == "editGrade")
 			// We dont really know status (TODO implement)
 			$Success->set("Betyget har nu ändrats.");
 			
-			// BK: Removed header('location: course.edit.php?id='.$grade_id);
+			header('location: course.edit.php?id='.$grade_id);
 			// move back to main course page to re-read change
-			header('location: course.php');	
+			// header('location: course.php');	
 			
 
 		}
