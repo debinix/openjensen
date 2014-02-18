@@ -254,7 +254,7 @@ elseif($function == "editGrade")
 			// url-ify the data for the POST with php built-in function
 			$php_url_string = http_build_query($fields);
 			// remove %27 i.e. the ' which php adds around post string :-( 
-			$fields_string = preg_replace('/%27/', '//', $php_url_string);
+			$fields_string = preg_replace('/%27/', '', $php_url_string);
 			//open connection
 			$ch = curl_init();
 			
