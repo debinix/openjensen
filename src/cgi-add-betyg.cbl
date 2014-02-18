@@ -323,10 +323,10 @@
            MOVE wn-grade-course-id TO tbl-grade-course-id
            
            DISPLAY '<br> Add new grade id: ' tbl-grade-grade-id
-           DISPLAY '<br> Add new grade: ' tbl-grade-grade-grade
-           DISPLAY '<br> Add new grade comment: ' tbl-grade-grade-comment
-           DISPLAY '<br> Add new user id: ' tbl-grade-user-id
-           DISPLAY '<br> Add new course id: ' tbl-grade-course-id
+           DISPLAY '<br> Add grade: ' tbl-grade-grade-grade
+           DISPLAY '<br> Add grade comment: 'tbl-grade-grade-comment
+           DISPLAY '<br> Add user id: ' tbl-grade-user-id
+           DISPLAY '<br> Add course id: ' tbl-grade-course-id
            
             
            EXEC SQL
