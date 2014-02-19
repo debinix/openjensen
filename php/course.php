@@ -32,6 +32,8 @@ if($_SESSION['usertype_id'] == 1)
       // wait until file is written at server before continue to read it.
       //
       
+      $time_start = microtime(true);
+      
       $file_exists=file_exists($betyg_elev_file);
       if($file_exists) {
         unlink($betyg_elev_file);
@@ -62,7 +64,8 @@ if($_SESSION['usertype_id'] == 1)
       
       //close connection
       curl_close($ch);
-      // sleep max 5s to make before continue with our php code below
+      
+      // time out after 5s
       for ($f=0; $f <= 5; $f++) {
         $file_exists=file_exists($betyg_elev_file);
         if($file_exists) {
@@ -72,7 +75,17 @@ if($_SESSION['usertype_id'] == 1)
       }
       if($f === 5) $Error->set("Saknar fil: $betyg_elev_file") ; 
       
+      
+      $time_mid = microtime(true);
+      $mytime = number_format($time_mid - $time_start, 5) ;
+      echo "Väntade på backend: $mytime sekunder<br>";
+      
       $course_row = file($betyg_elev_file);
+      
+      $time_end = microtime(true);
+      $mytime = number_format($time_end - $time_mid, 5) ;
+      echo "PHP processa infil: $mytime sekunder<br>";
+      
            
       // loop through the array
       for ($i = 0; $i < count($course_row); $i++)
@@ -114,6 +127,8 @@ elseif ($_SESSION['usertype_id'] >= 2)
   // wait until file is written at server before continue to read it.
   //
   
+  $time_start = microtime(true);
+  
   $file_exists=file_exists($betyg_all_file);
   if($file_exists) {
     unlink($betyg_all_file);
@@ -141,7 +156,8 @@ elseif ($_SESSION['usertype_id'] >= 2)
   
   //close connection
   curl_close($ch);
-  // sleep max 5s to make before continue with our php code below
+  
+  // time out after 5s
   for ($f=0; $f <= 5; $f++) {
     $file_exists=file_exists($betyg_all_file);
     if($file_exists) {
@@ -151,8 +167,15 @@ elseif ($_SESSION['usertype_id'] >= 2)
   }
   if($f === 5) $Error->set("Saknar fil: $betyg_all_file") ; 
   
-  
+  $time_mid = microtime(true);
+  $mytime = number_format($time_mid - $time_start, 5) ;
+  echo "Väntade på backend: $mytime sekunder<br>";
+
   $user_row = file($betyg_all_file);
+  
+  $time_end = microtime(true);
+  $mytime = number_format($time_end - $time_mid, 5) ;
+  echo "PHP processa infil: $mytime sekunder<br>";
   
     // loop through the array
     for ($i = 0; $i < count($user_row); $i++) {
