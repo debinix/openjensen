@@ -345,7 +345,7 @@
            move wn-user-program-id to t-user-program-id
 
            EXEC SQL
-               INSERT INTO tbl_users
+               INSERT INTO tbl_user
                VALUES (:t-user-id, :t-user-firstname,
                        :t-user-lastname, :t-user-email,
                        :t-user-phonenumber, :t-user-username,

@@ -276,7 +276,7 @@
                   :t-user-username,
                   :t-user-password,
                   :t-user-program-id
-             FROM tbl_users
+             FROM tbl_user
              WHERE user_id = :wn-user-id
            END-EXEC
 
