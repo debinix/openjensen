@@ -32,18 +32,24 @@ if($_SESSION['usertype_id'] == 1)
       // wait until file is written at server before continue to read it.
       //
       
+      // We need to set the filename because the COBOl CGI needs it.
+      $ses_id = session_id();
+      $filename = $ses_id."-".$betyg_elev_file ;
+      
       $time_start = microtime(true);
       
-      $file_exists=file_exists($betyg_elev_file);
+      $file_exists=file_exists($filename);
       if($file_exists) {
-        unlink($betyg_elev_file);
+        unlink($filename);
       }
       
-            $user_id = $_SESSION['user_id'];
+
+      $user_id = $_SESSION['user_id'];
       $user_program = $_SESSION['user_program'];
       $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi';
       $fields = array( 'user_id' => $user_id,
-                       'user_program' => $user_program
+                       'user_program' => $user_program,
+                       'file_name' => $filename
                       );
       
       //url-ify the data for the POST with php built-in function
@@ -67,20 +73,20 @@ if($_SESSION['usertype_id'] == 1)
       
       // time out after 5s
       for ($f=0; $f <= 5; $f++) {
-        $file_exists=file_exists($betyg_elev_file);
+        $file_exists=file_exists($filename);
         if($file_exists) {
             break;
         }
         sleep(1);      
       }
-      if($f === 5) $Error->set("Saknar fil: $betyg_elev_file") ; 
+      if($f === 5) $Error->set("Saknar fil: $filename") ; 
       
       
       $time_mid = microtime(true);
       $mytime = number_format($time_mid - $time_start, 5) ;
       echo "Väntade på backend: $mytime sekunder<br>";
       
-      $course_row = file($betyg_elev_file);
+      $course_row = file($filename);
       
       $time_end = microtime(true);
       $mytime = number_format($time_end - $time_mid, 5) ;
@@ -127,16 +133,21 @@ elseif ($_SESSION['usertype_id'] >= 2)
   // wait until file is written at server before continue to read it.
   //
   
+  // We need to set the filename because the COBOl CGI needs it.
+  $ses_id = session_id();
+  $filename = $ses_id."-".$betyg_all_file ;
+  
   $time_start = microtime(true);
   
-  $file_exists=file_exists($betyg_all_file);
+  $file_exists=file_exists($filename);
   if($file_exists) {
-    unlink($betyg_all_file);
+    unlink($filename);
   }
   
   $user_program = $_SESSION['user_program'];
   $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygalla.cgi';
-  $fields = array( 'user_program' => $user_program
+  $fields = array( 'user_program' => $user_program,
+                   'file_name' => $filename
                   );
   //url-ify the data for the POST with php built-in function
   $php_url_string = http_build_query($fields);
@@ -159,19 +170,19 @@ elseif ($_SESSION['usertype_id'] >= 2)
   
   // time out after 5s
   for ($f=0; $f <= 5; $f++) {
-    $file_exists=file_exists($betyg_all_file);
+    $file_exists=file_exists($filename);
     if($file_exists) {
         break;
     }
     sleep(1);      
   }
-  if($f === 5) $Error->set("Saknar fil: $betyg_all_file") ; 
+  if($f === 5) $Error->set("Saknar fil: $filename") ; 
   
   $time_mid = microtime(true);
   $mytime = number_format($time_mid - $time_start, 5) ;
   echo "Väntade på backend: $mytime sekunder<br>";
 
-  $user_row = file($betyg_all_file);
+  $user_row = file($filename);
   
   $time_end = microtime(true);
   $mytime = number_format($time_end - $time_mid, 5) ;
