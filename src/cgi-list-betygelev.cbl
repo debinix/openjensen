@@ -13,7 +13,7 @@
        input-output section.
             
        file-control.
-           SELECT fileout 
+           SELECT OPTIONAL fileout 
               ASSIGN TO '../betyg-elev.txt'
               ORGANIZATION IS LINE SEQUENTIAL.         
        *>**************************************************
@@ -106,6 +106,8 @@
        *> receiving variables for data passed from php
        01 wn-user_id                 PIC  9(4) VALUE ZERO.
        01 wn-program_id              PIC  9(4) VALUE ZERO.
+       01 wc-file-name               PIC  X(40) VALUE SPACE.
+       01 wc-dest-file-path          PIC  X(64) VALUE SPACE.
        
        *> constant to signal to php - no value
        01 WC-NO-SQLVALUE-TO-PHP      PIC X(1)  VALUE '-'.   
@@ -165,6 +167,15 @@
                CALL 'get-post-value' USING wn-rtn-code
                                            wc-post-name wc-post-value
                MOVE FUNCTION NUMVAL(wc-post-value) TO wn-user_id
+               
+               *> get filename to return data set to php
+               MOVE ZERO TO wn-rtn-code
+               MOVE SPACE TO wc-post-value
+               MOVE 'file_name' TO wc-post-name
+               CALL 'get-post-value' USING wn-rtn-code
+                                           wc-post-name wc-post-value
+               MOVE wc-post-value TO wc-file-name               
+               
                
                *> open outfile
                OPEN OUTPUT fileout
@@ -403,6 +414,23 @@
            CLOSE fileout
            
            .
+
+       *>**************************************************
+       B0310-rename-outfil. 
+                                 
+           *> use two OpenCobol "call by name" system routines
+           
+           MOVE SPACE TO wc-dest-file-path
+           
+           STRING '..' DELIMITED BY '/'
+               wc-filename DELIMITED BY SPACE INTO wc-dest-file-path
+           
+           *> copy file to new name
+           CALL 'C$COPY' USING fileout, wc-dest-file-path, 0
+           
+           .
+
+
 
        *>**************************************************
        C0100-closedown.
