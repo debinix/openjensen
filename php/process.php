@@ -185,7 +185,6 @@ elseif($function == "editUser")
 }
 elseif($function == "addUser")
 {
-	$user_id = $_SESSION['user_id'];
 	$firstname = pg_escape_literal($_POST['firstname']);
 	$lastname = pg_escape_literal($_POST['lastname']);
 	$email = pg_escape_literal($_POST['email']);
@@ -206,9 +205,8 @@ elseif($function == "addUser")
 		// pg_query("INSERT INTO tbl_user (user_firstname, user_lastname, user_email, user_phonenumber, user_username, user_password, user_lastlogin, user_program, usertype_id)
 		//		 VALUES ('".$firstname."', '".$lastname."', '".$email."', '".$phone."', '".$username."', '".$password."', '1970-01-01 00:00:00', '".$program."', '".$usertype."')") or die(pg_last_error());
 
-		$url = 'http://www.mc-butter.se/cgi-bin/cgi-edit-user.cgi';
-		$fields = array('user-id' => $user_id,
-				'firstname' => $firstname,
+		$url = 'http://www.mc-butter.se/cgi-bin/cgi-add-user.cgi';
+		$fields = array('firstname' => $firstname,
 				'lastname' => $lastname,
 				'email' => $email,
 				'phone' => $phone,
