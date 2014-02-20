@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenJensen</title>
+    <title>SCRUM</title>
     <link href="assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/css/main.css" rel="stylesheet">
     <link href="assets/css/login.css" rel="stylesheet">
@@ -24,10 +24,50 @@
         <button class="btn btn-lg btn-primary btn-block" type="submit">Logga in</button>
         <br>
         <div class="btn-group btn-group-justified">
-          <a class="btn btn-default" href="#" title="">Glömt lösenord?</a>
-          <a class="btn btn-default" href="#" title="">Ny användare?</a>
+          <a class="btn btn-default" href="" data-toggle="modal" data-target="#Losenord">Glömt lösenord?</a>
+          <a class="btn btn-default" href="" data-toggle="modal" data-target="#Kontakt">Kontakt</a>
         </div>
+        <div class="modal fade" id="Kontakt" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title" id="myModalLabel">Kontakt</h4>
+                </div>
+                <div class="modal-body">
+                  <p>Karlbergsvägen 77, 113 35 Stockholm</p>
+                  <p>Tel. 08-450 22 30. Telefontid: mån-fre kl. 9-12 och 13-16</p>
+                  <p><b>Vanliga frågor & svar</b></br>
+                  <a href="mailto:komvux@jenseneducation.se" target="_top">komvux@jenseneducation.se</p></a>
+                <p>T-bana: S:t Eriksplan uppgång Torsgatan, </br>Buss: 72, 42, 69, 3 och 4, </br>Pendeltåg: Karlbergs station.</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+<div class="modal fade" id="Losenord" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title" id="myModalLabel">Glömt lösenord?</h4>
+                </div>
+                <div class="modal-body">
+                  <p>Har du glömt ditt lösenord så kan du kontakta <a href="mailto:komvux@jenseneducation.se" target="_top">komvux@jenseneducation.se</a></p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        <div class="btn-group btn-group-justified">
         <a class="btn btn-default" href="" data-toggle="modal" data-target="#Cookies">Om Cookies</a>
+        </div>
       </form>
     </div>
     <div class="modal fade" id="Cookies" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -56,6 +96,9 @@
               </div>
             </div>
           </div>
+
+
+
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="assets/js/bootstrap.min.js"></script>
   </body>
