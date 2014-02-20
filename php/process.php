@@ -180,6 +180,7 @@ elseif($function == "editUser")
 		curl_close($ch);
 
 		//header('location: users.edit.php?user_id='.$user_id);
+		header('location: users.php');
 	}
 }
 elseif($function == "addUser")
@@ -207,13 +208,14 @@ elseif($function == "addUser")
 
 		$url = 'http://www.mc-butter.se/cgi-bin/cgi-edit-user.cgi';
 		$fields = array('user-id' => $user_id,
-				'firstname' => $fname,
-				'lastname' => $lname,
+				'firstname' => $firstname,
+				'lastname' => $lastname,
 				'email' => $email,
 				'phone' => $phone,
 				'username' => $username,
 				'password' => $password,
-				'program' => $program
+				'program' => $program,
+				'usertype'=> $usertype
 				);
 		// url-ify the data for the POST with php built-in function
 		$php_url_string = http_build_query($fields);
