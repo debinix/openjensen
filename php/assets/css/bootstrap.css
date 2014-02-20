@@ -43,6 +43,7 @@ html {
 }
 body {
   margin: 0;
+  overflow: scroll;
 }
 a {
   background: transparent;
