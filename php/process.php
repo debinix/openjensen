@@ -149,8 +149,8 @@ elseif($function == "editUser")
 	{
 		$url = 'http://www.mc-butter.se/cgi-bin/cgi-edit-user.cgi';
 		$fields = array('user_id' => $user_id,
-				'firstname' => $fname,
-				'lastname' => $lname,
+				'firstname' => $firstname,
+				'lastname' => $lastname,
 				'email' => $email,
 				'phone' => $phone,
 				'username' => $username,
