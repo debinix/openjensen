@@ -46,8 +46,6 @@
              05  t-user-phonenumber    PIC  X(40) VALUE SPACE.
              05  t-user-username       PIC  X(40) VALUE SPACE.
              05  t-user-password       PIC  X(40) VALUE SPACE.
-             05  t-user-lastlogin      PIC  X(40) VALUE SPACE.
-             05  t-user-program-id     PIC  9(9) VALUE ZERO.
        exec sql end declare section end-exec.
 
        01  wr-users-rec-vars.
@@ -58,8 +56,6 @@
              05  wc-user-phonenumber   PIC  X(40) VALUE SPACE.
              05  wc-user-username      PIC  X(40) VALUE SPACE.
              05  wc-user-password      PIC  X(40) VALUE SPACE.
-             05  wc-user-lastlogin     PIC  X(40) VALUE SPACE.
-             05  wn-user-program-id    PIC  9(9) VALUE ZERO.
        *>#######################################################
 
        *> temporary table holding existing data
@@ -71,8 +67,6 @@
              05  wc-cur-user-phonenumber  PIC  X(40) VALUE SPACE.
              05  wc-cur-user-username     PIC  X(40) VALUE SPACE.
              05  wc-cur-user-password     PIC  X(40) VALUE SPACE.
-             05  wc-cur-user-lastlogin    PIC  X(40) VALUE SPACE.
-             05  wn-cur-user-program-id   PIC  9(9) VALUE ZERO.
 
        EXEC SQL INCLUDE SQLCA END-EXEC.
 
@@ -203,18 +197,6 @@
                    set is-valid-init to true
                end-if
 
-               move zero to wn-rtn-code
-               move space to wc-post-value
-               move 'program' to wc-post-name
-               call 'get-post-value'
-                    using wn-rtn-code wc-post-name wc-post-value
-
-               if wn-rtn-code = zero
-                   move function numval(wc-post-value)
-                        TO wn-user-program-id
-                   set is-valid-init to true
-               end-if
-
            END-IF
            .
 
@@ -267,15 +249,13 @@
                    user_phonenumber,
                    user_username,
                    user_password
-                   user_program
              INTO :t-user-id,
                   :t-user-firstname,
                   :t-user-lastname,
                   :t-user-email,
                   :t-user-phonenumber,
                   :t-user-username,
-                  :t-user-password,
-                  :t-user-program-id
+                  :t-user-password
              FROM tbl_users
              WHERE user_id = :wn-user-id
            END-EXEC
@@ -294,8 +274,6 @@
                 MOVE t-user-phonenumber TO wc-cur-user-phonenumber
                 MOVE t-user-username TO wc-cur-user-username
                 MOVE t-user-password TO wc-cur-user-password
-                MOVE t-user-lastlogin TO wc-cur-user-lastlogin
-                MOVE t-user-program-id TO wn-cur-user-program-id
            END-IF
 
            .
@@ -342,18 +320,6 @@
                 MOVE wc-cur-user-password TO t-user-password
            END-IF
 
-           IF wc-user-lastlogin NOT = wc-cur-user-lastlogin
-                MOVE wc-user-lastlogin TO t-user-lastlogin
-           ELSE
-                MOVE wc-cur-user-lastlogin TO t-user-lastlogin
-           END-IF
-
-           IF wn-user-program-id NOT = wn-cur-user-program-id
-                MOVE wn-user-program-id TO t-user-program-id
-           ELSE
-                MOVE wn-cur-user-program-id TO t-user-program-id
-           END-IF
-
            *> finally update table
            MOVE wn-user-id TO t-user-id
            EXEC SQL
@@ -363,9 +329,7 @@
                     user_email = :t-user-email,
                     user_phonenumber = :t-user-phonenumber,
                     user_username = :t-user-username,
-                    user_password = :t-user-password,
-                    user_lastlogin = :t-user-lastlogin,
-                    user_program = :t-user-program-id
+                    user_password = :t-user-password
                WHERE user_id = :t-user-id
            END-EXEC
 
