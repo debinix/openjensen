@@ -23,7 +23,7 @@ $Success->show();
     $ses_id = session_id();
     $filename = $ses_id."-list-user.txt";
     // Get users from DB
-    $usertype_id = $_SESSION['usertype_id''];
+    $usertype_id = $_SESSION['usertype_id'];
     $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-user.cgi';
     $fields = array('usertype_id' => $usertype_id,
                     'filename' => $filename);
