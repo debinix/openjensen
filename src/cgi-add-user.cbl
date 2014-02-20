@@ -30,7 +30,7 @@
        *> always - used in error routine
        01  wc-printscr-string      PIC X(40)  VALUE SPACE.
 
-       01  wc-pagetitle   PIC X(20) VALUE 'Lägg till användare'.
+       01  wc-pagetitle   PIC X(25) VALUE 'Lägg till användare'.
 
        EXEC SQL BEGIN DECLARE SECTION END-EXEC.
        01  wc-database              PIC  X(30).
@@ -204,7 +204,7 @@
            *>  connect
            move  "openjensen"    to   wc-database
            move  "jensen"        to   wc-username
-           move  "jensen"        to   wc-passwd
+           move  SPACE           to   wc-passwd
 
            EXEC SQL
                CONNECT :wc-username identified BY :wc-passwd
