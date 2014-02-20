@@ -103,7 +103,7 @@ elseif($function == "editProfile")
 		//close connection
 		curl_close($ch);
 
-		header('location: profile.php');
+		//header('location: profile.php');
 	}
 }
 elseif($function == "contactSupport")
@@ -130,7 +130,7 @@ elseif($function == "contactSupport")
 }
 elseif($function == "editUser")
 {
-	$user_id = pg_escape_literal($_GET['user_id']);
+	$user_id = $_SESSION['user_id'];
 	$firstname = pg_escape_literal($_POST['firstname']);
 	$lastname = pg_escape_literal($_POST['lastname']);
 	$email = pg_escape_literal($_POST['email']);
@@ -148,7 +148,7 @@ elseif($function == "editUser")
 	else
 	{
 		$url = 'http://www.mc-butter.se/cgi-bin/cgi-edit-user.cgi';
-		$fields = array('user-id' => $user_id,
+		$fields = array('user_id' => $user_id,
 				'firstname' => $fname,
 				'lastname' => $lname,
 				'email' => $email,
@@ -179,7 +179,7 @@ elseif($function == "editUser")
 		//close connection
 		curl_close($ch);
 
-		header('location: users.edit.php?user_id='.$user_id);
+		//header('location: users.edit.php?user_id='.$user_id);
 	}
 }
 elseif($function == "addUser")
