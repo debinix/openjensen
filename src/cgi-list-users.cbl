@@ -152,9 +152,9 @@
        A0100-Init.
            CALL 'wui-print-header' USING wn-rtn-code
            
-           move "/srv/www/cgi-bin/html-output.txt"
+           move "html-output.txt"
                 to wc-src-file-path
-           move "srv/www/htdocs/" to wc-dest-dir-path
+           move "../" to wc-dest-dir-path
 
            call 'write-post-string' using wn-rtn-code
 
@@ -493,6 +493,7 @@
        *> Exit and cleanup procedures
        *>**************************************************
        C0100-Exit.
+            CALL 'wui-end-html' USING wn-rtn-code
             *> rename output file to the name given by php-script
             *> using a build in subroutine. Then remove output file.
             string wc-dest-dir-path delimited by " "

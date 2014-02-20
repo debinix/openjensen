@@ -97,7 +97,7 @@
            *> always send out the content-type before any other i/o
            call 'wui-print-header' using wn-rtn-code
            *>  start html doc
-           *>call 'wui-start-html' using wc-pagetitle
+           call 'wui-start-html' using wc-pagetitle
 
            *> decompose and save current post string
            call 'write-post-string' using wn-rtn-code
@@ -375,7 +375,7 @@
        *>**************************************************
        C0100-closedown.
 
-          *> call 'wui-end-html' using wn-rtn-code
+          call 'wui-end-html' using wn-rtn-code
 
         .
 

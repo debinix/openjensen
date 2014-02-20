@@ -59,6 +59,7 @@ $Success->show();
     }
     //Include the files contenst once
     include_once($filename);
+    ?>
   </tbody>
 </table>
 <?php include("assets/_footer.php"); ?>
