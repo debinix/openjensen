@@ -351,6 +351,7 @@
            MOVE wn-user-id TO t-user-id
            EXEC SQL
                UPDATE tbl_user
+                SET
                     user_firstname = :t-user-firstname,
                     user_lastname = :t-user-lastname,
                     user_email = :t-user-email,
