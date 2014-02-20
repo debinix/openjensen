@@ -4,8 +4,8 @@
        ENVIRONMENT DIVISION.
        input-output section.
        file-control.
-           SELECT ojlogfile
-              ASSIGN TO '../../openjensen.log'
+           SELECT OPTIONAL ojlogfile
+              ASSIGN TO '../openjensen.log'
               ORGANIZATION IS LINE SEQUENTIAL.
         
        DATA DIVISION.
