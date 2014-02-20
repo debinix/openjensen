@@ -76,11 +76,11 @@ elseif($function == "editProfile")
 
 		$url = 'http://www.mc-butter.se/cgi-bin/cgi-edit-profile.cgi';
 		$fields = array('user-id' => $user_id,
-						'firstname' => $fname,
-						'lastname' => $lname,
-						'email' => $email,
-						'phone' => $phone
-						);
+				'firstname' => $fname,
+				'lastname' => $lname,
+				'email' => $email,
+				'phone' => $phone
+				);
 		// url-ify the data for the POST with php built-in function
 		$php_url_string = http_build_query($fields);
 		// remove %27 i.e. the ' which php adds around post string :-(
@@ -103,21 +103,7 @@ elseif($function == "editProfile")
 		//close connection
 		curl_close($ch);
 
-		// $result = mysql_query("SELECT * FROM tbl_user WHERE user_username = '$username' LIMIT 1");
-		// $row = mysql_fetch_assoc($result);
-		/*
-		$result = pg_query("SELECT * FROM tbl_user WHERE user_username = $username LIMIT 1");
-		$row = pg_fetch_assoc($result);
-
-		$_SESSION['user_id'] = $row['user_id'];
-		$_SESSION['user_firstname'] = $row['user_firstname'];
-		$_SESSION['user_lastname'] = $row['user_lastname'];
-		$_SESSION['user_program'] = $row['user_program'];
-		$_SESSION['usertype_id'] = $row['usertype_id'];
-
-		$Success->set("Alla ändringar sparades.");
-		*/
-		//header('location: profile.php');
+		header('location: profile.php');
 	}
 }
 elseif($function == "contactSupport")
@@ -144,7 +130,6 @@ elseif($function == "contactSupport")
 }
 elseif($function == "editUser")
 {
-
 	$user_id = pg_escape_literal($_GET['user_id']);
 	$firstname = pg_escape_literal($_POST['firstname']);
 	$lastname = pg_escape_literal($_POST['lastname']);
@@ -162,37 +147,16 @@ elseif($function == "editUser")
 	}
 	else
 	{
-		/*
-		mysql_query("UPDATE tbl_user SET
-			user_firstname = '$firstname',
-			user_lastname = '$lastname',
-			user_email = '$email',
-			user_phonenumber = '$phone',
-			user_username = '$username',
-			user_password = '$password',
-			user_program = '$program'
-		WHERE user_id = '$user_id'") or die(mysql_error());
-
-		pg_query("UPDATE tbl_user SET
-			user_firstname = $firstname,
-			user_lastname = $lastname,
-			user_email = $email,
-			user_phonenumber = $phone,
-			user_username = $username,
-			user_password = $password,
-			user_program = $program
-		WHERE user_id = $user_id") or die(pg_last_error());
-		*/
 		$url = 'http://www.mc-butter.se/cgi-bin/cgi-edit-user.cgi';
 		$fields = array('user-id' => $user_id,
-						'firstname' => $fname,
-						'lastname' => $lname,
-						'email' => $email,
-						'phone' => $phone,
-						'username' => $username,
-						'password' => $password,
-						'program' => $program
-						);
+				'firstname' => $fname,
+				'lastname' => $lname,
+				'email' => $email,
+				'phone' => $phone,
+				'username' => $username,
+				'password' => $password,
+				'program' => $program
+				);
 		// url-ify the data for the POST with php built-in function
 		$php_url_string = http_build_query($fields);
 		// remove %27 i.e. the ' which php adds around post string :-(
@@ -243,14 +207,14 @@ elseif($function == "addUser")
 
 		$url = 'http://www.mc-butter.se/cgi-bin/cgi-edit-user.cgi';
 		$fields = array('user-id' => $user_id,
-						'firstname' => $fname,
-						'lastname' => $lname,
-						'email' => $email,
-						'phone' => $phone,
-						'username' => $username,
-						'password' => $password,
-						'program' => $program
-						);
+				'firstname' => $fname,
+				'lastname' => $lname,
+				'email' => $email,
+				'phone' => $phone,
+				'username' => $username,
+				'password' => $password,
+				'program' => $program
+				);
 		// url-ify the data for the POST with php built-in function
 		$php_url_string = http_build_query($fields);
 		// remove %27 i.e. the ' which php adds around post string :-(
@@ -388,26 +352,6 @@ elseif($function == "editGrade")
 	}
 }
 elseif($function == "addNews")
-{
-	$news_title = pg_escape_literal($_POST['news_title']);
-	$news_content = pg_escape_literal($_POST['news_content']);
-	$news_author = pg_escape_literal($_SESSION['user_id']);
-
-	if(empty($news_author) OR empty($news_content) OR empty($news_title))
-	{
-		$Error->set("Fyll i alla fält.");
-		header('location: index.create.php');
-	}
-	else
-	{
-		$date = date('H:i:s - Y/m/d');
-		mysql_query("INSERT INTO T_NYHETER (news_title, news_content, news_author, news_date) VALUES ('".$news_title."', '".$news_content."', '".$news_author."', '".$date."')") or die(pg_last_error());
-
-		$Success->set("Nyheten har skapats.");
-		header('location: index.php');
-	}
-}
-elseif($function == "listUsers")
 {
 	$news_title = pg_escape_literal($_POST['news_title']);
 	$news_content = pg_escape_literal($_POST['news_content']);
