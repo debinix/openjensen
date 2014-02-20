@@ -266,7 +266,7 @@
                    user_email,
                    user_phonenumber,
                    user_username,
-                   user_password
+                   user_password,
                    user_program
              INTO :t-user-id,
                   :t-user-firstname,
