@@ -1,5 +1,5 @@
 <?php include("assets/_header.php"); ?>
-<?php if($_SESSION['usertype_id'] >= 3) { ?><a href="users.create.php"><span class="label label-primary">Skapa en användare</span></a><?php } ?>
+<?php if($_SESSION['usertype_id'] >= 3) { ?><a href="users.create.php"><span class="label label-primary">Skapa en användare</span></a><?php }?>
 <h1>Användare</h1>
 <?php
 $Error->show();
@@ -19,33 +19,46 @@ $Success->show();
   </thead>
   <tbody>
     <?php
-    if($_SESSION['usertype_id'] == 2)
+    // We need to set the filename because the COBOl CGI needs it.
+    $ses_id = session_id();
+    $filename = $ses_id."-list-user.txt";
+    // Get users from DB
+    $usertype_id = $_SESSION['usertype_id''];
+    $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-user.cgi';
+    $fields = array('usertype_id' => $usertype_id,
+                    'filename' => $filename);
+    // url-ify the data for the POST with php built-in function
+    $php_url_string = http_build_query($fields);
+    // remove %27 i.e. the ' which php adds around post string :-(
+    $fields_string = preg_replace('/%27/', '', $php_url_string);
+    //open connection
+    $ch = curl_init();
+
+    //set the url, number of POST vars, POST data
+    curl_setopt($ch,CURLOPT_URL, $url);
+    curl_setopt($ch,CURLOPT_POST, count($fields));
+    curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
+
+    //execute post
+    $result = curl_exec($ch);
+    if($result === false) $Error->set("Kan ej kontakta servern: $url") ;
+
+    $Success->set("Användarlistan hämtad.");
+    header('location: users.php');
+    //Query is executed and the CGI has created a file we sleep
+    // max 5s to make sure that the file exists before continue
+    //with our php code below
+    for ($f=0; $f <= 5; $f++)
     {
-      // $result = mysql_query("SELECT * FROM tbl_user WHERE usertype_id = 1 ORDER BY user_lastname, user_firstname");
-      $result = pg_query("SELECT * FROM tbl_user WHERE usertype_id = 1 ORDER BY user_lastname, user_firstname");
+      $file_exists=file_exists($filename);
+      if($file_exists)
+      {
+          break;
+      }
+      sleep(1);
     }
-    else
-    {
-      // $result = mysql_query("SELECT * FROM tbl_user ORDER BY user_lastname, user_firstname");
-      $result = pg_query("SELECT * FROM tbl_user ORDER BY user_lastname, user_firstname");
-    }
-    // while($row = mysql_fetch_array( $result ))
-    while($row = pg_fetch_array( $result ))    
-    {
-      ?>
-      <tr>
-        <td><?php echo $Users->usertype($row['usertype_id']); ?></td>
-        <td><?php echo $row['user_firstname']; ?></td>
-        <td><?php echo $row['user_lastname']; ?></td>
-        <td><?php echo $Users->program($row['user_program']); ?></td>
-        <td><?php echo $row['user_email']; ?></td>
-        <td><?php echo $row['user_phonenumber']; ?></td>
-        <td><?php if($row['user_lastlogin'] == "1970-01-01 00:00:00") { echo "Aldrig"; } else { echo $row['user_lastlogin']; } ?></td>
-        <?php if($_SESSION['usertype_id'] >= 3) { ?><td><a href="users.edit.php?user_id=<?php echo $row['user_id']; ?>"><span class="label label-info">Ändra</span></a></td><?php } ?>
-      </tr>
-      <?php
-    }
-    ?>
+    //Include the files contenst once
+    include_once($filename);
   </tbody>
 </table>
 <?php include("assets/_footer.php"); ?>
