@@ -111,7 +111,7 @@
                *> cgi post: remove row by local-id
                move zero to wn-rtn-code
                move space to wc-post-VALUE
-               move 'user-id' to wc-post-name
+               move 'user_id' to wc-post-name
                call 'get-post-value' using wn-rtn-code
                                            wc-post-name wc-post-value
                *> convert to number (space --> 0)
@@ -135,7 +135,7 @@
            *>  connect
            move  "openjensen"    to   wc-database
            move  "jensen"        to   wc-username
-           move  "jensen"        to   wc-passwd
+           move  SPACE        to   wc-passwd
 
            exec sql
                connect :wc-username identified by :wc-passwd
