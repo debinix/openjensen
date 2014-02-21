@@ -6,14 +6,17 @@
        *>       0.1: Initial revision.
        *>**************************************************
        IDENTIFICATION DIVISION.
-       program-id. cgi-list-users.
+       PROGRAM-ID. cgi-list-users.
        *>**************************************************
        ENVIRONMENT DIVISION.
-      *>**************************************************
+       *>**************************************************
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           select optional html-file assign to 'html-output.txt'
-               organization is line sequential.
+            SELECT OPTIONAL html-file ASSIGN TO 'html-output.txt'
+               ORGANIZATION IS LINE SEQUENTIAL.
+               
+            SELECT OPTIONAL debug-file ASSIGN TO 'debug.txt'
+               ORGANIZATION IS LINE SEQUENTIAL.
        *>**************************************************
        DATA DIVISION.
        *>**************************************************
@@ -21,6 +24,10 @@
        FD html-file.
        01  html-output-rec.
            05  html-output                     PIC X(1024).
+        
+       FD debug-file.
+       01  debug-file-rec.
+           05  debug-line                      PIC X(120). 
 
        *>**************************************************
        WORKING-STORAGE SECTION.
@@ -33,10 +40,11 @@
            05  is-valid-init-switch            PIC X   VALUE 'N'.
                88 is-valid-init                        VALUE 'Y'.
 
-       *> Working storage for record to file
+       *> Working sTOrage for record TO file
        01 wr-html-output-rec.
             05 wc-html-output          PIC X(1024) VALUE SPACE.
-
+       01 wr-debug-file-rec.
+            05 wc-debug-line           PIC X(120)  VALUE SPACE.
        *>**************************************************
        *> SQL Copybooks
 
@@ -48,7 +56,7 @@
        01  wc-username                 PIC  X(30) VALUE SPACE.
        EXEC SQL END DECLARE SECTION END-EXEC.
 
-       exec sql begin declare section end-exec.
+       EXEC SQL BEGIN DECLARE SECTION END-EXEC.
        01  users-rec-vars.
              05  t-user-id             PIC  9(4) VALUE ZERO.
              05  t-user-firstname      PIC  X(40) VALUE SPACE.
@@ -60,7 +68,7 @@
              05  t-user-lastlogin      PIC  X(40) VALUE SPACE.
              05  t-user-usertype-id    PIC  9(9) VALUE ZERO.
              05  t-user-program-id     PIC  9(9) VALUE ZERO.
-       exec sql end declare section end-exec.
+       EXEC SQL END DECLARE SECTION END-EXEC.
 
        01  wr-users-rec-vars.
              05  wc-user-id            PIC  9(4) VALUE ZERO.
@@ -74,13 +82,13 @@
              05  wc-user-usertype-id   PIC  9(9) VALUE ZERO.
              05  wc-user-program-id    PIC  9(9) VALUE ZERO.
 
-       exec sql begin declare section end-exec.
+       EXEC SQL BEGIN DECLARE SECTION END-EXEC.
        01  program-rec-vars.
              05 t-program-id           PIC 9(4) VALUE ZERO.
              05 t-program-name         PIC X(40) VALUE SPACE.
              05 t-program-startdate    PIC X(40) VALUE SPACE.
              05 t-program-enddate      PIC X(40) VALUE SPACE.
-       exec sql end declare section end-exec.
+       EXEC SQL END DECLARE SECTION END-EXEC.
 
        01  wr-program-rec-vars.
              05 wc-program-id          PIC 9(4) VALUE ZERO.
@@ -88,12 +96,12 @@
              05 wc-program-startdate   PIC X(40) VALUE SPACE.
              05 wc-program-enddate     PIC X(40) VALUE SPACE.
 
-       exec sql begin declare section end-exec.
+       EXEC SQL BEGIN DECLARE SECTION END-EXEC.
        01  usertype-rec-vars.
              05 t-usertype-id         PIC 9(4) VALUE ZERO.
              05 t-usertype-name       PIC X(40) VALUE SPACE.
              05 t-usertype-rights     PIC 9(4) VALUE ZERO.
-       exec sql end declare section end-exec.
+       EXEC SQL END DECLARE SECTION END-EXEC.
 
        01  wr-usertype-rec-vars.
              05 wc-usertype-id         PIC 9(4) VALUE ZERO.
@@ -101,10 +109,10 @@
              05 wc-usertype-rights     PIC 9(4) VALUE ZERO.
 
        *>**************************************************
-       *> used in calls to dynamic libraries
+       *> used in CALLs TO dynamic libraries
        01  wn-rtn-code                 PIC  s99   VALUE ZERO.
        01  wc-post-name                PIC X(40)  VALUE SPACE.
-       01  wc-post-VALUE               PIC X(40)  VALUE SPACE.
+       01  wc-post-value               PIC X(40)  VALUE SPACE.
 
        *>**************************************************
        *> html-tags
@@ -117,18 +125,18 @@
        *>**************************************************
        *> Lookup tables
         01 User-Type-Table.
-           05 tbl-user-type-name PIC X(40) occurs 4 times indexed by
+           05 tbl-user-type-name PIC X(40) OCCURS 4 TIMES INDEXED BY
                                                        idx-user-type.
         01 Program-Name-Table.
-           05 tbl-program-name   PIC X(40) occurs 2 times indexed by
+           05 tbl-program-name   PIC X(40) OCCURS 2 TIMES INDEXED BY
                                                        idx-program.
 
        *>**************************************************
        *> Various temporal and utility fields.
        01 wn-user-type-number           PIC 9(4)  VALUE ZERO.
-       01 wc-filename                   PIC X(32) VALUE ZERO.
-       01 wc-src-file-path              PIC X(64) VALUE SPACE.
-       01 wc-dest-dir-path              PIC X(32) VALUE SPACE.
+       01 wc-filename                   PIC X(40) VALUE ZERO.
+       01 wc-src-file-path              PIC X(3)  VALUE SPACE.
+       01 wc-dest-dir-path              PIC X(32) VALUE "../".
        01 wc-dest-file-path             PIC X(64) VALUE SPACE.
        *> These two plus html-table-row-end makes up one
        *> line in the output file
@@ -142,57 +150,136 @@
        PROCEDURE DIVISION.
        *>**************************************************
        0000-Start.
-           copy setupenv_openjensen.
-
-           perform A0100-Init
-           perform B0100-Main
-           perform C0100-Exit
-           .
+            COPY setupenv_openjensen.
+ 
+            PERFORM A0100-Init
+            PERFORM B0100-Main
+            PERFORM C0100-Exit
+            .
        *>**************************************************
        A0100-Init.
-           CALL 'wui-print-header' USING wn-rtn-code
+            OPEN output debug-file
            
-           move "html-output.txt"
-                to wc-src-file-path
-           move "../" to wc-dest-dir-path
+            MOVE 'A0100-Init' TO wc-debug-line
+            MOVE wr-debug-file-rec TO debug-file-rec
+            WRITE debug-file-rec
+           
+            CALL 'wui-print-header' USING wn-rtn-code
+           
+            MOVE "html-output.txt"
+                TO wc-src-file-path
 
-           call 'write-post-string' using wn-rtn-code
+            CALL 'write-post-string' USING wn-rtn-code
 
-           if wn-rtn-code = ZERO
-               set is-valid-init to true
-               move zero to wn-rtn-code
-               move space to wc-post-VALUE
-               move 'usertype_id' to wc-post-name
-               call 'get-post-value' using wn-rtn-code
-                                           wc-post-name wc-post-value
-           end-if
-
-           IF wc-post-value = SPACE
-               MOVE 'Saknar ett användattyp id'
-                    TO wc-printscr-string
-               CALL 'stop-printscr' USING wc-printscr-string
-           ELSE
-               *> *** Get the post values ***
-               move function numval(wc-post-value)
-                    to wn-user-type-number
-
-               move zero to wn-rtn-code
-               move space to wc-post-value
-               move 'filename' to wc-post-name
-               call 'get-post-value'
-                    using wn-rtn-code wc-post-name wc-post-value
-
-               if wn-rtn-code = zero
-                   move wc-post-value TO wc-filename
-                   set is-valid-init to true
-               end-if
+            IF wn-rtn-code = ZERO
+                SET is-valid-init TO true
+                MOVE ZERO TO wn-rtn-code
+                MOVE SPACE TO wc-post-value
+                MOVE 'usertype_id' TO wc-post-name
+                CALL 'get-post-value'
+                    USING wn-rtn-code wc-post-name wc-post-value
             END-IF
 
-           perform A0110-Init-Cursors
+            IF wc-post-value = SPACE
+                MOVE 'Saknar ett användattyp id'
+                     TO wc-printscr-string
+                CALL 'stop-printscr' USING wc-printscr-string
+            ELSE
+                *> *** Get the post values ***
+                MOVE function numval(wc-post-value)
+                     TO wn-user-type-number
+ 
+                MOVE ZERO TO wn-rtn-code
+                MOVE SPACE TO wc-post-value
+                MOVE 'filename' TO wc-post-name
+                CALL 'get-post-value'
+                    USING wn-rtn-code wc-post-name wc-post-value
+ 
+                IF wn-rtn-code = ZERO
+                    MOVE wc-post-value TO wc-filename
+                    SET is-valid-init TO true
+                END-IF
+            END-IF
 
+            MOVE 'At end ofA0100-Init' TO wc-debug-line
+            MOVE wr-debug-file-rec TO debug-file-rec
+            WRITE debug-file-rec
+            MOVE SPACE TO wc-debug-line
+            
+            STRING "user type: "
+                   wn-user-type-number
+                   INTO wc-debug-line
+            MOVE wr-debug-file-rec TO debug-file-rec
+            WRITE debug-file-rec
+            MOVE SPACE TO wc-debug-line
+            
+            STRING "filename: "
+                   wc-filename
+                   INTO wc-debug-line
+            MOVE wr-debug-file-rec TO debug-file-rec
+            WRITE debug-file-rec
+            MOVE SPACE TO wc-debug-line
+
+           .       
+       *>**************************************************
+       B0100-Main.
+            MOVE 'B0100-Main' TO wc-debug-line
+            MOVE wr-debug-file-rec TO debug-file-rec
+            WRITE debug-file-rec
+            MOVE SPACE TO wc-debug-line
+            
+            IF is-valid-init
+    
+                PERFORM B0200-connect
+                
+                IF is-db-connected
+                     PERFORM B0300-Get-Lookup-Data
+                     PERFORM B0400-List-Users
+                     PERFORM Z0200-Disconnect
+                END-IF
+            END-IF
            .
        *>**************************************************
-       A0110-Init-Cursors.
+       B0200-Connect.
+            MOVE 'B0200-Connect' TO wc-debug-line
+            MOVE wr-debug-file-rec TO debug-file-rec
+            WRITE debug-file-rec
+            MOVE SPACE TO wc-debug-line
+       
+            MOVE  "openjensen"    TO   wc-database
+            MOVE  "jensen"        TO   wc-username
+            MOVE  SPACE           TO   wc-passwd
+
+            
+            EXEC SQL
+               CONNECT :wc-username IDENTIFIED BY :wc-passwd
+                                    USING :wc-database
+            END-EXEC
+            
+            STRING  wc-username
+                    ","
+                    wc-passwd
+                    ";"
+                    wc-database                   
+                    INTO wc-debug-line
+            MOVE wr-debug-file-rec TO debug-file-rec
+            WRITE debug-file-rec
+            MOVE SPACE TO wc-debug-line
+
+            IF SQLSTATE NOT = ZERO
+                PERFORM Z0100-Error-Routine
+            ELSE
+                SET is-db-connected TO TRUE
+                MOVE 'SET is-db-connected TO TRUE' TO wc-debug-line
+                MOVE wr-debug-file-rec TO debug-file-rec
+                WRITE debug-file-rec
+                MOVE SPACE TO wc-debug-line
+                
+                PERFORM B0210-Init-Cursors
+            END-IF
+            .
+       *>**************************************************
+       B0210-Init-Cursors.
             *> pupils only
             EXEC SQL
               DECLARE cur1 CURSOR FOR
@@ -206,6 +293,10 @@
                    WHERE usertype_id = 1
                    ORDER BY user_lastname, user_firstname
             END-EXEC
+            
+            IF SQLSTATE NOT = ZERO
+                PERFORM Z0100-Error-Routine
+            END-IF
 
             *> teachers
             EXEC SQL
@@ -220,7 +311,11 @@
                   WHERE usertype_id = 2
                   ORDER BY user_lastname, user_firstname
             END-EXEC
-
+            
+            IF SQLSTATE NOT = ZERO
+                PERFORM Z0100-Error-Routine
+            END-IF
+            
             *> all users
             EXEC SQL
               DECLARE cur3 cursor for
@@ -233,6 +328,10 @@
                   FROM tbl_users
                   ORDER BY user_lastname, user_firstname
             END-EXEC
+            
+            IF SQLSTATE NOT = ZERO
+                PERFORM Z0100-Error-Routine
+            END-IF
 
             *> program names
             EXEC SQL
@@ -242,6 +341,10 @@
                    ORDER BY program_id
             END-EXEC
 
+            IF SQLSTATE NOT = ZERO
+                PERFORM Z0100-Error-Routine
+            END-IF
+            
             *> user type names
             EXEC SQL
                DECLARE cur5 CURSOR FOR
@@ -249,132 +352,136 @@
                    FROM tbl_usertype
                    ORDER BY usertype_id
             END-EXEC
-       .
-       *>**************************************************
-       B0100-Main.
-           if is-valid-init
-
-                perform B0200-connect
-                if is-db-connected
-                    perform B0300-Get-Lookup-Data
-                    perform B0400-List-Users
-                    perform Z0200-Disconnect
-                end-if
-           end-if
-           .
-       *>**************************************************
-       B0200-Connect.
-           move  "openjensen"    to   wc-database
-           move  "jensen"        to   wc-username
-           move  SPACE           to   wc-passwd
-
-           exec sql
-               connect :wc-username identified by :wc-passwd
-                                    using :wc-database
-           end-exec
-
-           if  sqlstate not = zero
-                perform Z0100-Error-Routine
-           else
-                set is-db-connected to true
-           end-if
-           .
+            
+            IF SQLSTATE NOT = ZERO
+                PERFORM Z0100-Error-Routine
+            END-IF
+            .     
        *>**************************************************
        B0300-Get-Lookup-Data.
-           perform B0310-Get-Program-Names
-           perform B0320-Get-User-Type-Names
+           PERFORM B0310-Get-Program-Names
+           PERFORM B0320-Get-User-Type-Names
            .
        *>**************************************************
        B0310-Get-Program-Names.
-           exec sql
-                open cur4
-           end-exec
+            EXEC SQL
+                OPEN cur4
+            END-EXEC
 
-           exec sql
-               fetch cur4 into
+            IF SQLSTATE NOT = ZERO
+                PERFORM Z0100-Error-Routine
+            END-IF
+            
+            EXEC SQL
+                FETCH cur4 INTO
                    :t-program-id,
                    :t-program-name
-           end-exec
+            END-EXEC
 
-           set idx-program to 1
+            IF SQLSTATE NOT = ZERO
+                PERFORM Z0100-Error-Routine
+            END-IF
+            
+            SET idx-program TO 1
 
-           perform until sqlstate not = zero
+            PERFORM UNTIL sqlstate NOT = ZERO
 
-               move t-program-name to tbl-program-name(idx-program)
-               set idx-program up by 1
+               MOVE t-program-name
+                    TO tbl-program-name(idx-program)
+               SET idx-program up BY 1
 
-               exec sql
-                   fetch cur4 into
+               EXEC SQL
+                    FETCH cur4 INTO
                        :t-program-id,
                        :t-program-name
-               end-exec
+               END-EXEC
 
-           end-perform
+            END-PERFORM
 
-           exec sql
-                close cur4
-           end-exec
-           .
+            EXEC SQL
+                CLOSE cur4
+            END-EXEC
+            
+            IF SQLSTATE NOT = ZERO
+                PERFORM Z0100-Error-Routine
+            END-IF
+            .
        *>**************************************************
        B0320-Get-User-Type-Names.
 
-           exec sql
-                open cur5
-           end-exec
+            EXEC SQL
+                OPEN cur5
+            END-EXEC
 
-           exec sql
-               fetch cur5 into
+            IF SQLSTATE NOT = ZERO
+                PERFORM Z0100-Error-Routine
+            END-IF
+            
+            EXEC SQL
+                FETCH cur5 INTO
                    :t-usertype-id,
                    :t-usertype-name
-           end-exec
+            END-EXEC
 
-           set idx-user-type to 1
+            IF SQLSTATE NOT = ZERO
+                PERFORM Z0100-Error-Routine
+            END-IF
+            
+            SET idx-user-type TO 1
 
-           perform until sqlstate not = zero
+            PERFORM UNTIL sqlstate NOT = ZERO
 
-               move t-usertype-name to tbl-user-type-name(idx-user-type)
-               set idx-user-type up by 1
+               MOVE t-usertype-name
+                    TO tbl-user-type-name(idx-user-type)
+               SET idx-user-type up by 1
 
-               exec sql
-                   fetch cur5 into
+               EXEC SQL
+                    FETCH cur5 INTO
                        :t-usertype-id,
                        :t-usertype-name
-               end-exec
+               END-EXEC
 
-           end-perform
+            END-PERFORM
 
-           exec sql
-                close cur5
-           end-exec
-           .
+            EXEC SQL
+                CLOSE cur5
+            END-EXEC
+            
+            IF SQLSTATE NOT = ZERO
+                PERFORM Z0100-Error-Routine
+            END-IF            
+            .
        *>**************************************************
        B0400-List-Users.
+            MOVE 'B0400-List-Users' TO wc-debug-line
+            MOVE wr-debug-file-rec TO debug-file-rec
+            WRITE debug-file-rec
 
-           open output html-file
+            OPEN OUTPUT html-file
+ 
+            *> Fetch the first record
+             EVALUATE wc-post-value
+                WHEN 1
+                    EXEC SQL
+                        OPEN cur1
+                    END-EXEC
+                    PERFORM B0410-Get-Pupil-Data
+                WHEN 2
+                    EXEC SQL
+                        OPEN cur2
+                    END-EXEC
+                    PERFORM B0420-Get-Teacher-Data
+                WHEN other
+                    EXEC SQL
+                        OPEN cur3
+                    END-EXEC
+                    PERFORM B0430-Get-All-User-Data
+            END-EVALUATE
 
-           *> Fetch the first record
-           evaluate wc-post-value
-               when 1
-                  exec sql
-                        open cur1
-                  end-exec
-                  perform B0410-Get-Pupil-Data
-               when 2
-                   exec sql
-                        open cur2
-                   end-exec
-                   perform B0420-Get-Teacher-Data
-               when other
-                   exec sql
-                        open cur3
-                   end-exec
-                   perform B0430-Get-All-User-Data
-           end-evaluate
+            *> Fetch the remaining records
+            PERFORM UNTIL sqlstate NOT = ZERO
 
-           *> Fetch the remaining records
-           perform until sqlstate not = zero
-
-                string html-table-row-start
+                STRING html-table-row-start
                     html-table-cell-start
                       tbl-user-type-name(wn-user-type-number)
                     html-table-cell-end
@@ -396,122 +503,140 @@
                     html-table-cell-start
                       t-user-lastlogin
                     html-table-cell-end
-                    into wc-html-code
-                perform B0500-Check-if-Admin
+                    INTO wc-html-code
+                PERFORM B0500-Check-if-Admin
 
-               evaluate wc-post-value
-                   when 1
-                       perform B0410-Get-Pupil-Data
-                   when 2
-                       perform B0420-Get-Teacher-Data
-                   when other
-                       perform B0430-Get-All-User-Data
-               end-evaluate
+                EVALUATE wc-post-value
+                    WHEN 1
+                        PERFORM B0410-Get-Pupil-Data
+                    WHEN 2
+                        PERFORM B0420-Get-Teacher-Data
+                    WHEN other
+                        PERFORM B0430-Get-All-User-Data
+                END-EVALUATE
 
-               move wr-html-output-rec to html-output-rec
-               write html-output-rec
-           end-perform
+                MOVE wr-html-output-rec TO html-output-rec
+                WRITE html-output-rec
+            END-PERFORM
 
-           *> All users have been written to file. Close it.
-           close html-file
-
-           *> Close cursors
-           evaluate wc-post-value
-               when 1
-                  exec sql
-                        close cur1
-                  end-exec
-               when 2
-                   exec sql
-                        close cur2
-                   end-exec
-               when other
-                   exec sql
-                        close cur3
-                   end-exec
-           end-evaluate
-           .
+            *> All users have been written TO file. Close it.
+            CLOSE html-file
+            
+            MOVE 'All users have been written to file.'
+                TO wc-debug-line
+            MOVE wr-debug-file-rec TO debug-file-rec
+            WRITE debug-file-rec
+            
+            *> Close cursors
+            EVALUATE wc-post-value
+               WHEN 1
+                  EXEC SQL
+                        CLOSE cur1
+                  END-EXEC
+               WHEN 2
+                   EXEC SQL
+                        CLOSE cur2
+                   END-EXEC
+               WHEN OTHER
+                   EXEC SQL
+                        CLOSE cur3
+                   END-EXEC
+            END-EVALUATE
+            
+            MOVE 'Cursors closed.' TO wc-debug-line
+            MOVE wr-debug-file-rec TO debug-file-rec
+            WRITE debug-file-rec
+            .
        *>**************************************************
        B0410-Get-Pupil-Data.
-           exec sql
-               fetch cur1 into
+            EXEC SQL
+               FETCH cur1 INTO
                    :t-user-firstname,
                    :t-user-lastname,
                    :t-user-email,
                    :t-user-phonenumber,
                    :t-user-program-id,
                    :t-user-lastlogin
-           end-exec
-           .
+            END-EXEC
+            .
        *>**************************************************
        B0420-Get-Teacher-Data.
-           exec sql
-               fetch cur2 into
+            EXEC SQL
+               FETCH cur2 INTO
                    :t-user-firstname,
                    :t-user-lastname,
                    :t-user-email,
                    :t-user-phonenumber,
                    :t-user-program-id,
                    :t-user-lastlogin
-           end-exec
-           .
+            END-EXEC
+            .
        *>**************************************************
        B0430-Get-All-User-Data.
-           exec sql
-               fetch cur3 into
+            EXEC SQL
+               FETCH cur3 INTO
                    :t-user-firstname,
                    :t-user-lastname,
                    :t-user-email,
                    :t-user-phonenumber,
                    :t-user-program-id,
                    :t-user-lastlogin
-           end-exec
-           .
+            END-EXEC
+            .
        *>**************************************************
-       *> Checks if admin and builds output line
+       *> Checks IF admin and builds output line
        B0500-Check-if-Admin.
-           if wn-user-type-number = 4 then
-               string
+            IF wn-user-type-number = 4 THEN
+                STRING
                    '<td><a href="users.edit.php?user_id='
                    '<?php echo $ row['
                    function trim(t-user-id)
                    ']; ?>"><span class="label label-info">'
                    'Ändra'
                    '</span></a></td>'
-               into wc-php-code
-               string wc-html-code delimited by " "
-                      wc-php-code delimited by " "
+                INTO wc-php-code
+                STRING wc-html-code DELIMITED BY " "
+                      wc-php-code DELIMITED BY " "
                       html-table-row-end
-                      into wc-html-output
-           else
-                string wc-html-code delimited by " "
+                      INTO wc-html-output
+            ELSE
+                STRING wc-html-code DELIMITED BY " "
                        html-table-row-end
-                       into wc-html-output
-           end-if
-           .
+                       INTO wc-html-output
+            END-IF
+            .
        *>**************************************************
        *> Exit and cleanup procedures
        *>**************************************************
        C0100-Exit.
+            MOVE 'C0100-Exit' TO wc-debug-line
+            MOVE wr-debug-file-rec TO debug-file-rec
+            WRITE debug-file-rec
+
             CALL 'wui-end-html' USING wn-rtn-code
-            *> rename output file to the name given by php-script
-            *> using a build in subroutine. Then remove output file.
-            string wc-dest-dir-path delimited by " "
-                   wc-filename delimited by " "
-                   into wc-dest-file-path
-            CALL "C$COPY" USING wc-src-file-path, wc-dest-file-path, 0
+            *> rename output file TO the name given by php-script
+            *> USING a build in subroutine. Then reMOVE output file.
+            STRING wc-dest-dir-path DELIMITED BY " "
+                   wc-filename DELIMITED BY " "
+                   INTO wc-dest-file-path
+            CALL "C$COPY"
+                USING wc-src-file-path, wc-dest-file-path, 0
             *> CALL “C$DELETE” USING wc-src-file-path, 0
-           goback
-           .
+            
+            CLOSE debug-file
+            
+            goback
+            .
+            
        *>**************************************************
        *> Utility procedures (Z0000- etc.)
        *>**************************************************
        Z0100-Error-Routine.
-           COPY z0100-error-routine.
-           .
+            COPY z0100-error-routine.
+            .
        *>**************************************************
        Z0200-Disconnect.
-           exec sql
-               disconnect all
-           end-exec
-           .
+            EXEC SQL
+               DISCONNECT ALL
+            END-EXEC
+            .
