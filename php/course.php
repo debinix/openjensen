@@ -99,7 +99,8 @@ if($_SESSION['usertype_id'] == 1)
         // assign each field into a named array key
         $course_row[$i] = array('course_name' => $tmp[0], 'course_startdate' => $tmp[1], 'course_enddate' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_comment' => $tmp[4], 'sessionid' => $tmp[5]);
         
-        if($course_row[$i]['sessionid'] === $ses_id) $Error->set("Fel sessionsdata från back-end: $course_row[$i]['sessionid']") ; 
+        if($course_row[$i]['sessionid'] != $ses_id)
+             $Error->set("Fel sessionsdata från back-end: $course_row[$i]['sessionid']") ; 
         
         ?>
       
@@ -162,7 +163,8 @@ elseif ($_SESSION['usertype_id'] >= 2)
   
   //execute post
   $result = curl_exec($ch);
-  if($result === false) $Error->set("Kan ej kontakta servern: $url") ;
+  if($result === false)
+      $Error->set("Kan ej kontakta servern: $url") ;
   
   //close connection
   curl_close($ch);
@@ -175,7 +177,8 @@ elseif ($_SESSION['usertype_id'] >= 2)
     }
     sleep(1);      
   }
-  if($f === 5) $Error->set("Saknar fil: $betyg_all_file") ; 
+  if($f === 5)
+      $Error->set("Saknar fil: $betyg_all_file") ; 
   
   $time_mid = microtime(true);
   $mytime = number_format($time_mid - $time_start, 5) ;
@@ -194,7 +197,8 @@ elseif ($_SESSION['usertype_id'] >= 2)
         // assign each field into a named array key
         $user_row[$i] = array('course_name' => $tmp[0], 'user_firstname' => $tmp[1], 'user_lastname' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_id' => $tmp[4],'user_id' => $tmp[5],'course_id' => $tmp[6], 'grade_comment' => $tmp[7]);
     
-        if($user_row[$i]['sessionid'] === $ses_id) $Error->set("Fel sessionsdata från back-end: $user_row[$i]['sessionid']") ; 
+        if($user_row[$i]['sessionid'] != $ses_id)
+            $Error->set("Fel sessionsdata från back-end: $user_row[$i]['sessionid']") ; 
     
     }
         // initilize to rememeber previous group of the course names
