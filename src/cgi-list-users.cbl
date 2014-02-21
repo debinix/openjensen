@@ -82,32 +82,6 @@
              05  wc-user-usertype-id   PIC  9(9) VALUE ZERO.
              05  wc-user-program-id    PIC  9(9) VALUE ZERO.
 
-       EXEC SQL BEGIN DECLARE SECTION END-EXEC.
-       01  program-rec-vars.
-             05 t-program-id           PIC 9(4) VALUE ZERO.
-             05 t-program-name         PIC X(40) VALUE SPACE.
-             05 t-program-startdate    PIC X(40) VALUE SPACE.
-             05 t-program-enddate      PIC X(40) VALUE SPACE.
-       EXEC SQL END DECLARE SECTION END-EXEC.
-
-       01  wr-program-rec-vars.
-             05 wc-program-id          PIC 9(4) VALUE ZERO.
-             05 wc-program-name        PIC X(40) VALUE SPACE.
-             05 wc-program-startdate   PIC X(40) VALUE SPACE.
-             05 wc-program-enddate     PIC X(40) VALUE SPACE.
-
-       EXEC SQL BEGIN DECLARE SECTION END-EXEC.
-       01  usertype-rec-vars.
-             05 t-usertype-id         PIC 9(4) VALUE ZERO.
-             05 t-usertype-name       PIC X(40) VALUE SPACE.
-             05 t-usertype-rights     PIC 9(4) VALUE ZERO.
-       EXEC SQL END DECLARE SECTION END-EXEC.
-
-       01  wr-usertype-rec-vars.
-             05 wc-usertype-id         PIC 9(4) VALUE ZERO.
-             05 wc-usertype-name       PIC X(40) VALUE SPACE.
-             05 wc-usertype-rights     PIC 9(4) VALUE ZERO.
-
        *>**************************************************
        *> used in CALLs TO dynamic libraries
        01  wn-rtn-code                 PIC  s99   VALUE ZERO.
