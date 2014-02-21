@@ -32,15 +32,13 @@ if($_SESSION['usertype_id'] == 1)
       // wait until file is written at server before continue to read it.
       //
       
-      // We need to set the filename because the COBOl CGI needs it.
+      // Include session id to track diffrent clients in response
       $ses_id = session_id();
-      $filename = $ses_id."-".$betyg_elev_file ;
-      
       $time_start = microtime(true);
       
-      $file_exists=file_exists($filename);
+      $file_exists=file_exists($betyg_elev_file);
       if($file_exists) {
-        unlink($filename);
+        unlink($betyg_elev_file);
       }
       
 
@@ -49,7 +47,7 @@ if($_SESSION['usertype_id'] == 1)
       $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi';
       $fields = array( 'user_id' => $user_id,
                        'user_program' => $user_program,
-                       'file_name' => $filename
+                       'sessionid' => $ses_id
                       );
       
       //url-ify the data for the POST with php built-in function
@@ -73,20 +71,20 @@ if($_SESSION['usertype_id'] == 1)
       
       // time out after 5s
       for ($f=0; $f <= 5; $f++) {
-        $file_exists=file_exists($filename);
+        $file_exists=file_exists($betyg_elev_file);
         if($file_exists) {
             break;
         }
         sleep(1);      
       }
-      if($f === 5) $Error->set("Saknar fil: $filename") ; 
+      if($f === 5) $Error->set("Saknar fil: $betyg_elev_file") ; 
       
       
       $time_mid = microtime(true);
       $mytime = number_format($time_mid - $time_start, 5) ;
       echo "Väntade på backend: $mytime sekunder<br>";
       
-      $course_row = file($filename);
+      $course_row = file($betyg_elev_file);
       
       $time_end = microtime(true);
       $mytime = number_format($time_end - $time_mid, 5) ;
@@ -133,21 +131,19 @@ elseif ($_SESSION['usertype_id'] >= 2)
   // wait until file is written at server before continue to read it.
   //
   
-  // We need to set the filename because the COBOl CGI needs it.
-  $ses_id = session_id();
-  $filename = $ses_id."-".$betyg_all_file ;
-  
+  // Include session id to track diffrent clients in response
+  $ses_id = session_id();  
   $time_start = microtime(true);
   
-  $file_exists=file_exists($filename);
+  $file_exists=file_exists($betyg_all_file);
   if($file_exists) {
-    unlink($filename);
+    unlink($betyg_all_file);
   }
   
   $user_program = $_SESSION['user_program'];
   $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygalla.cgi';
   $fields = array( 'user_program' => $user_program,
-                   'file_name' => $filename
+                   'sessionid' => $ses_id
                   );
   //url-ify the data for the POST with php built-in function
   $php_url_string = http_build_query($fields);
@@ -170,19 +166,19 @@ elseif ($_SESSION['usertype_id'] >= 2)
   
   // time out after 5s
   for ($f=0; $f <= 5; $f++) {
-    $file_exists=file_exists($filename);
+    $file_exists=file_exists($betyg_all_file);
     if($file_exists) {
         break;
     }
     sleep(1);      
   }
-  if($f === 5) $Error->set("Saknar fil: $filename") ; 
+  if($f === 5) $Error->set("Saknar fil: $betyg_all_file") ; 
   
   $time_mid = microtime(true);
   $mytime = number_format($time_mid - $time_start, 5) ;
   echo "Väntade på backend: $mytime sekunder<br>";
 
-  $user_row = file($filename);
+  $user_row = file($betyg_all_file);
   
   $time_end = microtime(true);
   $mytime = number_format($time_end - $time_mid, 5) ;
