@@ -38,7 +38,7 @@ $Success->show();
     curl_setopt($ch,CURLOPT_URL, $url);
     curl_setopt($ch,CURLOPT_POST, count($fields));
     curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
-
+    
     //execute post
     $result = curl_exec($ch);
     if($result === false) $Error->set("Kan ej kontakta servern: $url") ;
