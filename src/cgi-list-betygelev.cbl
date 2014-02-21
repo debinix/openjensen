@@ -18,7 +18,7 @@
               ORGANIZATION IS LINE SEQUENTIAL.
         
            SELECT OPTIONAL statusfile 
-              ASSIGN TO '../status'
+              ASSIGN TO '../../status'
               ORGANIZATION IS LINE SEQUENTIAL.                
        *>**************************************************
        DATA DIVISION.
@@ -428,9 +428,9 @@
                DISCONNECT ALL
            END-EXEC
            
-           *> IF NOT is-sql-error
+           IF NOT is-sql-error
                PERFORM Z0200-write-status-ok-file
-           *> END-IF
+           END-IF
            
            *> close outfile
            CLOSE fileout
@@ -466,14 +466,15 @@
            
            *> create a new name '7863786§4g78b8§48743723.OK'
            MOVE SPACE TO wc-dest-file-path    
-           STRING wc-file-name DELIMITED BY SPACE 
+           STRING '../../'     DELIMITED BY SPACE
+                  wc-file-name DELIMITED BY SPACE 
                           '.'  DELIMITED BY SPACE
                           'OK' DELIMITED BY SPACE
                            INTO wc-dest-file-path
            *> copy existing dummy named 'status' file to OK-file
-           CALL 'CBL_COPY_FILE' USING '../status', wc-dest-file-path
+           CALL 'CBL_COPY_FILE' USING '../../status', wc-dest-file-path
            *> remove not needed dummy file
-           CALL 'CBL_DELETE_FILE' USING '../status'           
+           CALL 'CBL_DELETE_FILE' USING '../../status'           
        
            .           
            
