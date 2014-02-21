@@ -82,32 +82,6 @@
              05  wc-user-usertype-id   PIC  9(9) VALUE ZERO.
              05  wc-user-program-id    PIC  9(9) VALUE ZERO.
 
-       EXEC SQL BEGIN DECLARE SECTION END-EXEC.
-       01  program-rec-vars.
-             05 t-program-id           PIC 9(4) VALUE ZERO.
-             05 t-program-name         PIC X(40) VALUE SPACE.
-             05 t-program-startdate    PIC X(40) VALUE SPACE.
-             05 t-program-enddate      PIC X(40) VALUE SPACE.
-       EXEC SQL END DECLARE SECTION END-EXEC.
-
-       01  wr-program-rec-vars.
-             05 wc-program-id          PIC 9(4) VALUE ZERO.
-             05 wc-program-name        PIC X(40) VALUE SPACE.
-             05 wc-program-startdate   PIC X(40) VALUE SPACE.
-             05 wc-program-enddate     PIC X(40) VALUE SPACE.
-
-       EXEC SQL BEGIN DECLARE SECTION END-EXEC.
-       01  usertype-rec-vars.
-             05 t-usertype-id         PIC 9(4) VALUE ZERO.
-             05 t-usertype-name       PIC X(40) VALUE SPACE.
-             05 t-usertype-rights     PIC 9(4) VALUE ZERO.
-       EXEC SQL END DECLARE SECTION END-EXEC.
-
-       01  wr-usertype-rec-vars.
-             05 wc-usertype-id         PIC 9(4) VALUE ZERO.
-             05 wc-usertype-name       PIC X(40) VALUE SPACE.
-             05 wc-usertype-rights     PIC 9(4) VALUE ZERO.
-
        *>**************************************************
        *> used in CALLs TO dynamic libraries
        01  wn-rtn-code                 PIC  s99   VALUE ZERO.
@@ -138,6 +112,9 @@
        01 wc-src-file-path              PIC X(3)  VALUE SPACE.
        01 wc-dest-dir-path              PIC X(32) VALUE "../".
        01 wc-dest-file-path             PIC X(64) VALUE SPACE.
+       01 wc-usertype-name              PIC X(20) VALUE SPACE.
+       01 wc-program-name               PIC X(20) VALUE SPACE.
+       
        *> These two plus html-table-row-end makes up one
        *> line in the output file
        01 wc-html-code                  PIC X(891) VALUE SPACE.
@@ -233,7 +210,6 @@
                 PERFORM B0200-connect
                 
                 IF is-db-connected
-                     PERFORM B0300-Get-Lookup-Data
                      PERFORM B0400-List-Users
                      PERFORM Z0200-Disconnect
                 END-IF
@@ -276,130 +252,6 @@
                 MOVE SPACE TO wc-debug-line
             END-IF
             .
- 
-       *>**************************************************
-       B0300-Get-Lookup-Data.
-           PERFORM B0310-Get-Program-Names
-           PERFORM B0320-Get-User-Type-Names
-           .
-       *>**************************************************
-       B0310-Get-Program-Names.
-            EXEC SQL
-               DECLARE cur4 CURSOR FOR
-                   SELECT  program_id, program_name
-                   FROM tbl_program
-                   ORDER BY program_id
-            END-EXEC
-
-            IF SQLSTATE NOT = ZERO
-                PERFORM Z0100-Error-Routine
-                MOVE 'cur4' TO wc-debug-line
-                MOVE wr-debug-file-rec TO debug-file-rec
-                WRITE debug-file-rec
-                MOVE SPACE TO wc-debug-line
-            END-IF
-            
-            EXEC SQL
-                OPEN cur4
-            END-EXEC
-
-            IF SQLSTATE NOT = ZERO
-                PERFORM Z0100-Error-Routine
-            END-IF
-            
-            EXEC SQL
-                FETCH cur4 INTO
-                   :t-program-id,
-                   :t-program-name
-            END-EXEC
-
-            IF SQLSTATE NOT = ZERO
-                PERFORM Z0100-Error-Routine
-            END-IF
-            
-            SET idx-program TO 1
-
-            PERFORM UNTIL sqlstate NOT = ZERO
-
-               MOVE t-program-name
-                    TO tbl-program-name(idx-program)
-               SET idx-program up BY 1
-
-               EXEC SQL
-                    FETCH cur4 INTO
-                       :t-program-id,
-                       :t-program-name
-               END-EXEC
-
-            END-PERFORM
-
-            EXEC SQL
-                CLOSE cur4
-            END-EXEC
-            
-            IF SQLSTATE NOT = ZERO
-                PERFORM Z0100-Error-Routine
-            END-IF
-            .
-       *>**************************************************
-       B0320-Get-User-Type-Names.
-            EXEC SQL
-               DECLARE cur5 CURSOR FOR
-                   SELECT usertype_id, usertype_name
-                   FROM tbl_usertype
-                   ORDER BY usertype_id
-            END-EXEC
-            
-            IF SQLSTATE NOT = ZERO
-                PERFORM Z0100-Error-Routine
-                MOVE 'cur5' TO wc-debug-line
-                MOVE wr-debug-file-rec TO debug-file-rec
-                WRITE debug-file-rec
-                MOVE SPACE TO wc-debug-line
-            END-IF
-            
-            EXEC SQL
-                OPEN cur5
-            END-EXEC
-
-            IF SQLSTATE NOT = ZERO
-                PERFORM Z0100-Error-Routine
-            END-IF
-            
-            EXEC SQL
-                FETCH cur5 INTO
-                   :t-usertype-id,
-                   :t-usertype-name
-            END-EXEC
-
-            IF SQLSTATE NOT = ZERO
-                PERFORM Z0100-Error-Routine
-            END-IF
-            
-            SET idx-user-type TO 1
-
-            PERFORM UNTIL sqlstate NOT = ZERO
-
-               MOVE t-usertype-name
-                    TO tbl-user-type-name(idx-user-type)
-               SET idx-user-type up by 1
-
-               EXEC SQL
-                    FETCH cur5 INTO
-                       :t-usertype-id,
-                       :t-usertype-name
-               END-EXEC
-
-            END-PERFORM
-
-            EXEC SQL
-                CLOSE cur5
-            END-EXEC
-            
-            IF SQLSTATE NOT = ZERO
-                PERFORM Z0100-Error-Routine
-            END-IF            
-            .
        *>**************************************************
        B0400-List-Users.
             MOVE 'B0400-List-Users' TO wc-debug-line
@@ -419,7 +271,7 @@
                                  user_phonenumber,
                                  user_program,
                                  user_lastlogin
-                         FROM tbl_users
+                         FROM tbl_user
                          WHERE usertype_id = 1
                          ORDER BY user_lastname, user_firstname
                     END-EXEC
@@ -445,7 +297,7 @@
                                     user_phonenumber,
                                     user_program,
                                     user_lastlogin
-                            FROM tbl_users
+                            FROM tbl_user
                             WHERE usertype_id = 2
                             ORDER BY user_lastname, user_firstname
                     END-EXEC
@@ -462,16 +314,16 @@
                         OPEN cur2
                     END-EXEC
                     PERFORM B0420-Get-Teacher-Data
-                WHEN other
+                WHEN OTHER
                     EXEC SQL
-                        DECLARE cur3 cursor for
+                        DECLARE cur3 CURSOR FOR
                             SELECT  user_firstname,
                                     user_lastname,
                                     user_email,
                                     user_phonenumber,
                                     user_program,
                                     user_lastlogin
-                            FROM tbl_users
+                            FROM tbl_user
                             ORDER BY user_lastname, user_firstname
                     END-EXEC
                       
@@ -491,10 +343,13 @@
 
             *> Fetch the remaining records
             PERFORM UNTIL sqlstate NOT = ZERO
-
+                
+                PERFORM B0405-Get-Usertype-Name
+                PERFORM B0406-Get-Program-Name
+                
                 STRING html-table-row-start
                     html-table-cell-start
-                      tbl-user-type-name(wn-user-type-number)
+                      wc-usertype-name
                     html-table-cell-end
                     html-table-cell-start
                       t-user-firstname
@@ -503,7 +358,7 @@
                       t-user-lastname
                     html-table-cell-end
                     html-table-cell-start
-                      tbl-program-name(t-user-program-id)
+                      wc-program-name
                     html-table-cell-end
                     html-table-cell-start
                       t-user-email
@@ -516,7 +371,8 @@
                     html-table-cell-end
                     INTO wc-html-code
                 PERFORM B0500-Check-if-Admin
-
+                
+                *> fetch next
                 EVALUATE wc-post-value
                     WHEN 1
                         PERFORM B0410-Get-Pupil-Data
@@ -557,6 +413,28 @@
             MOVE 'Cursors closed.' TO wc-debug-line
             MOVE wr-debug-file-rec TO debug-file-rec
             WRITE debug-file-rec
+            .
+       *>**************************************************
+       B0405-Get-Usertype-Name.
+            EVALUATE wn-user-type-number
+                WHEN 1
+                    MOVE 'Elev' TO wc-usertype-name
+                WHEN 2
+                    MOVE 'Lärare' TO wc-usertype-name
+                WHEN 4
+                    MOVE 'Utbildningsledare' TO wc-usertype-name
+                WHEN 16
+                    MOVE 'Administratör' TO wc-usertype-name
+            END-EVALUATE
+            .
+       *>**************************************************
+       B0406-Get-Program-Name.
+            EVALUATE t-user-program-id
+                WHEN 1
+                    MOVE 'Testprogram1' TO wc-program-name
+                WHEN 2
+                    MOVE 'Testprogram2' TO wc-program-name
+            END-EVALUATE
             .
        *>**************************************************
        B0410-Get-Pupil-Data.
