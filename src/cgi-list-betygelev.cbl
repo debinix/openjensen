@@ -30,7 +30,9 @@
            03  fc-sep-3                   PIC X.     
            03  fc-grade                   PIC X(40).    
            03  fc-sep-4                   PIC X.      
-           03  fc-grade-comment           PIC X(40).            
+           03  fc-grade-comment           PIC X(40).
+           03  fc-sep-5                   PIC X.      
+           03  fc-session-id              PIC X(40).  
            
        *>--------------------------------------------------
        working-storage section.
@@ -106,8 +108,7 @@
        *> receiving variables for data passed from php
        01 wn-user_id                 PIC  9(4) VALUE ZERO.
        01 wn-program_id              PIC  9(4) VALUE ZERO.
-       01 wc-file-name               PIC  X(40) VALUE SPACE.
-       01 wc-dest-file-path          PIC  X(64) VALUE SPACE.
+       01 wc-session-id              PIC  X(40) VALUE SPACE.
        
        *> constant to signal to php - no value
        01 WC-NO-SQLVALUE-TO-PHP      PIC X(1)  VALUE '-'.   
@@ -168,13 +169,13 @@
                                            wc-post-name wc-post-value
                MOVE FUNCTION NUMVAL(wc-post-value) TO wn-user_id
                
-               *> get session-id to return data set to php
-               *> MOVE ZERO TO wn-rtn-code
-               *> MOVE SPACE TO wc-post-value
-               *> MOVE 'file_name' TO wc-post-name
-               *> CALL 'get-post-value' USING wn-rtn-code
+               *> get session-id to return with data sent back to php
+               MOVE ZERO TO wn-rtn-code
+               MOVE SPACE TO wc-post-value
+               MOVE 'sessionid' TO wc-post-name
+               CALL 'get-post-value' USING wn-rtn-code
                                            wc-post-name wc-post-value
-               *> MOVE wc-post-value TO wc-file-name               
+               MOVE wc-post-value TO wc-session-id               
                
                
                *> open outfile
@@ -392,6 +393,8 @@
                MOVE WC-NO-SQLVALUE-TO-PHP TO fc-grade
                MOVE ',' TO fc-sep-4           
                MOVE WC-NO-SQLVALUE-TO-PHP TO fc-grade-comment
+               MOVE ',' TO fc-sep-5           
+               MOVE wc-session-id TO fc-session-id               
                
                WRITE fd-fileout-post
            
