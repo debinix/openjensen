@@ -34,7 +34,7 @@ if($_SESSION['usertype_id'] == 1)
       
       // We need to set the filename because the COBOl CGI needs it.
       $ses_id = session_id();
-      $filename = $ses_id."-".$betyg_elev_file ;
+      $filename = $betyg_elev_file ;
       
       $time_start = microtime(true);
       
@@ -49,7 +49,7 @@ if($_SESSION['usertype_id'] == 1)
       $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi';
       $fields = array( 'user_id' => $user_id,
                        'user_program' => $user_program,
-                       'file_name' => $filename
+                       'session_id' => $ses_id
                       );
       
       //url-ify the data for the POST with php built-in function
@@ -135,7 +135,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
   
   // We need to set the filename because the COBOl CGI needs it.
   $ses_id = session_id();
-  $filename = $ses_id."-".$betyg_all_file ;
+  $filename = $betyg_all_file ;
   
   $time_start = microtime(true);
   
@@ -147,7 +147,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
   $user_program = $_SESSION['user_program'];
   $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygalla.cgi';
   $fields = array( 'user_program' => $user_program,
-                   'file_name' => $filename
+                   'session_id' => $ses_id
                   );
   //url-ify the data for the POST with php built-in function
   $php_url_string = http_build_query($fields);
