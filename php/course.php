@@ -99,6 +99,8 @@ if($_SESSION['usertype_id'] == 1)
         // assign each field into a named array key
         $course_row[$i] = array('course_name' => $tmp[0], 'course_startdate' => $tmp[1], 'course_enddate' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_comment' => $tmp[4], 'sessionid' => $tmp[5]);
         
+        if($course_row[$i]['sessionid'] === $ses_id) $Error->set("Fel sessionsdata från back-end: $course_row[$i]['sessionid']") ; 
+        
         ?>
       
         <tr>
@@ -191,6 +193,9 @@ elseif ($_SESSION['usertype_id'] >= 2)
         $tmp = preg_split("/\s*,\s*/", trim($user_row[$i]), -1, PREG_SPLIT_NO_EMPTY);
         // assign each field into a named array key
         $user_row[$i] = array('course_name' => $tmp[0], 'user_firstname' => $tmp[1], 'user_lastname' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_id' => $tmp[4],'user_id' => $tmp[5],'course_id' => $tmp[6], 'grade_comment' => $tmp[7]);
+    
+        if($user_row[$i]['sessionid'] === $ses_id) $Error->set("Fel sessionsdata från back-end: $user_row[$i]['sessionid']") ; 
+    
     }
         // initilize to rememeber previous group of the course names
         $lastcoursename = '-';
