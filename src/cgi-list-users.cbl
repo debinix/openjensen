@@ -324,7 +324,6 @@
                                     user_program,
                                     user_lastlogin
                             FROM tbl_user
-                            ORDER BY user_lastname, user_firstname
                     END-EXEC
                       
                     IF SQLSTATE NOT = ZERO
