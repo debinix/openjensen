@@ -258,82 +258,57 @@
             MOVE wr-debug-file-rec TO debug-file-rec
             WRITE debug-file-rec
 
-            OPEN OUTPUT html-file     
+            OPEN OUTPUT html-file
+            
+            EXEC SQL
+                DECLARE curpupil CURSOR FOR
+                   SELECT  user_firstname,
+                           user_lastname,
+                           user_email,
+                           user_phonenumber,
+                           user_program,
+                           user_lastlogin
+                   FROM tbl_user
+                   WHERE usertype_id = 1
+                   ORDER BY user_lastname, user_firstname
+            END-EXEC
+            
+            IF SQLSTATE NOT = ZERO
+                PERFORM Z0100-Error-Routine
+                MOVE 'curpupil' TO wc-debug-line
+                MOVE wr-debug-file-rec TO debug-file-rec
+                WRITE debug-file-rec
+                MOVE SPACE TO wc-debug-line
+            END-IF
+            
+            EXEC SQL
+                DECLARE curall CURSOR FOR
+                    SELECT  user_firstname,
+                            user_lastname,
+                            user_email,
+                            user_phonenumber,
+                            user_program,
+                            user_lastlogin
+                    FROM tbl_user
+                    ORDER BY user_lastname, user_firstname
+            END-EXEC
+                      
+            IF SQLSTATE NOT = ZERO
+                PERFORM Z0100-Error-Routine
+                MOVE 'curall' TO wc-debug-line
+                MOVE wr-debug-file-rec TO debug-file-rec
+                WRITE debug-file-rec
+                MOVE SPACE TO wc-debug-line
+            END-IF
  
             *> Fetch the first record
              EVALUATE wc-post-value
                 WHEN 1
                     EXEC SQL
-                      DECLARE curpupil CURSOR FOR
-                         SELECT  user_firstname,
-                                 user_lastname,
-                                 user_email,
-                                 user_phonenumber,
-                                 user_program,
-                                 user_lastlogin
-                         FROM tbl_user
-                         WHERE usertype_id = 1
-                         ORDER BY user_lastname, user_firstname
-                    END-EXEC
-                  
-                    IF SQLSTATE NOT = ZERO
-                        PERFORM Z0100-Error-Routine
-                        MOVE 'curpupil' TO wc-debug-line
-                        MOVE wr-debug-file-rec TO debug-file-rec
-                        WRITE debug-file-rec
-                        MOVE SPACE TO wc-debug-line
-                    END-IF
-
-                    EXEC SQL
                         OPEN curpupil
                     END-EXEC
                     PERFORM B0410-Get-Pupil-Data
-                WHEN 2
-                    EXEC SQL
-                        DECLARE curteach CURSOR FOR
-                            SELECT  user_firstname,
-                                    user_lastname,
-                                    user_email,
-                                    user_phonenumber,
-                                    user_program,
-                                    user_lastlogin
-                            FROM tbl_user
-                            WHERE usertype_id = 2
-                            ORDER BY user_lastname, user_firstname
-                    END-EXEC
-            
-                    IF SQLSTATE NOT = ZERO
-                        PERFORM Z0100-Error-Routine
-                        MOVE 'curteach' TO wc-debug-line
-                        MOVE wr-debug-file-rec TO debug-file-rec
-                        WRITE debug-file-rec
-                        MOVE SPACE TO wc-debug-line
-                    END-IF
-                    
-                    EXEC SQL
-                        OPEN curteach
-                    END-EXEC
-                    PERFORM B0420-Get-Teacher-Data
                 WHEN OTHER
-                    EXEC SQL
-                        DECLARE curall CURSOR FOR
-                            SELECT  user_firstname,
-                                    user_lastname,
-                                    user_email,
-                                    user_phonenumber,
-                                    user_program,
-                                    user_lastlogin
-                            FROM tbl_user
-                    END-EXEC
-                      
-                    IF SQLSTATE NOT = ZERO
-                        PERFORM Z0100-Error-Routine
-                        MOVE 'curall' TO wc-debug-line
-                        MOVE wr-debug-file-rec TO debug-file-rec
-                        WRITE debug-file-rec
-                        MOVE SPACE TO wc-debug-line
-                    END-IF
-                    
                     EXEC SQL
                         OPEN curall
                     END-EXEC
@@ -375,8 +350,6 @@
                 EVALUATE wc-post-value
                     WHEN 1
                         PERFORM B0410-Get-Pupil-Data
-                    WHEN 2
-                        PERFORM B0420-Get-Teacher-Data
                     WHEN other
                         PERFORM B0430-Get-All-User-Data
                 END-EVALUATE
@@ -399,10 +372,6 @@
                   EXEC SQL
                         CLOSE curpupil
                   END-EXEC
-               WHEN 2
-                   EXEC SQL
-                        CLOSE curteach
-                   END-EXEC
                WHEN OTHER
                    EXEC SQL
                         CLOSE curall
@@ -439,18 +408,6 @@
        B0410-Get-Pupil-Data.
             EXEC SQL
                FETCH curpupil INTO
-                   :t-user-firstname,
-                   :t-user-lastname,
-                   :t-user-email,
-                   :t-user-phonenumber,
-                   :t-user-program-id,
-                   :t-user-lastlogin
-            END-EXEC
-            .
-       *>**************************************************
-       B0420-Get-Teacher-Data.
-            EXEC SQL
-               FETCH curteach INTO
                    :t-user-firstname,
                    :t-user-lastname,
                    :t-user-email,
