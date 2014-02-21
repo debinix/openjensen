@@ -264,7 +264,7 @@
              EVALUATE wc-post-value
                 WHEN 1
                     EXEC SQL
-                      DECLARE cur1 CURSOR FOR
+                      DECLARE curpupil CURSOR FOR
                          SELECT  user_firstname,
                                  user_lastname,
                                  user_email,
@@ -278,19 +278,19 @@
                   
                     IF SQLSTATE NOT = ZERO
                         PERFORM Z0100-Error-Routine
-                        MOVE 'cur1' TO wc-debug-line
+                        MOVE 'curpupil' TO wc-debug-line
                         MOVE wr-debug-file-rec TO debug-file-rec
                         WRITE debug-file-rec
                         MOVE SPACE TO wc-debug-line
                     END-IF
 
                     EXEC SQL
-                        OPEN cur1
+                        OPEN curpupil
                     END-EXEC
                     PERFORM B0410-Get-Pupil-Data
                 WHEN 2
                     EXEC SQL
-                        DECLARE cur2 CURSOR FOR
+                        DECLARE curteach CURSOR FOR
                             SELECT  user_firstname,
                                     user_lastname,
                                     user_email,
@@ -304,19 +304,19 @@
             
                     IF SQLSTATE NOT = ZERO
                         PERFORM Z0100-Error-Routine
-                        MOVE 'cur2' TO wc-debug-line
+                        MOVE 'curteach' TO wc-debug-line
                         MOVE wr-debug-file-rec TO debug-file-rec
                         WRITE debug-file-rec
                         MOVE SPACE TO wc-debug-line
                     END-IF
                     
                     EXEC SQL
-                        OPEN cur2
+                        OPEN curteach
                     END-EXEC
                     PERFORM B0420-Get-Teacher-Data
                 WHEN OTHER
                     EXEC SQL
-                        DECLARE cur3 CURSOR FOR
+                        DECLARE curall CURSOR FOR
                             SELECT  user_firstname,
                                     user_lastname,
                                     user_email,
@@ -328,14 +328,14 @@
                       
                     IF SQLSTATE NOT = ZERO
                         PERFORM Z0100-Error-Routine
-                        MOVE 'cur3' TO wc-debug-line
+                        MOVE 'curall' TO wc-debug-line
                         MOVE wr-debug-file-rec TO debug-file-rec
                         WRITE debug-file-rec
                         MOVE SPACE TO wc-debug-line
                     END-IF
                     
                     EXEC SQL
-                        OPEN cur3
+                        OPEN curall
                     END-EXEC
                     PERFORM B0430-Get-All-User-Data
             END-EVALUATE
@@ -397,15 +397,15 @@
             EVALUATE wc-post-value
                WHEN 1
                   EXEC SQL
-                        CLOSE cur1
+                        CLOSE curpupil
                   END-EXEC
                WHEN 2
                    EXEC SQL
-                        CLOSE cur2
+                        CLOSE curteach
                    END-EXEC
                WHEN OTHER
                    EXEC SQL
-                        CLOSE cur3
+                        CLOSE curall
                    END-EXEC
             END-EVALUATE
             
@@ -438,7 +438,7 @@
        *>**************************************************
        B0410-Get-Pupil-Data.
             EXEC SQL
-               FETCH cur1 INTO
+               FETCH curpupil INTO
                    :t-user-firstname,
                    :t-user-lastname,
                    :t-user-email,
@@ -450,7 +450,7 @@
        *>**************************************************
        B0420-Get-Teacher-Data.
             EXEC SQL
-               FETCH cur2 INTO
+               FETCH curteach INTO
                    :t-user-firstname,
                    :t-user-lastname,
                    :t-user-email,
@@ -462,7 +462,7 @@
        *>**************************************************
        B0430-Get-All-User-Data.
             EXEC SQL
-               FETCH cur3 INTO
+               FETCH curall INTO
                    :t-user-firstname,
                    :t-user-lastname,
                    :t-user-email,
