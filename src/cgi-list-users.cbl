@@ -274,89 +274,9 @@
                 MOVE wr-debug-file-rec TO debug-file-rec
                 WRITE debug-file-rec
                 MOVE SPACE TO wc-debug-line
-                
-                PERFORM B0210-Init-Cursors
             END-IF
             .
-       *>**************************************************
-       B0210-Init-Cursors.
-            *> pupils only
-            EXEC SQL
-              DECLARE cur1 CURSOR FOR
-                   SELECT  user_firstname,
-                           user_lastname,
-                           user_email,
-                           user_phonenumber,
-                           user_program,
-                           user_lastlogin
-                   FROM tbl_users
-                   WHERE usertype_id = 1
-                   ORDER BY user_lastname, user_firstname
-            END-EXEC
-            
-            IF SQLSTATE NOT = ZERO
-                PERFORM Z0100-Error-Routine
-            END-IF
-
-            *> teachers
-            EXEC SQL
-              DECLARE cur2 CURSOR FOR
-                  SELECT  user_firstname,
-                          user_lastname,
-                          user_email,
-                          user_phonenumber,
-                          user_program,
-                          user_lastlogin
-                  FROM tbl_users
-                  WHERE usertype_id = 2
-                  ORDER BY user_lastname, user_firstname
-            END-EXEC
-            
-            IF SQLSTATE NOT = ZERO
-                PERFORM Z0100-Error-Routine
-            END-IF
-            
-            *> all users
-            EXEC SQL
-              DECLARE cur3 cursor for
-                  SELECT  user_firstname,
-                          user_lastname,
-                          user_email,
-                          user_phonenumber,
-                          user_program,
-                          user_lastlogin
-                  FROM tbl_users
-                  ORDER BY user_lastname, user_firstname
-            END-EXEC
-            
-            IF SQLSTATE NOT = ZERO
-                PERFORM Z0100-Error-Routine
-            END-IF
-
-            *> program names
-            EXEC SQL
-               DECLARE cur4 CURSOR FOR
-                   SELECT  program_id, user_name
-                   FROM tbl_program
-                   ORDER BY program_id
-            END-EXEC
-
-            IF SQLSTATE NOT = ZERO
-                PERFORM Z0100-Error-Routine
-            END-IF
-            
-            *> user type names
-            EXEC SQL
-               DECLARE cur5 CURSOR FOR
-                   SELECT usertype_id, usertype_name
-                   FROM tbl_usertype
-                   ORDER BY usertype_id
-            END-EXEC
-            
-            IF SQLSTATE NOT = ZERO
-                PERFORM Z0100-Error-Routine
-            END-IF
-            .     
+ 
        *>**************************************************
        B0300-Get-Lookup-Data.
            PERFORM B0310-Get-Program-Names
@@ -364,6 +284,21 @@
            .
        *>**************************************************
        B0310-Get-Program-Names.
+            EXEC SQL
+               DECLARE cur4 CURSOR FOR
+                   SELECT  program_id, program_name
+                   FROM tbl_program
+                   ORDER BY program_id
+            END-EXEC
+
+            IF SQLSTATE NOT = ZERO
+                PERFORM Z0100-Error-Routine
+                MOVE 'cur4' TO wc-debug-line
+                MOVE wr-debug-file-rec TO debug-file-rec
+                WRITE debug-file-rec
+                MOVE SPACE TO wc-debug-line
+            END-IF
+            
             EXEC SQL
                 OPEN cur4
             END-EXEC
@@ -408,7 +343,21 @@
             .
        *>**************************************************
        B0320-Get-User-Type-Names.
-
+            EXEC SQL
+               DECLARE cur5 CURSOR FOR
+                   SELECT usertype_id, usertype_name
+                   FROM tbl_usertype
+                   ORDER BY usertype_id
+            END-EXEC
+            
+            IF SQLSTATE NOT = ZERO
+                PERFORM Z0100-Error-Routine
+                MOVE 'cur5' TO wc-debug-line
+                MOVE wr-debug-file-rec TO debug-file-rec
+                WRITE debug-file-rec
+                MOVE SPACE TO wc-debug-line
+            END-IF
+            
             EXEC SQL
                 OPEN cur5
             END-EXEC
@@ -457,21 +406,83 @@
             MOVE wr-debug-file-rec TO debug-file-rec
             WRITE debug-file-rec
 
-            OPEN OUTPUT html-file
+            OPEN OUTPUT html-file     
  
             *> Fetch the first record
              EVALUATE wc-post-value
                 WHEN 1
+                    EXEC SQL
+                      DECLARE cur1 CURSOR FOR
+                         SELECT  user_firstname,
+                                 user_lastname,
+                                 user_email,
+                                 user_phonenumber,
+                                 user_program,
+                                 user_lastlogin
+                         FROM tbl_users
+                         WHERE usertype_id = 1
+                         ORDER BY user_lastname, user_firstname
+                    END-EXEC
+                  
+                    IF SQLSTATE NOT = ZERO
+                        PERFORM Z0100-Error-Routine
+                        MOVE 'cur1' TO wc-debug-line
+                        MOVE wr-debug-file-rec TO debug-file-rec
+                        WRITE debug-file-rec
+                        MOVE SPACE TO wc-debug-line
+                    END-IF
+
                     EXEC SQL
                         OPEN cur1
                     END-EXEC
                     PERFORM B0410-Get-Pupil-Data
                 WHEN 2
                     EXEC SQL
+                        DECLARE cur2 CURSOR FOR
+                            SELECT  user_firstname,
+                                    user_lastname,
+                                    user_email,
+                                    user_phonenumber,
+                                    user_program,
+                                    user_lastlogin
+                            FROM tbl_users
+                            WHERE usertype_id = 2
+                            ORDER BY user_lastname, user_firstname
+                    END-EXEC
+            
+                    IF SQLSTATE NOT = ZERO
+                        PERFORM Z0100-Error-Routine
+                        MOVE 'cur2' TO wc-debug-line
+                        MOVE wr-debug-file-rec TO debug-file-rec
+                        WRITE debug-file-rec
+                        MOVE SPACE TO wc-debug-line
+                    END-IF
+                    
+                    EXEC SQL
                         OPEN cur2
                     END-EXEC
                     PERFORM B0420-Get-Teacher-Data
                 WHEN other
+                    EXEC SQL
+                        DECLARE cur3 cursor for
+                            SELECT  user_firstname,
+                                    user_lastname,
+                                    user_email,
+                                    user_phonenumber,
+                                    user_program,
+                                    user_lastlogin
+                            FROM tbl_users
+                            ORDER BY user_lastname, user_firstname
+                    END-EXEC
+                      
+                    IF SQLSTATE NOT = ZERO
+                        PERFORM Z0100-Error-Routine
+                        MOVE 'cur3' TO wc-debug-line
+                        MOVE wr-debug-file-rec TO debug-file-rec
+                        WRITE debug-file-rec
+                        MOVE SPACE TO wc-debug-line
+                    END-IF
+                    
                     EXEC SQL
                         OPEN cur3
                     END-EXEC
