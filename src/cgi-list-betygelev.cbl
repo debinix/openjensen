@@ -15,7 +15,11 @@
        file-control.
            SELECT OPTIONAL fileout 
               ASSIGN TO '../betyg-elev.txt'
-              ORGANIZATION IS LINE SEQUENTIAL.         
+              ORGANIZATION IS LINE SEQUENTIAL.
+        
+           SELECT OPTIONAL statusfile 
+              ASSIGN TO '../status'
+              ORGANIZATION IS LINE SEQUENTIAL.                
        *>**************************************************
        DATA DIVISION.
        file section.
@@ -32,7 +36,10 @@
            03  fc-sep-4                   PIC X.      
            03  fc-grade-comment           PIC X(40).
            03  fc-sep-5                   PIC X.      
-           03  fc-session-id              PIC X(40).  
+           03  fc-session-id              PIC X(40).
+           
+       FD  statusfile.
+       01  fd-fileout-status         PIC  X(1) VALUE SPACE.           
            
        *>--------------------------------------------------
        working-storage section.
@@ -43,6 +50,8 @@
                 88  is-valid-init                   VALUE 'Y'.
             03  is-grade-done-switch        PIC X   VALUE 'N'.
                 88  is-grade-done                   VALUE 'Y'.
+            03  is-sql-error-switch         PIC X   VALUE 'N'.
+                88  is-sql-error                    VALUE 'Y'.    
                 
        01   tbl-grade                         VALUE ZERO.
             03 grade OCCURS 25 TIMES.
@@ -109,6 +118,10 @@
        01 wn-user_id                 PIC  9(4) VALUE ZERO.
        01 wn-program_id              PIC  9(4) VALUE ZERO.
        01 wc-session-id              PIC  X(40) VALUE SPACE.
+       
+       *> holds the status file real name
+       01 wc-file-name               PIC  X(40) VALUE SPACE.
+       01 wc-dest-file-path          PIC  X(72) VALUE SPACE.
        
        *> constant to signal to php - no value
        01 WC-NO-SQLVALUE-TO-PHP      PIC X(1)  VALUE '-'.   
@@ -415,6 +428,10 @@
                DISCONNECT ALL
            END-EXEC
            
+           IF NOT is-sql-error
+               PERFORM Z0200-write-status-ok-file
+           END-IF
+           
            *> close outfile
            CLOSE fileout
            
@@ -430,10 +447,36 @@
        *>**************************************************
        Z0100-error-routine.
                   
+           SET is-sql-error TO TRUE
+           
            *> requires the ending dot (and no extension)!
            COPY z0100-error-routine.
            
            .
+           
+       *>**************************************************
+       Z0200-write-status-ok-file.
+       
+           *> move the SESSION_ID as base in new filename
+           MOVE wc-session-id TO wc-file-name
+       
+           *> create a zero file
+           OPEN EXTEND statusfile           
+           CLOSE statusfile
+           
+           *> create a new name like '7863786§4g78b8§48743723.OK'
+           MOVE SPACE TO wc-dest-file-path    
+           STRING '../'        DELIMITED BY SPACE
+                  wc-file-name DELIMITED BY SPACE 
+                          '.'  DELIMITED BY SPACE
+                          'OK' DELIMITED BY SPACE
+                           INTO wc-dest-file-path
+           *> copy existing dummy named 'status' file to OK-file
+           CALL 'CBL_COPY_FILE' USING '../status', wc-dest-file-path
+           *> remove not needed dummy file
+           CALL 'CBL_DELETE_FILE' USING '../status'           
+       
+           .           
            
        *>**************************************************    
        *> END PROGRAM  
