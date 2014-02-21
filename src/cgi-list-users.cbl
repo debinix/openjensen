@@ -206,13 +206,13 @@
             WRITE debug-file-rec
             
             STRING "user type: "
-                   wc-filename
+                   wn-user-type-number
                    INTO wc-debug-line
             MOVE wr-debug-file-rec TO debug-file-rec
             WRITE debug-file-rec
             
             STRING "filename: "
-                   wn-user-type-number
+                   wc-filename
                    INTO wc-debug-line
             MOVE wr-debug-file-rec TO debug-file-rec
             WRITE debug-file-rec
@@ -362,7 +362,8 @@
 
             PERFORM UNTIL sqlstate NOT = ZERO
 
-               MOVE t-program-name TO tbl-program-name(idx-program)
+               MOVE t-program-name
+                    TO tbl-program-name(idx-program)
                SET idx-program up BY 1
 
                EXEC SQL
@@ -406,7 +407,8 @@
 
             PERFORM UNTIL sqlstate NOT = ZERO
 
-               MOVE t-usertype-name TO tbl-user-type-name(idx-user-type)
+               MOVE t-usertype-name
+                    TO tbl-user-type-name(idx-user-type)
                SET idx-user-type up by 1
 
                EXEC SQL
@@ -496,7 +498,8 @@
             *> All users have been written TO file. Close it.
             CLOSE html-file
             
-            MOVE 'All users have been written to file.' TO wc-debug-line
+            MOVE 'All users have been written to file.'
+                TO wc-debug-line
             MOVE wr-debug-file-rec TO debug-file-rec
             WRITE debug-file-rec
             
@@ -592,7 +595,8 @@
             STRING wc-dest-dir-path DELIMITED BY " "
                    wc-filename DELIMITED BY " "
                    INTO wc-dest-file-path
-            CALL "C$COPY" USING wc-src-file-path, wc-dest-file-path, 0
+            CALL "C$COPY"
+                USING wc-src-file-path, wc-dest-file-path, 0
             *> CALL “C$DELETE” USING wc-src-file-path, 0
             
             CLOSE debug-file
