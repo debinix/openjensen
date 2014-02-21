@@ -5,29 +5,31 @@
        input-output section.
        file-control.
            SELECT OPTIONAL ojlogfile
-              ASSIGN TO '../../openjensen.log'
+              ASSIGN TO '../_openjensen.log'
               ORGANIZATION IS LINE SEQUENTIAL.
         
        DATA DIVISION.
        file section.
        FD  ojlogfile.
        01  fd-ojlogfile-post.
-           03  fc-yyyy                    PIC X(4).
+           03  fe-yyyy                    PIC ZZZ9.
            03  fc-sep-1                   PIC X.
-           03  fc-monthmonth              PIC X(2).
+           03  fe-monthmonth              PIC Z9.
            03  fc-sep-2                   PIC X.
-           03  fc-dd                      PIC X(2).
+           03  fe-dd                      PIC Z9.
            03  fc-sep-3                   PIC X.
-           03  fc-hh                      PIC X(2).
+           03  fe-hh                      PIC Z9.
            03  fc-sep-4                   PIC X.
-           03  fc-mm                      PIC X(2).
+           03  fe-mm                      PIC Z9.
            03  fc-sep-5                   PIC X.           
-           03  fc-ss                      PIC X(2).
+           03  fe-ss                      PIC Z9.
            03  fc-sep-6                   PIC X.
+           03  fe-tt                      PIC Z9.
+           03  fc-sep-7                   PIC X.           
            03  fc-err-state               PIC X(5).
-           03  fc-sep-7                   PIC X.      
+           03  fc-sep-8                   PIC X.      
            03  fc-err-msg                 PIC X(40).
-           03  fc-sep-8                   PIC X.       
+           03  fc-sep-9                   PIC X.       
        
        working-storage section.
        01   switches.
@@ -91,22 +93,24 @@
            
            PERFORM UNTIL is-eof-input             
                       
-               MOVE wn-year TO fc-yyyy  
+               MOVE wn-year TO fe-yyyy  
                MOVE '-' TO fc-sep-1   
-               MOVE wn-month TO fc-monthmonth   
+               MOVE wn-month TO fe-monthmonth   
                MOVE '-' TO fc-sep-2    
-               MOVE wn-day TO fc-dd     
+               MOVE wn-day TO fe-dd     
                MOVE 'T' TO fc-sep-3     
-               MOVE wn-hour TO fc-hh      
+               MOVE wn-hour TO fe-hh      
                MOVE ':' TO fc-sep-4                 
-               MOVE wn-minute TO fc-mm    
+               MOVE wn-minute TO fe-mm    
                MOVE ':' TO fc-sep-5                  
-               MOVE wn-second TO fc-ss
-               MOVE '|' TO fc-sep-6     
+               MOVE wn-second TO fe-ss
+               MOVE '-' TO fc-sep-6
+               MOVE wn-hundred TO fe-tt               
+               MOVE '|' TO fc-sep-7               
                MOVE lc-err-state TO fc-err-state      
-               MOVE '|' TO fc-sep-7          
+               MOVE '|' TO fc-sep-8          
                MOVE lc-err-msg TO fc-err-msg
-               MOVE '|' TO fc-sep-8        
+               MOVE '|' TO fc-sep-9        
                              
                *>  Read next record            
                READ ojlogfile INTO fd-ojlogfile-post
