@@ -204,18 +204,21 @@
             MOVE 'At end ofA0100-Init' TO wc-debug-line
             MOVE wr-debug-file-rec TO debug-file-rec
             WRITE debug-file-rec
+            MOVE SPACE TO wc-debug-line
             
             STRING "user type: "
                    wn-user-type-number
                    INTO wc-debug-line
             MOVE wr-debug-file-rec TO debug-file-rec
             WRITE debug-file-rec
+            MOVE SPACE TO wc-debug-line
             
             STRING "filename: "
                    wc-filename
                    INTO wc-debug-line
             MOVE wr-debug-file-rec TO debug-file-rec
             WRITE debug-file-rec
+            MOVE SPACE TO wc-debug-line
             
             PERFORM A0110-Init-Cursors
 
@@ -303,7 +306,8 @@
        B0100-Main.
             MOVE 'B0100-Main' TO wc-debug-line
             MOVE wr-debug-file-rec TO debug-file-rec
-            WRITE debug-file-rec       
+            WRITE debug-file-rec
+            MOVE SPACE TO wc-debug-line
             
             IF is-valid-init
     
@@ -318,19 +322,39 @@
            .
        *>**************************************************
        B0200-Connect.
+            MOVE 'B0200-Connect' TO wc-debug-line
+            MOVE wr-debug-file-rec TO debug-file-rec
+            WRITE debug-file-rec
+            MOVE SPACE TO wc-debug-line
+       
             MOVE  "openjensen"    TO   wc-database
             MOVE  "jensen"        TO   wc-username
             MOVE  SPACE           TO   wc-passwd
 
+            
             EXEC SQL
                CONNECT :wc-username IDENTIFIED BY :wc-passwd
                                     USING :wc-database
             END-EXEC
+            
+            STRING  wc-username
+                    ","
+                    wc-passwd
+                    ";"
+                    wc-database                   
+                    INTO wc-debug-line
+            MOVE wr-debug-file-rec TO debug-file-rec
+            WRITE debug-file-rec
+            MOVE SPACE TO wc-debug-line
 
             IF SQLSTATE NOT = ZERO
                 PERFORM Z0100-Error-Routine
             ELSE
                 SET is-db-connected TO TRUE
+                MOVE 'SET is-db-connected TO TRUE' TO wc-debug-line
+                MOVE wr-debug-file-rec TO debug-file-rec
+                WRITE debug-file-rec
+                MOVE SPACE TO wc-debug-line
             END-IF
             .
        *>**************************************************
