@@ -314,7 +314,7 @@
                     PERFORM B0420-Get-Teacher-Data
                 WHEN other
                     EXEC SQL
-                        DECLARE cur3 cursor for
+                        DECLARE cur3 CURSOR FOR
                             SELECT  user_firstname,
                                     user_lastname,
                                     user_email,
