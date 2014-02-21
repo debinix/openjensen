@@ -70,14 +70,16 @@ if($_SESSION['usertype_id'] == 1)
       curl_close($ch);
       
       // time out after 5s
-      for ($f=0; $f <= 5; $f++) {
+      for ($f=0; $f <= 50; $f++) {
         $file_exists=file_exists($betyg_elev_file);
         if($file_exists) {
             break;
         }
-        sleep(1);      
+        // sleep 100 ms
+        usleep(100000);      
       }
-      if($f === 5) $Error->set("Saknar fil: $betyg_elev_file") ; 
+      if($f === 50)
+          $Error->set("Saknar fil: $betyg_elev_file") ; 
       
       
       $time_mid = microtime(true);
@@ -85,6 +87,17 @@ if($_SESSION['usertype_id'] == 1)
       echo "Väntade på backend: $mytime sekunder<br>";
       
       $course_row = file($betyg_elev_file);
+      
+      // is backend data valid - and is it right session user
+      $session_ok_file = $ses_id."."."OK";      
+      $ok_file_exists=file_exists($session_ok_file);
+      if(!ok_file_exists) {
+          $Error->set("Databas: Ogiltiga data för denna session") ; 
+      }
+      else {
+          unlink($session_ok_file);
+      }
+      
       
       $time_end = microtime(true);
       $mytime = number_format($time_end - $time_mid, 5) ;
@@ -170,14 +183,15 @@ elseif ($_SESSION['usertype_id'] >= 2)
   curl_close($ch);
   
   // time out after 5s
-  for ($f=0; $f <= 5; $f++) {
+  for ($f=0; $f <= 50; $f++) {
     $file_exists=file_exists($betyg_all_file);
     if($file_exists) {
         break;
     }
-    sleep(1);      
+    // sleep 100 ms
+    usleep(100000);   
   }
-  if($f === 5)
+  if($f === 50)
       $Error->set("Saknar fil: $betyg_all_file") ; 
   
   $time_mid = microtime(true);
@@ -185,6 +199,16 @@ elseif ($_SESSION['usertype_id'] >= 2)
   echo "Väntade på backend: $mytime sekunder<br>";
 
   $user_row = file($betyg_all_file);
+  
+  // is backend data valid - and is it right session user
+  $session_ok_file = $ses_id."."."OK";      
+  $ok_file_exists=file_exists($session_ok_file);
+  if(!ok_file_exists) {
+      $Error->set("Databas: Ogiltiga data för denna session") ; 
+  }
+  else {
+      unlink($session_ok_file);
+  }  
   
   $time_end = microtime(true);
   $mytime = number_format($time_end - $time_mid, 5) ;
