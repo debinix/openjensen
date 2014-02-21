@@ -295,7 +295,9 @@
            MOVE ',' TO fc-sep-3           
            MOVE wc-grade_grade TO fc-grade
            MOVE ',' TO fc-sep-4           
-           MOVE wc-grade_comment TO fc-grade-comment       
+           MOVE wc-grade_comment TO fc-grade-comment
+           MOVE ',' TO fc-sep-5           
+           MOVE wc-session-id TO fc-session-id             
            
            *> Rememeber which user-id have completed their grades
            ADD 1 TO wn-tbl-cnt
