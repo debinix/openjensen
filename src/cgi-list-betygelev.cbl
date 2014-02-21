@@ -428,9 +428,9 @@
                DISCONNECT ALL
            END-EXEC
            
-           IF NOT is-sql-error
+           *> IF NOT is-sql-error
                PERFORM Z0200-write-status-ok-file
-           END-IF
+           *> END-IF
            
            *> close outfile
            CLOSE fileout
