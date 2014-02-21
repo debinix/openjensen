@@ -24,7 +24,7 @@ $Success->show();
     $filename = $ses_id."-list-user.txt";
     // Get users from DB
     $usertype_id = $_SESSION['usertype_id'];
-    $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-user.cgi';
+    $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-users.cgi';
     $fields = array('usertype_id' => $usertype_id,
                     'filename' => $filename);
     // url-ify the data for the POST with php built-in function
