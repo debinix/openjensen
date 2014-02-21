@@ -271,8 +271,9 @@
                                  user_phonenumber,
                                  user_program,
                                  user_lastlogin
-                         FROM tbl_users
+                         FROM tbl_user
                          WHERE usertype_id = 1
+                         ORDER BY user_lastname, user_firstname
                     END-EXEC
                   
                     IF SQLSTATE NOT = ZERO
@@ -296,8 +297,9 @@
                                     user_phonenumber,
                                     user_program,
                                     user_lastlogin
-                            FROM tbl_users
+                            FROM tbl_user
                             WHERE usertype_id = 2
+                            ORDER BY user_lastname, user_firstname
                     END-EXEC
             
                     IF SQLSTATE NOT = ZERO
@@ -312,7 +314,7 @@
                         OPEN cur2
                     END-EXEC
                     PERFORM B0420-Get-Teacher-Data
-                WHEN other
+                WHEN OTHER
                     EXEC SQL
                         DECLARE cur3 CURSOR FOR
                             SELECT  user_firstname,
@@ -321,7 +323,8 @@
                                     user_phonenumber,
                                     user_program,
                                     user_lastlogin
-                            FROM tbl_users
+                            FROM tbl_user
+                            ORDER BY user_lastname, user_firstname
                     END-EXEC
                       
                     IF SQLSTATE NOT = ZERO
