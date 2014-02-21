@@ -168,13 +168,13 @@
                                            wc-post-name wc-post-value
                MOVE FUNCTION NUMVAL(wc-post-value) TO wn-user_id
                
-               *> get filename to return data set to php
-               MOVE ZERO TO wn-rtn-code
-               MOVE SPACE TO wc-post-value
-               MOVE 'file_name' TO wc-post-name
-               CALL 'get-post-value' USING wn-rtn-code
+               *> get session-id to return data set to php
+               *> MOVE ZERO TO wn-rtn-code
+               *> MOVE SPACE TO wc-post-value
+               *> MOVE 'file_name' TO wc-post-name
+               *> CALL 'get-post-value' USING wn-rtn-code
                                            wc-post-name wc-post-value
-               MOVE wc-post-value TO wc-file-name               
+               *> MOVE wc-post-value TO wc-file-name               
                
                
                *> open outfile
@@ -414,23 +414,6 @@
            CLOSE fileout
            
            .
-
-       *>**************************************************
-       B0310-rename-outfil. 
-                                 
-           *> use two OpenCobol "call by name" system routines
-           
-           MOVE SPACE TO wc-dest-file-path
-           
-           STRING '..' DELIMITED BY '/'
-               wc-filename DELIMITED BY SPACE INTO wc-dest-file-path
-           
-           *> copy file to new name
-           CALL 'C$COPY' USING fileout, wc-dest-file-path, 0
-           
-           .
-
-
 
        *>**************************************************
        C0100-closedown.
