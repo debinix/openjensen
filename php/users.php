@@ -45,6 +45,7 @@ $Success->show();
 
     $Success->set("Användarlistan hämtad.");
     
+
     //Query is executed and the CGI has created a file we sleep
     // max 5s to make sure that the file exists before continue
     //with our php code below
