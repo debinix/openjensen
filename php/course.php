@@ -49,7 +49,7 @@ if($_SESSION['usertype_id'] == 1)
       $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi';
       $fields = array( 'user_id' => $user_id,
                        'user_program' => $user_program,
-                       'session_id' => $ses_id
+                       'sessionid' => $ses_id
                       );
       
       //url-ify the data for the POST with php built-in function
@@ -147,7 +147,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
   $user_program = $_SESSION['user_program'];
   $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygalla.cgi';
   $fields = array( 'user_program' => $user_program,
-                   'session_id' => $ses_id
+                   'sessionid' => $ses_id
                   );
   //url-ify the data for the POST with php built-in function
   $php_url_string = http_build_query($fields);
