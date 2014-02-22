@@ -38,7 +38,7 @@ if($_SESSION['usertype_id'] == 1)
       $magic_number = time();
       // add 10 more random digits to string
       for($i = 0; $i < 10; $i++) {
-      $magic_number .= mt_rand(0, 9);
+      $magic_number .= rand(0, 9);
       }
       
       $magic_number = time();
@@ -160,7 +160,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
   $magic_number = time();
   // add 10 more random digits to string
   for($i = 0; $i < 10; $i++) {
-  $magic_number .= mt_rand(0, 9);
+  $magic_number .= rand(0, 9);
   }
   
   $time_start = microtime(true);
