@@ -25,7 +25,7 @@
         // Delete the file
         unlink($removefilename);
         
-        if(file_exists($removefilename)) {
+        if(!file_exists($removefilename)) {
             echo "SUCCESS: File $removefilename is DELETED! <br>";
         }
         else {
