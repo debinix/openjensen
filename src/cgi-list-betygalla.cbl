@@ -12,17 +12,18 @@
        input-output section.
             
        file-control.
-           SELECT fileout 
-              ASSIGN TO '../data/betyg-all.txt'
+           SELECT fileout ASSIGN TO
+        '/home/jensen/www.mc-butter.se/public_html/data/betyg-all.txt'
               ORGANIZATION IS LINE SEQUENTIAL.
            
            SELECT gradetmpfile 
               ASSIGN TO '/tmp/gradetmp.dat'
               ORGANIZATION IS LINE SEQUENTIAL.  
            
-           SELECT OPTIONAL statusfile 
-              ASSIGN TO '../data/status'
-              ORGANIZATION IS LINE SEQUENTIAL.        
+           SELECT OPTIONAL statusfile
+              ASSIGN TO
+              '/home/jensen/www.mc-butter.se/public_html/data/status'             
+              ORGANIZATION IS LINE SEQUENTIAL.      
               
        *>**************************************************
        DATA DIVISION.

@@ -1,10 +1,10 @@
        *>
        *> cgi-list-betygelev: fetch a list of student
-       *> corses within his program and his grades
+       *> courses within his program and his grades
        *> from table tbl_course and tbl_grade and writes
        *> the results back to file.
        *> 
-       *> Coder: BK 
+       *> Coder: BK  
        *>
        IDENTIFICATION DIVISION.
        program-id. cgi-list-betygelev.
@@ -15,12 +15,12 @@
        file-control.
            SELECT OPTIONAL fileout
               ASSIGN TO
-                  '../data/betyg-elev.txt'
+        '/home/jensen/www.mc-butter.se/public_html/data/betyg-elev.txt'
               ORGANIZATION IS LINE SEQUENTIAL.
       
            SELECT OPTIONAL statusfile
               ASSIGN TO
-                  '../data/status'             
+              '/home/jensen/www.mc-butter.se/public_html/data/status'             
               ORGANIZATION IS LINE SEQUENTIAL.
               
        *>**************************************************
