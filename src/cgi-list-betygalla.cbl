@@ -76,7 +76,15 @@
            03  value-is-found-switch       PIC X   VALUE 'N'.
                88  value-is-found                  VALUE 'Y'.
            03  is-sql-error-switch         PIC X   VALUE 'N'.
-                88  is-sql-error                   VALUE 'Y'.                
+                88  is-sql-error                   VALUE 'Y'.
+                
+       *> each switch monitors one received POST name-value pair
+       01  sub-init-swithes.        
+            03  is-valid-init-program-witch PIC X   VALUE 'N'.
+                88  is-valid-init-program           VALUE 'Y'.
+            03  is-valid-init-magic-switch  PIC X   VALUE 'N'.
+                88  is-valid-init-magic             VALUE 'Y'.                   
+                
        
        *> used in calls to dynamic libraries
        01  wn-rtn-code             PIC  S99   VALUE ZERO.
@@ -174,6 +182,9 @@
                     PERFORM B0250-write-all-courses-in-pgrm
                     PERFORM B0300-disconnect
                 END-IF
+           ELSE     
+                MOVE 'Kunde ej läsa POST data' TO wc-printscr-string
+                CALL 'stop-printscr' USING wc-printscr-string  
            END-IF
                    
            PERFORM C0100-closedown
@@ -202,9 +213,12 @@
                MOVE SPACE TO wc-post-value
                MOVE 'user_program' TO wc-post-name
                CALL 'get-post-value' USING wn-rtn-code
-                                           wc-post-name wc-post-value
-                      
-               MOVE FUNCTION NUMVAL(wc-post-value) TO wn-program_id
+                                           wc-post-name wc-post-value 
+               IF wc-post-value NOT = SPACE
+                   SET is-valid-init-program TO TRUE       
+                   MOVE FUNCTION NUMVAL(wc-post-value) TO wn-program_id
+               END-IF
+               
                
                *> get magic_number to return with data sent back to php
                MOVE ZERO TO wn-rtn-code
@@ -212,11 +226,19 @@
                MOVE 'magic_number' TO wc-post-name
                CALL 'get-post-value' USING wn-rtn-code
                                            wc-post-name wc-post-value
-               MOVE wc-post-value TO wc-magic-number       
+               IF wc-post-value NOT = SPACE
+                   SET is-valid-init-magic TO TRUE  
+                   MOVE wc-post-value TO wc-magic-number       
+               END-IF
                
-               
-               *> open outfile
-               OPEN OUTPUT fileout
+               *> both must be valid
+               IF is-valid-init-program AND is-valid-init-magic
+                  
+                  SET is-valid-init TO TRUE
+                  *> open outfile
+                  OPEN OUTPUT fileout
+                  
+               END-IF               
   
            END-IF
 
