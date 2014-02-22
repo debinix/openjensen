@@ -9,7 +9,7 @@
     //
     // mc-butter.se/tst-phpunlink.php
     //
-    $removefilename = "./1111111111111111.OK-ta-bort-mig" ;    
+    $removefilename = "/home/jensen/www.mc-butter.se/public_html/1111111111111111.OK-ta-bort-mig" ;    
 
     $ok_file_exists=file_exists($removefilename);
     if(!ok_file_exists) {
@@ -20,9 +20,11 @@
         unlink($removefilename);
 
         $ok_file_exists=file_exists($removefilename);
+        echo "";
         echo "After unlink test: File $removefilename is deleted! <br>";
     }
     
+    echo "";
     echo "Test finished! <br>"
 
 
