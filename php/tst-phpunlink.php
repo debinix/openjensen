@@ -12,8 +12,10 @@
     // mc-butter.se/tst-phpunlink.php
     //
     
-    $removefilename = "/home/jensen/www.mc-butter.se/public_html/phpunlinktest.OK" ;    
+    // $removefilename = "/home/jensen/www.mc-butter.se/public_html/phpunlinktest.OK" ;    
 
+    $removefilename = 'phpunlinktest.OK' ; 
+    
     if(!file_exists($removefilename)) {
         echo "Missing testfile $removefilename (Run: cgi-bin/cgi-test-php-unlink.cgi first)<br>" ; 
     }
