@@ -35,7 +35,7 @@
        Z0100-write-status-ok-file.
        
            *> simulates file name with a 'magic (unique) number'
-           MOVE '../phpunlinktest' TO wc-file-name
+           MOVE '../data/phpunlinktest' TO wc-file-name
        
            *> create a zero file
            OPEN EXTEND statusfile           
