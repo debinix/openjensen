@@ -13,7 +13,7 @@
             
        file-control.
            SELECT fileout 
-              ASSIGN TO '../betyg-all.txt'
+              ASSIGN TO '../data/betyg-all.txt'
               ORGANIZATION IS LINE SEQUENTIAL.
            
            SELECT gradetmpfile 
@@ -21,7 +21,7 @@
               ORGANIZATION IS LINE SEQUENTIAL.  
            
            SELECT OPTIONAL statusfile 
-              ASSIGN TO '../status'
+              ASSIGN TO '../data/status'
               ORGANIZATION IS LINE SEQUENTIAL.        
               
        *>**************************************************
@@ -538,15 +538,15 @@
            
            *> create a new name like '7863786§4g78b8§48743723.OK'
            MOVE SPACE TO wc-dest-file-path    
-           STRING '../'        DELIMITED BY SPACE
+           STRING '../data/'   DELIMITED BY SPACE
                   wc-file-name DELIMITED BY SPACE 
                           '.'  DELIMITED BY SPACE
                           'OK' DELIMITED BY SPACE
                            INTO wc-dest-file-path
            *> copy existing dummy named 'status' file to OK-file
-           CALL 'CBL_COPY_FILE' USING '../status', wc-dest-file-path
+           CALL 'CBL_COPY_FILE' USING '../data/status', wc-dest-file-path
            *> remove not needed dummy file
-           CALL 'CBL_DELETE_FILE' USING '../status'           
+           CALL 'CBL_DELETE_FILE' USING '../data/status'           
        
            .              
            

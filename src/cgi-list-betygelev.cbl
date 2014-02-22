@@ -14,11 +14,11 @@
             
        file-control.
            SELECT OPTIONAL fileout 
-              ASSIGN TO '../betyg-elev.txt'
+              ASSIGN TO '../data/betyg-elev.txt'
               ORGANIZATION IS LINE SEQUENTIAL.
         
            SELECT OPTIONAL statusfile 
-              ASSIGN TO '../status'
+              ASSIGN TO '../data/status'
               ORGANIZATION IS LINE SEQUENTIAL.                
        *>**************************************************
        DATA DIVISION.
@@ -466,15 +466,15 @@
            
            *> create a new name like '7863786§4g78b8§48743723.OK'
            MOVE SPACE TO wc-dest-file-path    
-           STRING '../'        DELIMITED BY SPACE
+           STRING '../data/'   DELIMITED BY SPACE
                   wc-file-name DELIMITED BY SPACE 
                           '.'  DELIMITED BY SPACE
                           'OK' DELIMITED BY SPACE
                            INTO wc-dest-file-path
            *> copy existing dummy named 'status' file to OK-file
-           CALL 'CBL_COPY_FILE' USING '../status', wc-dest-file-path
+           CALL 'CBL_COPY_FILE' USING '../data/status', wc-dest-file-path
            *> remove not needed dummy file
-           CALL 'CBL_DELETE_FILE' USING '../status'           
+           CALL 'CBL_DELETE_FILE' USING '../data/status'           
        
            .           
            
