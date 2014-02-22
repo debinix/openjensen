@@ -13,17 +13,17 @@
 
     $ok_file_exists=file_exists($removefilename);
     if(!ok_file_exists) {
-        echo "Before unlink test: Missing $removefilename " ; 
+        echo "Before unlink test: Missing $removefilename <br>" ; 
     }
     else {
-        echo "Before unlink test: Found file $removefilename " ;         
+        echo "Before unlink test: Found file $removefilename <br>" ;         
         unlink($removefilename);
 
         $ok_file_exists=file_exists($removefilename);
-        echo "After unlink test: File $removefilename is deleted!";
+        echo "After unlink test: File $removefilename is deleted! <br>";
     }
     
-    echo "Test finished!"
+    echo "Test finished! <br>"
 
 
 ?>
