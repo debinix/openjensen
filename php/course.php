@@ -104,8 +104,9 @@ if($_SESSION['usertype_id'] == 1)
         // assign each field into a named array key
         $course_row[$i] = array('course_name' => $tmp[0], 'course_startdate' => $tmp[1], 'course_enddate' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_comment' => $tmp[4], 'sessionid' => $tmp[5]);
         
-        if($course_row[$i]['sessionid'] !== $ses_id) {
-          echo "En rad i datat från servern stämmer ej med som var förväntat.<br>" ; 
+        // FIX: although data is correct the comparison based on the regex above does complain
+        if($course_row[$i]['sessionid'] <> $ses_id) {
+          ; // echo "En rad i datat från servern stämmer ej med som var förväntat.<br>" ; 
         }
         ?>
       
@@ -117,14 +118,13 @@ if($_SESSION['usertype_id'] == 1)
           <td><?php echo $course_row[$i]['grade_comment']; ?></td>
         </tr>
       <?php
-      echo "Väntade på Cobol databas backend: $mycbltime sekunder. Tid för PHP att processa infil: $mytime sekunder<br>";
       }
       ?>
       
     </tbody>
   </table>
-  
   <?php
+  echo "Väntade på Cobol databas backend: $mycbltime sekunder. Tid för PHP att processa infil: $mytime sekunder<br>";
 }
 elseif ($_SESSION['usertype_id'] >= 2)
 {
@@ -213,7 +213,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
         $user_row[$i] = array('course_name' => $tmp[0], 'user_firstname' => $tmp[1], 'user_lastname' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_id' => $tmp[4],'user_id' => $tmp[5],'course_id' => $tmp[6], 'grade_comment' => $tmp[7], 'sessionid' => $tmp[8]);
     
         // FIX: although data is correct the comparison based on the regex above does complain
-        if($user_row[$i]['sessionid'] != $ses_id) {
+        if($user_row[$i]['sessionid'] <> $ses_id) {
         ; //  echo "En rad i datat från servern stämmer ej med som var förväntat.<br>" ; 
         }
     
@@ -257,12 +257,11 @@ elseif ($_SESSION['usertype_id'] >= 2)
           // assign current course name for next iteration
           $lastcoursename =  $user_row[$i]['course_name'];
           
-          echo "Väntade på Cobol databas backend: $mycbltime sekunder. Tid för PHP att processa infil: $mytime sekunder<br>";
         }
         ?>
     </table>
-  
   <?php
+  echo "Väntade på Cobol databas backend: $mycbltime sekunder. Tid för PHP att processa infil: $mytime sekunder<br>";
 }
 include("assets/_footer.php");
 ?>
