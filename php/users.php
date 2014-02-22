@@ -52,7 +52,7 @@ $Success->show();
     
     for ($f=0; $f <= 5; $f++)
     {
-      $file_exists=file_exists($filename);
+      $file_exists=file_exists("data/".$filename);
       if($file_exists)
       {
           break;
