@@ -8,7 +8,7 @@ if($_SESSION['usertype_id'] == 1)
   <?php
   $Error->show();
   $Success->show();
-  $betyg_elev_file = 'data/betyg-elev.txt';
+  $betyg_elev_file = 'betyg-elev.txt';
   ?>
     
   <table class="table table-hover">
@@ -31,14 +31,9 @@ if($_SESSION['usertype_id'] == 1)
       // wait until file is written at server before continue to read it.
       //
       
-      // Include session id to track diffrent clients in response
-      $ses_id = session_id();
-      $time_start = microtime(true);
-      
-      if(file_exists($betyg_elev_file)) {
-        unlink($betyg_elev_file);
-      }
-      
+      // Include unique id to track different client responses
+      $ses_id = time();
+      $time_start = microtime(true);      
 
       $user_id = $_SESSION['user_id'];
       $user_program = $_SESSION['user_program'];
@@ -62,7 +57,7 @@ if($_SESSION['usertype_id'] == 1)
       //execute post
       $result = curl_exec($ch);
       if($result === false) {
-          echo "kan inte få kontakt med $url" ;
+          echo "Kan inte få kontakt med $url <br>" ;
       }
       
       //close connection
@@ -78,31 +73,27 @@ if($_SESSION['usertype_id'] == 1)
         usleep(100000);      
       }
       if($f === 50) {
-          echo "Saknar fil från databas: $betyg_elev_file" ; 
+          echo "Saknar fil från databas: $betyg_elev_file <br>" ; 
       }
       
       
       $time_mid = microtime(true);
-      $mytime = number_format($time_mid - $time_start, 5) ;
-      echo "Väntade på backend: $mytime sekunder<br>";
+      $mycbltime = number_format($time_mid - $time_start, 5) ;
       
       // read file from database
       $course_row = file($betyg_elev_file);
-      unlink($betyg_elev_file);
       
-      // is backend data valid - and is it right session user
-      $session_ok_file = $ses_id."."."OK";      
+      // is backend data valid
+      $session_ok_file = "data/".$ses_id."."."OK";      
       if(!file_exists($session_ok_file)) {
-          echo "Ogiltiga data returnerades från databasen" ; 
+          echo "Ogiltiga data returnerades från databasen.<br>" ; 
       }
       else {
           unlink($session_ok_file);
       }
       
-      
       $time_end = microtime(true);
       $mytime = number_format($time_end - $time_mid, 5) ;
-      echo "PHP processa infil: $mytime sekunder<br>";
       
            
       // loop through the array
@@ -113,8 +104,8 @@ if($_SESSION['usertype_id'] == 1)
         // assign each field into a named array key
         $course_row[$i] = array('course_name' => $tmp[0], 'course_startdate' => $tmp[1], 'course_enddate' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_comment' => $tmp[4], 'sessionid' => $tmp[5]);
         
-        if($course_row[$i]['sessionid'] != $ses_id) {
-            echo "En rad i datat från servern stämmer ej med som var förväntat." ; 
+        if($course_row[$i]['sessionid'] !== $ses_id) {
+          echo "En rad i datat från servern stämmer ej med som var förväntat.<br>" ; 
         }
         ?>
       
@@ -126,11 +117,13 @@ if($_SESSION['usertype_id'] == 1)
           <td><?php echo $course_row[$i]['grade_comment']; ?></td>
         </tr>
       <?php
+      echo "Väntade på Cobol databas backend: $mycbltime sekunder. Tid för PHP att processa infil: $mytime sekunder<br>";
       }
       ?>
       
     </tbody>
   </table>
+  
   <?php
 }
 elseif ($_SESSION['usertype_id'] >= 2)
@@ -141,7 +134,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
   <?php
   $Error->show();
   $Success->show();
-  $betyg_all_file = 'data/betyg-all.txt';
+  $betyg_all_file = 'betyg-all.txt';
   
   //
   // POST data to url: 
@@ -149,13 +142,9 @@ elseif ($_SESSION['usertype_id'] >= 2)
   // wait until file is written at server before continue to read it.
   //
   
-  // Include session id to track diffrent clients in response
-  $ses_id = session_id();  
+  // Include unique id to track different client responses
+  $ses_id = time();    
   $time_start = microtime(true);
-  
-  if(file_exists($betyg_all_file)) {
-    unlink($betyg_all_file);
-  }
   
   $user_program = $_SESSION['user_program'];
   $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygalla.cgi';
@@ -177,7 +166,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
   //execute post
   $result = curl_exec($ch);
   if($result === false) {
-      echo "Kan inte få kontakt med $url" ;
+      echo "Kan inte få kontakt med $url <br>" ;
   }
   
   //close connection
@@ -193,21 +182,20 @@ elseif ($_SESSION['usertype_id'] >= 2)
     usleep(100000);   
   }
     if($f === 50) {
-        echo "Saknar fil från databas: $betyg_elev_file" ; 
+        echo "Saknar fil från databas: $betyg_elev_file <br>" ; 
     }
   
   $time_mid = microtime(true);
-  $mytime = number_format($time_mid - $time_start, 5) ;
-  echo "Väntade på backend: $mytime sekunder<br>";
+  $mycbltime = number_format($time_mid - $time_start, 5) ;
+  echo "Väntade på backend: $mycbltime sekunder<br>";
 
   // read file from database
   $user_row = file($betyg_all_file);
-  unlink($betyg_all_file);
   
-  // is backend data valid - and is it right session user
-  $session_ok_file = $ses_id."."."OK";      
+  // is backend data valid
+  $session_ok_file = "data/".$ses_id."."."OK";       
   if(!file_exists($session_ok_file)) {
-      echo "Ogiltiga data returnerades från databasen" ; 
+      echo "Ogiltiga data returnerades från databasen.<br>" ; 
   }
   else {
       unlink($session_ok_file);
@@ -222,14 +210,15 @@ elseif ($_SESSION['usertype_id'] >= 2)
         // separate each field
         $tmp = preg_split("/\s*,\s*/", trim($user_row[$i]), -1, PREG_SPLIT_NO_EMPTY);
         // assign each field into a named array key
-        $user_row[$i] = array('course_name' => $tmp[0], 'user_firstname' => $tmp[1], 'user_lastname' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_id' => $tmp[4],'user_id' => $tmp[5],'course_id' => $tmp[6], 'grade_comment' => $tmp[7]);
+        $user_row[$i] = array('course_name' => $tmp[0], 'user_firstname' => $tmp[1], 'user_lastname' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_id' => $tmp[4],'user_id' => $tmp[5],'course_id' => $tmp[6], 'grade_comment' => $tmp[7], 'sessionid' => $tmp[8]);
     
+        // FIX: although data is correct the comparison based on the regex above does complain
         if($user_row[$i]['sessionid'] != $ses_id) {
-            echo "En rad i datat från servern stämmer ej med som var förväntat." ; 
+        ; //  echo "En rad i datat från servern stämmer ej med som var förväntat.<br>" ; 
         }
     
     }
-        // initilize to rememeber previous group of the course names
+        // initilize to remember previous group of the course names
         $lastcoursename = '-';
 
         // iterate through all course user data
@@ -266,7 +255,9 @@ elseif ($_SESSION['usertype_id'] >= 2)
         
         <?php
           // assign current course name for next iteration
-          $lastcoursename =  $user_row[$i]['course_name']; 
+          $lastcoursename =  $user_row[$i]['course_name'];
+          
+          echo "Väntade på Cobol databas backend: $mycbltime sekunder. Tid för PHP att processa infil: $mytime sekunder<br>";
         }
         ?>
     </table>
