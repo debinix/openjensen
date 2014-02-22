@@ -8,7 +8,7 @@ if($_SESSION['usertype_id'] == 1)
   <?php
   $Error->show();
   $Success->show();
-  $betyg_elev_file = 'betyg-elev.txt';
+  $betyg_elev_file = 'data/betyg-elev.txt';
   ?>
     
   <table class="table table-hover">
@@ -36,8 +36,7 @@ if($_SESSION['usertype_id'] == 1)
       $ses_id = session_id();
       $time_start = microtime(true);
       
-      $file_exists=file_exists($betyg_elev_file);
-      if($file_exists) {
+      if(file_exists($betyg_elev_file)) {
         unlink($betyg_elev_file);
       }
       
@@ -63,8 +62,9 @@ if($_SESSION['usertype_id'] == 1)
       
       //execute post
       $result = curl_exec($ch);
-      if($result === false)
-          $Error->set("Curl have a problem to reach $url") ;
+      if($result === false) {
+          echo "kan inte få kontakt med $url" ;
+      }
       
       //close connection
       curl_close($ch);
@@ -78,8 +78,9 @@ if($_SESSION['usertype_id'] == 1)
         // sleep 100 ms
         usleep(100000);      
       }
-      if($f === 50)
-          $Error->set("Saknar fil: $betyg_elev_file") ; 
+      if($f === 50) {
+          echo "Saknar fil från databas: $betyg_elev_file" ; 
+      }
       
       
       $time_mid = microtime(true);
@@ -92,9 +93,8 @@ if($_SESSION['usertype_id'] == 1)
       
       // is backend data valid - and is it right session user
       $session_ok_file = $ses_id."."."OK";      
-      $ok_file_exists=file_exists($session_ok_file);
-      if(!ok_file_exists) {
-          $Error->set("Databas: Ogiltiga data för denna session") ; 
+      if(!file_exists($session_ok_file)) {
+          echo "Ogiltiga data returnerades från databasen" ; 
       }
       else {
           unlink($session_ok_file);
@@ -114,9 +114,9 @@ if($_SESSION['usertype_id'] == 1)
         // assign each field into a named array key
         $course_row[$i] = array('course_name' => $tmp[0], 'course_startdate' => $tmp[1], 'course_enddate' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_comment' => $tmp[4], 'sessionid' => $tmp[5]);
         
-        // if($course_row[$i]['sessionid'] != $ses_id)
-        //    $Error->set("Redan inloggad, du kan bara vara inloggad från en browser åt gången") ; 
-        
+        if($course_row[$i]['sessionid'] != $ses_id) {
+            echo "En rad i datat från servern stämmer ej med som var förväntat." ; 
+        }
         ?>
       
         <tr>
@@ -142,7 +142,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
   <?php
   $Error->show();
   $Success->show();
-  $betyg_all_file = 'betyg-all.txt';
+  $betyg_all_file = 'data/betyg-all.txt';
   
   //
   // POST data with: name="program_id" (i.e. $_SESSION['user_program'])
@@ -154,8 +154,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
   $ses_id = session_id();  
   $time_start = microtime(true);
   
-  $file_exists=file_exists($betyg_all_file);
-  if($file_exists) {
+  if(file_exists($betyg_all_file)) {
     unlink($betyg_all_file);
   }
   
@@ -178,8 +177,9 @@ elseif ($_SESSION['usertype_id'] >= 2)
   
   //execute post
   $result = curl_exec($ch);
-  if($result === false)
-      $Error->set("Kan ej kontakta servern: $url") ;
+  if($result === false) {
+      echo "Kan inte få kontakt med $url" ;
+  }
   
   //close connection
   curl_close($ch);
@@ -193,8 +193,9 @@ elseif ($_SESSION['usertype_id'] >= 2)
     // sleep 100 ms
     usleep(100000);   
   }
-  if($f === 50)
-      $Error->set("Saknar fil: $betyg_all_file") ; 
+    if($f === 50) {
+        echo "Saknar fil från databas: $betyg_elev_file" ; 
+    }
   
   $time_mid = microtime(true);
   $mytime = number_format($time_mid - $time_start, 5) ;
@@ -206,9 +207,8 @@ elseif ($_SESSION['usertype_id'] >= 2)
   
   // is backend data valid - and is it right session user
   $session_ok_file = $ses_id."."."OK";      
-  $ok_file_exists=file_exists($session_ok_file);
-  if(!ok_file_exists) {
-      $Error->set("Databas: Ogiltiga data för denna session") ; 
+  if(!file_exists($session_ok_file)) {
+      echo "Ogiltiga data returnerades från databasen" ; 
   }
   else {
       unlink($session_ok_file);
@@ -225,8 +225,9 @@ elseif ($_SESSION['usertype_id'] >= 2)
         // assign each field into a named array key
         $user_row[$i] = array('course_name' => $tmp[0], 'user_firstname' => $tmp[1], 'user_lastname' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_id' => $tmp[4],'user_id' => $tmp[5],'course_id' => $tmp[6], 'grade_comment' => $tmp[7]);
     
-        //if($user_row[$i]['sessionid'] != $ses_id)
-        //    $Error->set("Redan inloggad, du kan bara vara inloggad från en browser åt gången") ; 
+        if($user_row[$i]['sessionid'] != $ses_id) {
+            echo "En rad i datat från servern stämmer ej med som var förväntat." ; 
+        }
     
     }
         // initilize to rememeber previous group of the course names
