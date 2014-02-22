@@ -9,7 +9,7 @@
     //
     // mc-butter.se/tst-phpunlink.php
     //
-    $removefilename = "1111111111111111.OK-ta-bort-mig" ;    
+    $removefilename = "./1111111111111111.OK-ta-bort-mig" ;    
 
     $ok_file_exists=file_exists($removefilename);
     if(!ok_file_exists) {
