@@ -38,7 +38,7 @@
            03  fc-sep-4                   PIC X.      
            03  fc-grade-comment           PIC X(40).
            03  fc-sep-5                   PIC X.      
-           03  fc-session-id              PIC X(40).
+           03  fc-magic-number            PIC X(40).
            
        FD  statusfile.
        01  fd-fileout-status         PIC  X(1) VALUE SPACE.           
@@ -119,7 +119,7 @@
        *> receiving variables for data passed from php
        01 wn-user_id                 PIC  9(4) VALUE ZERO.
        01 wn-program_id              PIC  9(4) VALUE ZERO.
-       01 wc-session-id              PIC  X(40) VALUE SPACE.
+       01 wc-magic-number              PIC  X(40) VALUE SPACE.
        
        *> holds the status file real name
        01 wc-file-name               PIC  X(60) VALUE SPACE.
@@ -184,13 +184,13 @@
                                            wc-post-name wc-post-value
                MOVE FUNCTION NUMVAL(wc-post-value) TO wn-user_id
                
-               *> get session-id to return with data sent back to php
+               *> get magic number to return with data sent back to php
                MOVE ZERO TO wn-rtn-code
                MOVE SPACE TO wc-post-value
-               MOVE 'sessionid' TO wc-post-name
+               MOVE 'magic_number' TO wc-post-name
                CALL 'get-post-value' USING wn-rtn-code
                                            wc-post-name wc-post-value
-               MOVE wc-post-value TO wc-session-id               
+               MOVE wc-post-value TO wc-magic-number               
                
                
                *> open outfile
@@ -312,7 +312,7 @@
            MOVE ',' TO fc-sep-4           
            MOVE wc-grade_comment TO fc-grade-comment
            MOVE ',' TO fc-sep-5           
-           MOVE wc-session-id TO fc-session-id             
+           MOVE wc-magic-number TO fc-magic-number             
            
            *> Rememeber which user-id have completed their grades
            ADD 1 TO wn-tbl-cnt
@@ -411,7 +411,7 @@
                MOVE ',' TO fc-sep-4           
                MOVE WC-NO-SQLVALUE-TO-PHP TO fc-grade-comment
                MOVE ',' TO fc-sep-5           
-               MOVE wc-session-id TO fc-session-id               
+               MOVE wc-magic-number TO fc-magic-number               
                
                WRITE fd-fileout-post
            
@@ -459,8 +459,8 @@
        *>**************************************************
        Z0200-write-status-ok-file.
        
-           *> move the SESSION_ID as base in new filename
-           MOVE wc-session-id TO wc-file-name
+           *> use the magic number as base in the new filename
+           MOVE wc-magic-number TO wc-file-name
        
            *> create a zero file
            OPEN EXTEND statusfile           
