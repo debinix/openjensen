@@ -14,9 +14,10 @@
     
     // $removefilename = "/home/jensen/www.mc-butter.se/public_html/phpunlinktest.OK" ;    
 
-    echo exec('whoami');
+    echo "PHP runs as user: ";
+    exec('whoami');
     
-    $removefilename = 'phpunlinktest.OK' ; 
+    $removefilename = 'data/phpunlinktest.OK' ; 
     
     if(!file_exists($removefilename)) {
         echo "Missing testfile $removefilename (Run: cgi-bin/cgi-test-php-unlink.cgi first)<br>" ; 
