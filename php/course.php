@@ -117,14 +117,13 @@ if($_SESSION['usertype_id'] == 1)
           <td><?php echo $course_row[$i]['grade_comment']; ?></td>
         </tr>
       <?php
-      echo "Väntade på Cobol databas backend: $mycbltime sekunder. Tid för PHP att processa infil: $mytime sekunder<br>";
       }
       ?>
       
     </tbody>
   </table>
-  
   <?php
+  echo "Väntade på Cobol databas backend: $mycbltime sekunder. Tid för PHP att processa infil: $mytime sekunder<br>";
 }
 elseif ($_SESSION['usertype_id'] >= 2)
 {
@@ -257,12 +256,11 @@ elseif ($_SESSION['usertype_id'] >= 2)
           // assign current course name for next iteration
           $lastcoursename =  $user_row[$i]['course_name'];
           
-          echo "Väntade på Cobol databas backend: $mycbltime sekunder. Tid för PHP att processa infil: $mytime sekunder<br>";
         }
         ?>
     </table>
-  
   <?php
+  echo "Väntade på Cobol databas backend: $mycbltime sekunder. Tid för PHP att processa infil: $mytime sekunder<br>";
 }
 include("assets/_footer.php");
 ?>
