@@ -14,9 +14,7 @@
        FILE-CONTROL.
             SELECT OPTIONAL html-file ASSIGN TO 'html-output.txt'
                ORGANIZATION IS LINE SEQUENTIAL.
-               
-            SELECT OPTIONAL debug-file ASSIGN TO 'debug.txt'
-               ORGANIZATION IS LINE SEQUENTIAL.
+
        *>**************************************************
        DATA DIVISION.
        *>**************************************************
@@ -25,10 +23,6 @@
        01  html-output-rec.
            05  html-output                     PIC X(1024).
         
-       FD debug-file.
-       01  debug-file-rec.
-           05  debug-line                      PIC X(120). 
-
        *>**************************************************
        WORKING-STORAGE SECTION.
        *>**************************************************
@@ -43,8 +37,7 @@
        *> Working sTOrage for record TO file
        01 wr-html-output-rec.
             05 wc-html-output          PIC X(1024) VALUE SPACE.
-       01 wr-debug-file-rec.
-            05 wc-debug-line           PIC X(120)  VALUE SPACE.
+
        *>**************************************************
        *> SQL Copybooks
 
@@ -109,8 +102,8 @@
        *> Various temporal and utility fields.
        01 wn-user-type-number           PIC 9(4)  VALUE ZERO.
        01 wc-filename                   PIC X(40) VALUE ZERO.
-       01 wc-src-file-path              PIC X(3)  VALUE SPACE.
-       01 wc-dest-dir-path              PIC X(32) VALUE "../".
+       01 wc-src-file-path              PIC X(15)  VALUE SPACE.
+       01 wc-dest-dir-path              PIC X(8)  VALUE "../data/".
        01 wc-dest-file-path             PIC X(64) VALUE SPACE.
        01 wc-usertype-name              PIC X(20) VALUE SPACE.
        01 wc-program-name               PIC X(20) VALUE SPACE.
@@ -135,12 +128,6 @@
             .
        *>**************************************************
        A0100-Init.
-            OPEN output debug-file
-           
-            MOVE 'A0100-Init' TO wc-debug-line
-            MOVE wr-debug-file-rec TO debug-file-rec
-            WRITE debug-file-rec
-           
             CALL 'wui-print-header' USING wn-rtn-code
            
             MOVE "html-output.txt"
@@ -177,34 +164,9 @@
                     SET is-valid-init TO true
                 END-IF
             END-IF
-
-            MOVE 'At end ofA0100-Init' TO wc-debug-line
-            MOVE wr-debug-file-rec TO debug-file-rec
-            WRITE debug-file-rec
-            MOVE SPACE TO wc-debug-line
-            
-            STRING "user type: "
-                   wn-user-type-number
-                   INTO wc-debug-line
-            MOVE wr-debug-file-rec TO debug-file-rec
-            WRITE debug-file-rec
-            MOVE SPACE TO wc-debug-line
-            
-            STRING "filename: "
-                   wc-filename
-                   INTO wc-debug-line
-            MOVE wr-debug-file-rec TO debug-file-rec
-            WRITE debug-file-rec
-            MOVE SPACE TO wc-debug-line
-
            .       
        *>**************************************************
-       B0100-Main.
-            MOVE 'B0100-Main' TO wc-debug-line
-            MOVE wr-debug-file-rec TO debug-file-rec
-            WRITE debug-file-rec
-            MOVE SPACE TO wc-debug-line
-            
+       B0100-Main.            
             IF is-valid-init
     
                 PERFORM B0200-connect
@@ -217,11 +179,6 @@
            .
        *>**************************************************
        B0200-Connect.
-            MOVE 'B0200-Connect' TO wc-debug-line
-            MOVE wr-debug-file-rec TO debug-file-rec
-            WRITE debug-file-rec
-            MOVE SPACE TO wc-debug-line
-       
             MOVE  "openjensen"    TO   wc-database
             MOVE  "jensen"        TO   wc-username
             MOVE  SPACE           TO   wc-passwd
@@ -231,33 +188,15 @@
                CONNECT :wc-username IDENTIFIED BY :wc-passwd
                                     USING :wc-database
             END-EXEC
-            
-            STRING  wc-username
-                    ","
-                    wc-passwd
-                    ";"
-                    wc-database                   
-                    INTO wc-debug-line
-            MOVE wr-debug-file-rec TO debug-file-rec
-            WRITE debug-file-rec
-            MOVE SPACE TO wc-debug-line
 
             IF SQLSTATE NOT = ZERO
                 PERFORM Z0100-Error-Routine
             ELSE
                 SET is-db-connected TO TRUE
-                MOVE 'SET is-db-connected TO TRUE' TO wc-debug-line
-                MOVE wr-debug-file-rec TO debug-file-rec
-                WRITE debug-file-rec
-                MOVE SPACE TO wc-debug-line
             END-IF
             .
        *>**************************************************
        B0400-List-Users.
-            MOVE 'B0400-List-Users' TO wc-debug-line
-            MOVE wr-debug-file-rec TO debug-file-rec
-            WRITE debug-file-rec
-
             OPEN OUTPUT html-file
             
             EXEC SQL
@@ -266,43 +205,29 @@
                            user_lastname,
                            user_email,
                            user_phonenumber,
+                           usertype_id,
                            user_program,
                            user_lastlogin
                    FROM tbl_user
                    WHERE usertype_id = 1
                    ORDER BY user_lastname, user_firstname
             END-EXEC
-            
-            IF SQLSTATE NOT = ZERO
-                PERFORM Z0100-Error-Routine
-                MOVE 'curpupil' TO wc-debug-line
-                MOVE wr-debug-file-rec TO debug-file-rec
-                WRITE debug-file-rec
-                MOVE SPACE TO wc-debug-line
-            END-IF
-            
+
             EXEC SQL
                 DECLARE curall CURSOR FOR
                     SELECT  user_firstname,
                             user_lastname,
                             user_email,
                             user_phonenumber,
+                            usertype_id,
                             user_program,
                             user_lastlogin
                     FROM tbl_user
                     ORDER BY user_lastname, user_firstname
             END-EXEC
-                      
-            IF SQLSTATE NOT = ZERO
-                PERFORM Z0100-Error-Routine
-                MOVE 'curall' TO wc-debug-line
-                MOVE wr-debug-file-rec TO debug-file-rec
-                WRITE debug-file-rec
-                MOVE SPACE TO wc-debug-line
-            END-IF
  
             *> Fetch the first record
-             EVALUATE wc-post-value
+            EVALUATE wn-user-type-number
                 WHEN 1
                     EXEC SQL
                         OPEN curpupil
@@ -347,7 +272,7 @@
                 PERFORM B0500-Check-if-Admin
                 
                 *> fetch next
-                EVALUATE wc-post-value
+                EVALUATE wn-user-type-number
                     WHEN 1
                         PERFORM B0410-Get-Pupil-Data
                     WHEN other
@@ -361,11 +286,6 @@
             *> All users have been written TO file. Close it.
             CLOSE html-file
             
-            MOVE 'All users have been written to file.'
-                TO wc-debug-line
-            MOVE wr-debug-file-rec TO debug-file-rec
-            WRITE debug-file-rec
-            
             *> Close cursors
             EVALUATE wc-post-value
                WHEN 1
@@ -377,14 +297,13 @@
                         CLOSE curall
                    END-EXEC
             END-EVALUATE
-            
-            MOVE 'Cursors closed.' TO wc-debug-line
-            MOVE wr-debug-file-rec TO debug-file-rec
-            WRITE debug-file-rec
             .
        *>**************************************************
+       *> TO-DO: move these two procedures into a subroutine
+       *> and fetch the names from the db and put them in in-
+       *> ternal tables. /PB 
        B0405-Get-Usertype-Name.
-            EVALUATE wn-user-type-number
+            EVALUATE t-user-usertype-id
                 WHEN 1
                     MOVE 'Elev' TO wc-usertype-name
                 WHEN 2
@@ -412,6 +331,7 @@
                    :t-user-lastname,
                    :t-user-email,
                    :t-user-phonenumber,
+                   :t-user-usertype-id,
                    :t-user-program-id,
                    :t-user-lastlogin
             END-EXEC
@@ -424,6 +344,7 @@
                    :t-user-lastname,
                    :t-user-email,
                    :t-user-phonenumber,
+                   :t-user-usertype-id,
                    :t-user-program-id,
                    :t-user-lastlogin
             END-EXEC
@@ -454,21 +375,16 @@
        *> Exit and cleanup procedures
        *>**************************************************
        C0100-Exit.
-            MOVE 'C0100-Exit' TO wc-debug-line
-            MOVE wr-debug-file-rec TO debug-file-rec
-            WRITE debug-file-rec
 
             CALL 'wui-end-html' USING wn-rtn-code
-            *> rename output file TO the name given by php-script
-            *> USING a build in subroutine. Then reMOVE output file.
+            *> rename output file to the name given by php-script
+            *> using a build in subroutine. Then remove output file.
             STRING wc-dest-dir-path DELIMITED BY " "
                    wc-filename DELIMITED BY " "
                    INTO wc-dest-file-path
             CALL "C$COPY"
                 USING wc-src-file-path, wc-dest-file-path, 0
-            *> CALL “C$DELETE” USING wc-src-file-path, 0
-            
-            CLOSE debug-file
+            CALL "C$DELETE" USING wc-src-file-path, 0
             
             goback
             .
