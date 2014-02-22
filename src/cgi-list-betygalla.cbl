@@ -148,8 +148,8 @@
        01 wc-session-id              PIC  X(40) VALUE SPACE.
        
        *> holds the status file real name
-       01 wc-file-name               PIC  X(40) VALUE SPACE.
-       01 wc-dest-file-path          PIC  X(72) VALUE SPACE.
+       01 wc-file-name               PIC  X(60) VALUE SPACE.
+       01 wc-dest-path               PIC  X(80) VALUE SPACE.
        
        *> constant to signal to php - no value
        01 WC-NO-SQLVALUE-TO-PHP      PIC X(1)  VALUE '-'.   
@@ -537,14 +537,21 @@
            CLOSE statusfile
            
            *> create a new name like '7863786§4g78b8§48743723.OK'
-           MOVE SPACE TO wc-dest-file-path    
+           MOVE SPACE TO wc-dest-path    
            STRING '../data/'   DELIMITED BY SPACE
-                  wc-file-name DELIMITED BY SPACE 
-                          '.'  DELIMITED BY SPACE
-                          'OK' DELIMITED BY SPACE
-                           INTO wc-dest-file-path
+              wc-file-name DELIMITED BY SPACE 
+                      '.'  DELIMITED BY SPACE
+                      'OK' DELIMITED BY SPACE
+                      INTO wc-dest-file-path
+                      ON OVERFLOW
+                         MOVE 'Filnamn för långt' TO wc-printscr-string
+                         CALL 'stop-printscr' USING wc-printscr-string
+                      NOT ON OVERFLOW
+                         CONTINUE
+           END-STRING                         
+                             
            *> copy existing dummy named 'status' file to OK-file
-           CALL 'CBL_COPY_FILE' USING '../data/status', wc-dest-file-path
+           CALL 'CBL_COPY_FILE' USING '../data/status', wc-dest-path
            *> remove not needed dummy file
            CALL 'CBL_DELETE_FILE' USING '../data/status'           
        
