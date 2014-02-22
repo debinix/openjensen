@@ -11,17 +11,15 @@
        *>**************************************************
        ENVIRONMENT DIVISION.
        input-output section.
-             
-       *> absolute path does not help to traverse fs for real file      
+                 
        file-control.
            SELECT fileout ASSIGN TO
-              '../betyg-elev.txt'
+              '../data/betyg-elev.txt'
               ORGANIZATION IS LINE SEQUENTIAL.
            
-           *> works only if zero-byte file
            SELECT OPTIONAL statusfile
               ASSIGN TO
-              '/home/jensen/www.mc-butter.se/public_html/data/status'             
+              '../data/status'             
               ORGANIZATION IS LINE SEQUENTIAL.  
               
        *>**************************************************
@@ -482,9 +480,9 @@
                          CONTINUE
            END-STRING                   
            *> copy existing dummy named 'status' file to OK-file
-           CALL 'CBL_COPY_FILE' USING '../data/status', wc-dest-path
+           CALL 'C$COPY' USING '../data/status', wc-dest-path, 0
            *> remove not needed dummy file
-           CALL 'CBL_DELETE_FILE' USING '../data/status'           
+           CALL 'C$DELETE' USING '../data/status', 0           
        
            .           
            
