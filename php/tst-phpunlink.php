@@ -15,7 +15,8 @@
     // $removefilename = "/home/jensen/www.mc-butter.se/public_html/phpunlinktest.OK" ;    
 
     echo "PHP runs as user: ";
-    exec('whoami');
+    echo exec('whoami');
+    echo "<br><br>";
     
     $removefilename = 'data/phpunlinktest.OK' ; 
     
