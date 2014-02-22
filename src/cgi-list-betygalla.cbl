@@ -11,20 +11,20 @@
        ENVIRONMENT DIVISION.
        input-output section.
        
-       *> absolute path does not help to traverse fs for real file   
+ 
        file-control.
            SELECT fileout ASSIGN TO
-              '../betyg-all.txt'
+              '../data/betyg-all.txt'
               ORGANIZATION IS LINE SEQUENTIAL.
            
            SELECT gradetmpfile 
-              ASSIGN TO '/tmp/gradetmp.dat'
+              ASSIGN TO
+              '../data/gradetmp.dat'
               ORGANIZATION IS LINE SEQUENTIAL.  
            
-           *> works only if zero-byte file
            SELECT OPTIONAL statusfile
               ASSIGN TO
-              '/home/jensen/www.mc-butter.se/public_html/data/status'             
+              '../data/status'             
               ORGANIZATION IS LINE SEQUENTIAL.      
               
        *>**************************************************
@@ -539,7 +539,7 @@
            OPEN EXTEND statusfile           
            CLOSE statusfile
            
-           *> create a new name like '7863786§4g78b8§48743723.OK'
+           *> create a new name like '78637867437818148743723.OK'
            MOVE SPACE TO wc-dest-path    
            STRING '../data/'   DELIMITED BY SPACE
               wc-file-name DELIMITED BY SPACE 
@@ -554,9 +554,9 @@
            END-STRING                         
                              
            *> copy existing dummy named 'status' file to OK-file
-           CALL 'CBL_COPY_FILE' USING '../data/status', wc-dest-path
+           CALL 'C$COPY' USING '../data/status', wc-dest-path, 0
            *> remove not needed dummy file
-           CALL 'CBL_DELETE_FILE' USING '../data/status'           
+           CALL 'C$DELETE' USING '../data/status', 0           
        
            .              
            
