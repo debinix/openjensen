@@ -14,6 +14,8 @@
     
     // $removefilename = "/home/jensen/www.mc-butter.se/public_html/phpunlinktest.OK" ;    
 
+    echo exec('whoami');
+    
     $removefilename = 'phpunlinktest.OK' ; 
     
     if(!file_exists($removefilename)) {
