@@ -49,7 +49,7 @@ $Success->show();
     //Query is executed and the CGI has created a file we sleep
     // max 5s to make sure that the file exists before continue
     //with our php code below
-    /*
+    
     for ($f=0; $f <= 5; $f++)
     {
       $file_exists=file_exists($filename);
@@ -61,8 +61,8 @@ $Success->show();
     }
     //Include the files contenst once
     include_once($filename);
-    */
-    //header('location: users.php');
+    
+    header('location: users.php');
     ?>
   </tbody>
 </table>
