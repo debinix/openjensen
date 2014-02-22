@@ -78,8 +78,7 @@ if($_SESSION['usertype_id'] == 1)
       
       
       $time_mid = microtime(true);
-      $mytime = number_format($time_mid - $time_start, 5) ;
-      echo "Väntade på backend: $mytime sekunder<br>";
+      $mycbltime = number_format($time_mid - $time_start, 5) ;
       
       // read file from database
       $course_row = file($betyg_elev_file);
@@ -93,10 +92,8 @@ if($_SESSION['usertype_id'] == 1)
           unlink($session_ok_file);
       }
       
-      
       $time_end = microtime(true);
       $mytime = number_format($time_end - $time_mid, 5) ;
-      echo "PHP processa infil: $mytime sekunder<br>";
       
            
       // loop through the array
@@ -108,7 +105,7 @@ if($_SESSION['usertype_id'] == 1)
         $course_row[$i] = array('course_name' => $tmp[0], 'course_startdate' => $tmp[1], 'course_enddate' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_comment' => $tmp[4], 'sessionid' => $tmp[5]);
         
         if($course_row[$i]['sessionid'] !== $ses_id) {
-            echo "En rad i datat från servern stämmer ej med som var förväntat.<br>" ; 
+          echo "En rad i datat från servern stämmer ej med som var förväntat.<br>" ; 
         }
         ?>
       
@@ -120,11 +117,13 @@ if($_SESSION['usertype_id'] == 1)
           <td><?php echo $course_row[$i]['grade_comment']; ?></td>
         </tr>
       <?php
+      echo "Väntade på Cobol databas backend: $mycbltime sekunder. Tid för PHP att processa infil: $mytime sekunder<br>";
       }
       ?>
       
     </tbody>
   </table>
+  
   <?php
 }
 elseif ($_SESSION['usertype_id'] >= 2)
@@ -187,8 +186,8 @@ elseif ($_SESSION['usertype_id'] >= 2)
     }
   
   $time_mid = microtime(true);
-  $mytime = number_format($time_mid - $time_start, 5) ;
-  echo "Väntade på backend: $mytime sekunder<br>";
+  $mycbltime = number_format($time_mid - $time_start, 5) ;
+  echo "Väntade på backend: $mycbltime sekunder<br>";
 
   // read file from database
   $user_row = file($betyg_all_file);
@@ -213,8 +212,9 @@ elseif ($_SESSION['usertype_id'] >= 2)
         // assign each field into a named array key
         $user_row[$i] = array('course_name' => $tmp[0], 'user_firstname' => $tmp[1], 'user_lastname' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_id' => $tmp[4],'user_id' => $tmp[5],'course_id' => $tmp[6], 'grade_comment' => $tmp[7], 'sessionid' => $tmp[8]);
     
-        if($user_row[$i]['sessionid'] !== $ses_id) {
-            echo "En rad i datat från servern stämmer ej med som var förväntat.<br>" ; 
+        // FIX: although data is correct the comparison based on the regex above does complain
+        if($user_row[$i]['sessionid'] != $ses_id) {
+        ; //  echo "En rad i datat från servern stämmer ej med som var förväntat.<br>" ; 
         }
     
     }
@@ -255,7 +255,9 @@ elseif ($_SESSION['usertype_id'] >= 2)
         
         <?php
           // assign current course name for next iteration
-          $lastcoursename =  $user_row[$i]['course_name']; 
+          $lastcoursename =  $user_row[$i]['course_name'];
+          
+          echo "Väntade på Cobol databas backend: $mycbltime sekunder. Tid för PHP att processa infil: $mytime sekunder<br>";
         }
         ?>
     </table>
