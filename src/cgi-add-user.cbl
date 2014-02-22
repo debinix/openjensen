@@ -230,11 +230,10 @@
                    perform B0230-add-dataitem-to-table
                END-IF
            ELSE
-        move 'det finns redan användare med detta användarnamn'
+           move 'det finns redan användare med detta användarnamn'
                     to wc-printscr-string
                call 'stop-printscr' using wc-printscr-string
            END-IF
-
            .
 
        *>**************************************************
