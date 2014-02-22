@@ -11,17 +11,16 @@
        *>**************************************************
        ENVIRONMENT DIVISION.
        input-output section.
-            
+             
        file-control.
-           SELECT OPTIONAL fileout
-              ASSIGN TO
-        '/home/jensen/www.mc-butter.se/public_html/data/betyg-elev.txt'
+           SELECT fileout ASSIGN TO
+              '../data/betyg-elev.txt'
               ORGANIZATION IS LINE SEQUENTIAL.
       
            SELECT OPTIONAL statusfile
               ASSIGN TO
-              '/home/jensen/www.mc-butter.se/public_html/data/status'             
-              ORGANIZATION IS LINE SEQUENTIAL.
+              '../data/status'             
+              ORGANIZATION IS LINE SEQUENTIAL.  
               
        *>**************************************************
        DATA DIVISION.
@@ -473,10 +472,10 @@
               wc-file-name DELIMITED BY SPACE 
                       '.'  DELIMITED BY SPACE
                       'OK' DELIMITED BY SPACE
-                      INTO wc-dest-file-path
+                      INTO wc-dest-path
                       ON OVERFLOW
-                         MOVE 'Filnamn för långt' TO wc-printscr-string
-                         CALL 'stop-printscr' USING wc-printscr-string
+                      MOVE 'Filnamn för långt' TO wc-printscr-string
+                      CALL 'stop-printscr' USING wc-printscr-string
                       NOT ON OVERFLOW
                          CONTINUE
            END-STRING                   
