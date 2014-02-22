@@ -26,9 +26,8 @@ if($_SESSION['usertype_id'] == 1)
       <?php
       
       //
-      // POST data with: name="user_id" (i.e. $_SESSION['user_id']) 
-      //                 and name="program_id" (i.e. $_SESSION['user_program'])
-      // to url: http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi
+      // POST data to url:
+      // http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi
       // wait until file is written at server before continue to read it.
       //
       
@@ -145,8 +144,8 @@ elseif ($_SESSION['usertype_id'] >= 2)
   $betyg_all_file = 'data/betyg-all.txt';
   
   //
-  // POST data with: name="program_id" (i.e. $_SESSION['user_program'])
-  // to url: http://www.mc-butter.se/cgi-bin/cgi-list-betygalla.cgi
+  // POST data to url: 
+  // http://www.mc-butter.se/cgi-bin/cgi-list-betygalla.cgi
   // wait until file is written at server before continue to read it.
   //
   
