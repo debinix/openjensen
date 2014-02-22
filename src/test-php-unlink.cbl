@@ -35,7 +35,7 @@
        Z0100-write-status-ok-file.
        
            *> simulates file name with a 'magic (unique) number'
-           MOVE '../1111111111111111' TO wc-file-name
+           MOVE '../phpunlinktest' TO wc-file-name
        
            *> create a zero file
            OPEN EXTEND statusfile           
@@ -44,7 +44,7 @@
            MOVE SPACE TO wc-dest-file-path    
            STRING wc-file-name DELIMITED BY SPACE 
                           '.'  DELIMITED BY SPACE
-              'OK-ta-bort-mig' DELIMITED BY SPACE
+              'OK' DELIMITED BY SPACE
                                INTO wc-dest-file-path
            *> copy file to new name
            CALL 'CBL_COPY_FILE' USING '../status', wc-dest-file-path
