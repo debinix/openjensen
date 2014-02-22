@@ -41,7 +41,6 @@ if($_SESSION['usertype_id'] == 1)
       $magic_number .= rand(0, 9);
       }
       
-      $magic_number = time();
       $time_start = microtime(true);      
 
       $user_id = $_SESSION['user_id'];
