@@ -32,7 +32,8 @@ if($_SESSION['usertype_id'] == 1)
       //
       
       // Include session id to track diffrent clients in response
-      $ses_id = session_id();
+      // $ses_id = session_id();
+      $ses_id = time();
       $time_start = microtime(true);      
 
       $user_id = $_SESSION['user_id'];
@@ -144,7 +145,8 @@ elseif ($_SESSION['usertype_id'] >= 2)
   //
   
   // Include session id to track diffrent clients in response
-  $ses_id = session_id();  
+  //$ses_id = session_id();  
+  $ses_id = time();    
   $time_start = microtime(true);
   
   $user_program = $_SESSION['user_program'];
