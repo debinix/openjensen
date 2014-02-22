@@ -31,8 +31,7 @@ if($_SESSION['usertype_id'] == 1)
       // wait until file is written at server before continue to read it.
       //
       
-      // Include session id to track diffrent clients in response
-      // $ses_id = session_id();
+      // Include unique id to track different client responses
       $ses_id = time();
       $time_start = microtime(true);      
 
@@ -85,7 +84,7 @@ if($_SESSION['usertype_id'] == 1)
       // read file from database
       $course_row = file($betyg_elev_file);
       
-      // is backend data valid - and is it right session user
+      // is backend data valid
       $session_ok_file = "data/".$ses_id."."."OK";      
       if(!file_exists($session_ok_file)) {
           echo "Ogiltiga data returnerades från databasen.<br>" ; 
@@ -108,7 +107,7 @@ if($_SESSION['usertype_id'] == 1)
         // assign each field into a named array key
         $course_row[$i] = array('course_name' => $tmp[0], 'course_startdate' => $tmp[1], 'course_enddate' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_comment' => $tmp[4], 'sessionid' => $tmp[5]);
         
-        if($course_row[$i]['sessionid'] != $ses_id) {
+        if($course_row[$i]['sessionid'] !== $ses_id) {
             echo "En rad i datat från servern stämmer ej med som var förväntat.<br>" ; 
         }
         ?>
@@ -144,8 +143,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
   // wait until file is written at server before continue to read it.
   //
   
-  // Include session id to track diffrent clients in response
-  //$ses_id = session_id();  
+  // Include unique id to track different client responses
   $ses_id = time();    
   $time_start = microtime(true);
   
@@ -195,7 +193,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
   // read file from database
   $user_row = file($betyg_all_file);
   
-  // is backend data valid - and is it right session user
+  // is backend data valid
   $session_ok_file = "data/".$ses_id."."."OK";       
   if(!file_exists($session_ok_file)) {
       echo "Ogiltiga data returnerades från databasen.<br>" ; 
@@ -215,12 +213,12 @@ elseif ($_SESSION['usertype_id'] >= 2)
         // assign each field into a named array key
         $user_row[$i] = array('course_name' => $tmp[0], 'user_firstname' => $tmp[1], 'user_lastname' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_id' => $tmp[4],'user_id' => $tmp[5],'course_id' => $tmp[6], 'grade_comment' => $tmp[7], 'sessionid' => $tmp[8]);
     
-        if($user_row[$i]['sessionid'] != $ses_id) {
+        if($user_row[$i]['sessionid'] !== $ses_id) {
             echo "En rad i datat från servern stämmer ej med som var förväntat.<br>" ; 
         }
     
     }
-        // initilize to rememeber previous group of the course names
+        // initilize to remember previous group of the course names
         $lastcoursename = '-';
 
         // iterate through all course user data
