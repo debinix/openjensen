@@ -139,6 +139,8 @@ elseif ($_SESSION['usertype_id'] >= 2)
   ?>
   <h1>Betyg</h1>
   
+  
+  
   <?php
   $Error->show();
   $Success->show();
@@ -243,20 +245,18 @@ elseif ($_SESSION['usertype_id'] >= 2)
         { 
         
           // only echo if course name different from previous iteration
-          if ( $lastcoursename !=  $user_row[$i]['course_name'] )
-          {
-        ?>
-        
-          <h3><?php echo $user_row[$i]['course_name']; ?></h3>
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <td><strong>Förnamn</strong></td>
-                <td><strong>Efternamn</strong></td>
-                <td><strong>Betyg</strong></td>
-                <td></td>
-              </tr>
-            </thead>
+          if ( $lastcoursename <>  $user_row[$i]['course_name'] ) { ?>
+             <h3><?php echo $user_row[$i]['course_name']; ?></h3>
+                    <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <td><strong>Förnamn</strong></td>
+                        <td><strong>Efternamn</strong></td>
+                        <td><strong>Betyg</strong></td>
+                        <td></td>
+                      </tr>
+                    </thead>
+
           <?php  
           }
           ?>
@@ -270,11 +270,11 @@ elseif ($_SESSION['usertype_id'] >= 2)
             </tr>
           </tbody>           
         
-        <?php
+          <?php
           // assign current course name for next iteration
           $lastcoursename =  $user_row[$i]['course_name'];
-          
         }
+        
         ?>
     </table>
   <?php
