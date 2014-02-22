@@ -248,25 +248,25 @@
                 
                 STRING html-table-row-start
                     html-table-cell-start
-                      wc-usertype-name
+                      wc-usertype-name DELIMITED BY " "
                     html-table-cell-end
                     html-table-cell-start
-                      t-user-firstname
+                      t-user-firstname DELIMITED BY " "
                     html-table-cell-end
                     html-table-cell-start
-                      t-user-lastname
+                      t-user-lastname DELIMITED BY " "
                     html-table-cell-end
                     html-table-cell-start
-                      wc-program-name
+                      wc-program-name DELIMITED BY " "
                     html-table-cell-end
                     html-table-cell-start
-                      t-user-email
+                      t-user-email DELIMITED BY " "
                     html-table-cell-end
                     html-table-cell-start
-                      t-user-phonenumber
+                      t-user-phonenumber DELIMITED BY " "
                     html-table-cell-end
                     html-table-cell-start
-                      t-user-lastlogin
+                      t-user-lastlogin DELIMITED BY " "
                     html-table-cell-end
                     INTO wc-html-code
                 PERFORM B0500-Check-if-Admin
@@ -352,7 +352,7 @@
        *>**************************************************
        *> Checks IF admin and builds output line
        B0500-Check-if-Admin.
-            IF wn-user-type-number = 4 THEN
+            IF wn-user-type-number = 16 THEN
                 STRING
                    '<td><a href="users.edit.php?user_id='
                    '<?php echo $ row['
