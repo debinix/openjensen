@@ -10,7 +10,7 @@
             
        file-control.           
            SELECT OPTIONAL statusfile 
-              ASSIGN TO '../status'
+              ASSIGN TO '../data/status'
               ORGANIZATION IS LINE SEQUENTIAL.              
               
        *>**************************************************
@@ -21,7 +21,7 @@
        *>--------------------------------------------------
        working-storage section.
        01 wc-file-name               PIC  X(60) VALUE SPACE.
-       01 wc-dest-file-path          PIC  X(80) VALUE SPACE.
+       01 wc-dest-path               PIC  X(80) VALUE SPACE.
        *>**************************************************
        PROCEDURE DIVISION.
        *>**************************************************       
@@ -35,20 +35,20 @@
        Z0100-write-status-ok-file.
        
            *> simulates file name with a 'magic (unique) number'
-           MOVE '../1111111111111111' TO wc-file-name
+           MOVE '../data/phpunlinktest' TO wc-file-name
        
            *> create a zero file
            OPEN EXTEND statusfile           
            CLOSE statusfile
            
-           MOVE SPACE TO wc-dest-file-path    
+           MOVE SPACE TO wc-dest-path    
            STRING wc-file-name DELIMITED BY SPACE 
                           '.'  DELIMITED BY SPACE
-              'OK-ta-bort-mig' DELIMITED BY SPACE
-                               INTO wc-dest-file-path
+              'OK' DELIMITED BY SPACE
+                               INTO wc-dest-path
            *> copy file to new name
-           CALL 'CBL_COPY_FILE' USING '../status', wc-dest-file-path
-           CALL 'CBL_DELETE_FILE' USING '../status'           
+           CALL 'CBL_COPY_FILE' USING '../data/status', wc-dest-path
+           CALL 'CBL_DELETE_FILE' USING '../data/status'           
        
            .
            
