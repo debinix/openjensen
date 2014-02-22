@@ -57,7 +57,7 @@ if($_SESSION['usertype_id'] == 1)
       //execute post
       $result = curl_exec($ch);
       if($result === false) {
-          echo "kan inte få kontakt med $url" ;
+          echo "Kan inte få kontakt med $url <br>" ;
       }
       
       //close connection
@@ -73,7 +73,7 @@ if($_SESSION['usertype_id'] == 1)
         usleep(100000);      
       }
       if($f === 50) {
-          echo "Saknar fil från databas: $betyg_elev_file" ; 
+          echo "Saknar fil från databas: $betyg_elev_file <br>" ; 
       }
       
       
@@ -85,9 +85,9 @@ if($_SESSION['usertype_id'] == 1)
       $course_row = file($betyg_elev_file);
       
       // is backend data valid - and is it right session user
-      $session_ok_file = $ses_id."."."OK";      
+      $session_ok_file = "data/".$ses_id."."."OK";      
       if(!file_exists($session_ok_file)) {
-          echo "Ogiltiga data returnerades från databasen" ; 
+          echo "Ogiltiga data returnerades från databasen.<br>" ; 
       }
       else {
           unlink($session_ok_file);
@@ -108,7 +108,7 @@ if($_SESSION['usertype_id'] == 1)
         $course_row[$i] = array('course_name' => $tmp[0], 'course_startdate' => $tmp[1], 'course_enddate' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_comment' => $tmp[4], 'sessionid' => $tmp[5]);
         
         if($course_row[$i]['sessionid'] != $ses_id) {
-            echo "En rad i datat från servern stämmer ej med som var förväntat." ; 
+            echo "En rad i datat från servern stämmer ej med som var förväntat.<br>" ; 
         }
         ?>
       
@@ -167,7 +167,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
   //execute post
   $result = curl_exec($ch);
   if($result === false) {
-      echo "Kan inte få kontakt med $url" ;
+      echo "Kan inte få kontakt med $url <br>" ;
   }
   
   //close connection
@@ -183,7 +183,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
     usleep(100000);   
   }
     if($f === 50) {
-        echo "Saknar fil från databas: $betyg_elev_file" ; 
+        echo "Saknar fil från databas: $betyg_elev_file <br>" ; 
     }
   
   $time_mid = microtime(true);
@@ -194,9 +194,9 @@ elseif ($_SESSION['usertype_id'] >= 2)
   $user_row = file($betyg_all_file);
   
   // is backend data valid - and is it right session user
-  $session_ok_file = $ses_id."."."OK";      
+  $session_ok_file = "data/".$ses_id."."."OK";       
   if(!file_exists($session_ok_file)) {
-      echo "Ogiltiga data returnerades från databasen" ; 
+      echo "Ogiltiga data returnerades från databasen.<br>" ; 
   }
   else {
       unlink($session_ok_file);
@@ -214,7 +214,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
         $user_row[$i] = array('course_name' => $tmp[0], 'user_firstname' => $tmp[1], 'user_lastname' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_id' => $tmp[4],'user_id' => $tmp[5],'course_id' => $tmp[6], 'grade_comment' => $tmp[7]);
     
         if($user_row[$i]['sessionid'] != $ses_id) {
-            echo "En rad i datat från servern stämmer ej med som var förväntat." ; 
+            echo "En rad i datat från servern stämmer ej med som var förväntat.<br>" ; 
         }
     
     }
