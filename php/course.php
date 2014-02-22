@@ -213,7 +213,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
         // separate each field
         $tmp = preg_split("/\s*,\s*/", trim($user_row[$i]), -1, PREG_SPLIT_NO_EMPTY);
         // assign each field into a named array key
-        $user_row[$i] = array('course_name' => $tmp[0], 'user_firstname' => $tmp[1], 'user_lastname' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_id' => $tmp[4],'user_id' => $tmp[5],'course_id' => $tmp[6], 'grade_comment' => $tmp[7]);
+        $user_row[$i] = array('course_name' => $tmp[0], 'user_firstname' => $tmp[1], 'user_lastname' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_id' => $tmp[4],'user_id' => $tmp[5],'course_id' => $tmp[6], 'grade_comment' => $tmp[7], 'sessionid' => $tmp[8]);
     
         if($user_row[$i]['sessionid'] != $ses_id) {
             echo "En rad i datat från servern stämmer ej med som var förväntat.<br>" ; 
