@@ -8,7 +8,7 @@ if($_SESSION['usertype_id'] == 1)
   <?php
   $Error->show();
   $Success->show();
-  $betyg_elev_file = 'betyg-elev.txt';
+  $betyg_elev_file = 'data/betyg-elev.txt';
   ?>
     
   <table class="table table-hover">
@@ -24,6 +24,10 @@ if($_SESSION['usertype_id'] == 1)
     <tbody>
       
       <?php
+      
+      if(file_exists($betyg_elev_file)) {
+          unlink($betyg_elev_file) ; 
+      }
       
       //
       // POST data to url:
@@ -134,7 +138,11 @@ elseif ($_SESSION['usertype_id'] >= 2)
   <?php
   $Error->show();
   $Success->show();
-  $betyg_all_file = 'betyg-all.txt';
+  $betyg_all_file = 'data/betyg-all.txt';
+  
+  if(file_exists($betyg_all_file)) {
+      unlink($betyg_all_file) ; 
+  }
   
   //
   // POST data to url: 
@@ -187,7 +195,6 @@ elseif ($_SESSION['usertype_id'] >= 2)
   
   $time_mid = microtime(true);
   $mycbltime = number_format($time_mid - $time_start, 5) ;
-  echo "Väntade på backend: $mycbltime sekunder<br>";
 
   // read file from database
   $user_row = file($betyg_all_file);
@@ -203,7 +210,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
   
   $time_end = microtime(true);
   $mytime = number_format($time_end - $time_mid, 5) ;
-  echo "PHP processa infil: $mytime sekunder<br>";
+
   
     // loop through the array
     for ($i = 0; $i < count($user_row); $i++) {
