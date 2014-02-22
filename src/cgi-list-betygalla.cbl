@@ -11,18 +11,20 @@
        ENVIRONMENT DIVISION.
        input-output section.
        
+       *> absolute path does not help to traverse fs for real file   
        file-control.
            SELECT fileout ASSIGN TO
-              '../data/betyg-all.txt'
+              '../betyg-all.txt'
               ORGANIZATION IS LINE SEQUENTIAL.
            
            SELECT gradetmpfile 
               ASSIGN TO '/tmp/gradetmp.dat'
               ORGANIZATION IS LINE SEQUENTIAL.  
            
+           *> works only if zero-byte file
            SELECT OPTIONAL statusfile
               ASSIGN TO
-              '../data/status'             
+              '/home/jensen/www.mc-butter.se/public_html/data/status'             
               ORGANIZATION IS LINE SEQUENTIAL.      
               
        *>**************************************************

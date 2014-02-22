@@ -8,7 +8,7 @@ if($_SESSION['usertype_id'] == 1)
   <?php
   $Error->show();
   $Success->show();
-  $betyg_elev_file = 'data/betyg-elev.txt';
+  $betyg_elev_file = 'betyg-elev.txt';
   ?>
     
   <table class="table table-hover">
@@ -33,12 +33,7 @@ if($_SESSION['usertype_id'] == 1)
       
       // Include session id to track diffrent clients in response
       $ses_id = session_id();
-      $time_start = microtime(true);
-      
-      if(file_exists($betyg_elev_file)) {
-        unlink($betyg_elev_file);
-      }
-      
+      $time_start = microtime(true);      
 
       $user_id = $_SESSION['user_id'];
       $user_program = $_SESSION['user_program'];
@@ -88,7 +83,6 @@ if($_SESSION['usertype_id'] == 1)
       
       // read file from database
       $course_row = file($betyg_elev_file);
-      unlink($betyg_elev_file);
       
       // is backend data valid - and is it right session user
       $session_ok_file = $ses_id."."."OK";      
@@ -141,7 +135,7 @@ elseif ($_SESSION['usertype_id'] >= 2)
   <?php
   $Error->show();
   $Success->show();
-  $betyg_all_file = 'data/betyg-all.txt';
+  $betyg_all_file = 'betyg-all.txt';
   
   //
   // POST data to url: 
@@ -152,10 +146,6 @@ elseif ($_SESSION['usertype_id'] >= 2)
   // Include session id to track diffrent clients in response
   $ses_id = session_id();  
   $time_start = microtime(true);
-  
-  if(file_exists($betyg_all_file)) {
-    unlink($betyg_all_file);
-  }
   
   $user_program = $_SESSION['user_program'];
   $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygalla.cgi';
@@ -202,7 +192,6 @@ elseif ($_SESSION['usertype_id'] >= 2)
 
   // read file from database
   $user_row = file($betyg_all_file);
-  unlink($betyg_all_file);
   
   // is backend data valid - and is it right session user
   $session_ok_file = $ses_id."."."OK";      
