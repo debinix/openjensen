@@ -238,26 +238,16 @@ elseif ($_SESSION['usertype_id'] >= 2)
     
     }
         // initilize to remember previous group of the course names
-        $lastcoursename = $user_row[$i]['course_name']; ?>
+        $lastcoursename = 'Ingen kurs';
         
-        <h3><?php echo $user_row[$i]['course_name']; ?></h3>
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <td><strong>Förnamn</strong></td>
-                <td><strong>Efternamn</strong></td>
-                <td><strong>Betyg</strong></td>
-                <td></td>
-              </tr>
-            </thead>
-        
-        <?php
         // iterate through all course user data
         for ($i = 0; $i < count($user_row); $i++)
         { 
           // only echo if course name different from previous iteration
           if ( $lastcoursename <>  $user_row[$i]['course_name'] ) { ?>
+             
              <h3><?php echo $user_row[$i]['course_name']; ?></h3>
+                <table class="table table-hover">
                 <thead>
                   <tr>
                     <td><strong>Förnamn</strong></td>
