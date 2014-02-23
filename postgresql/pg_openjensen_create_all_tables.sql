@@ -89,6 +89,28 @@ CREATE TABLE tbl_course (
 
 
 --
+-- T_NYHETER (12) - first used table to be (partly migrated) OpenJensen
+--
+
+CREATE TABLE T_NYHETER
+(
+   News_id INTEGER NOT NULL,
+   News_title CHAR(255) NOT NULL,
+   News_content TEXT NOT NULL,
+   News_date DATE NOT NULL,
+   News_author INTEGER NOT NULL,
+   /* Primary key */
+   CONSTRAINT pk_nyheter PRIMARY KEY(news_id)
+)
+;
+
+-------------------------------------------------------------------
+--
+-- Front-end (php) have not yet migrated to any tables (1) - (11) 
+--
+-------------------------------------------------------------------
+
+--
 -- T_KONTAK (1)
 --
 
@@ -263,21 +285,7 @@ CREATE TABLE T_BETYG (
 ;
 
 
---
--- T_NYHETER (12)
---
 
-CREATE TABLE T_NYHETER
-(
-   News_id INTEGER NOT NULL,
-   News_title CHAR(255) NOT NULL,
-   News_content TEXT NOT NULL,
-   News_date DATE NOT NULL,
-   News_author INTEGER NOT NULL,
-   /* Primary key */
-   CONSTRAINT pk_nyheter PRIMARY KEY(news_id)
-)
-;
 
 
 --
@@ -331,6 +339,10 @@ ALTER TABLE T_BETYG ADD CONSTRAINT betyg_kurs_id_fk
 ALTER TABLE T_BETYG ADD CONSTRAINT betyg_elev_id_fk
 	FOREIGN KEY(Elev_id) REFERENCES T_ELEV(Elev_id)
 ;
+
+--
+-- Used (partly migrated) currently in front-end OpenJensen
+--
 
 ALTER TABLE T_NYHETER ADD CONSTRAINT fk_news_author
     FOREIGN KEY (news_author) REFERENCES T_KONTAK(kontakt_id)
