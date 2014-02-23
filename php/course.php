@@ -8,7 +8,7 @@ if($_SESSION['usertype_id'] == 1)
   <?php
   $Error->show();
   $Success->show();
-  $betyg_elev_file = 'betyg-elev.txt';
+  $betyg_elev_file = 'data/betyg-elev.txt';
   ?>
     
   <table class="table table-hover">
@@ -21,18 +21,27 @@ if($_SESSION['usertype_id'] == 1)
         <td><strong>Kommentar</strong></td>
       </tr>
     </thead>
+    
     <tbody>
       
       <?php
       
-      //
+      if(file_exists($betyg_elev_file)) {
+          unlink($betyg_elev_file) ; 
+      }
+      
       // POST data to url:
       // http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi
       // wait until file is written at server before continue to read it.
-      //
       
-      // Include unique id to track different client responses
-      $ses_id = time();
+      //  Add unique control number with each front-end request
+      // seconds since Unix Epoch (1970-01-01)
+      $magic_number = time();
+      // add 10 more random digits to string
+      for($i = 0; $i < 10; $i++) {
+      $magic_number .= rand(0, 9);
+      }
+      
       $time_start = microtime(true);      
 
       $user_id = $_SESSION['user_id'];
@@ -40,7 +49,7 @@ if($_SESSION['usertype_id'] == 1)
       $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygelev.cgi';
       $fields = array( 'user_id' => $user_id,
                        'user_program' => $user_program,
-                       'sessionid' => $ses_id
+                       'magic_number' => $magic_number
                       );
       
       //url-ify the data for the POST with php built-in function
@@ -84,7 +93,7 @@ if($_SESSION['usertype_id'] == 1)
       $course_row = file($betyg_elev_file);
       
       // is backend data valid
-      $session_ok_file = "data/".$ses_id."."."OK";      
+      $session_ok_file = "data/".$magic_number."."."OK";      
       if(!file_exists($session_ok_file)) {
           echo "Ogiltiga data returnerades från databasen.<br>" ; 
       }
@@ -102,11 +111,11 @@ if($_SESSION['usertype_id'] == 1)
         // separate each field
         $tmp = preg_split("/\s*,\s*/", trim($course_row[$i]), -1, PREG_SPLIT_NO_EMPTY);
         // assign each field into a named array key
-        $course_row[$i] = array('course_name' => $tmp[0], 'course_startdate' => $tmp[1], 'course_enddate' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_comment' => $tmp[4], 'sessionid' => $tmp[5]);
+        $course_row[$i] = array('course_name' => $tmp[0], 'course_startdate' => $tmp[1], 'course_enddate' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_comment' => $tmp[4], 'magic_number' => $tmp[5]);
         
-        // FIX: although data is correct the comparison based on the regex above does complain
-        if($course_row[$i]['sessionid'] <> $ses_id) {
-          ; // echo "En rad i datat från servern stämmer ej med som var förväntat.<br>" ; 
+        // check each row for the magic number
+        if($course_row[$i]['magic_number'] <> $magic_number) {
+            echo "En rad i datat från servern stämmer ej med som var förväntat.<br>" ; 
         }
         ?>
       
@@ -131,10 +140,16 @@ elseif ($_SESSION['usertype_id'] >= 2)
   ?>
   <h1>Betyg</h1>
   
+  
+  
   <?php
   $Error->show();
   $Success->show();
-  $betyg_all_file = 'betyg-all.txt';
+  $betyg_all_file = 'data/betyg-all.txt';
+  
+  if(file_exists($betyg_all_file)) {
+      unlink($betyg_all_file) ; 
+  }
   
   //
   // POST data to url: 
@@ -142,14 +157,20 @@ elseif ($_SESSION['usertype_id'] >= 2)
   // wait until file is written at server before continue to read it.
   //
   
-  // Include unique id to track different client responses
-  $ses_id = time();    
+  //  Add unique control number with each front-end request
+  // seconds since Unix Epoch (1970-01-01)
+  $magic_number = time();
+  // add 10 more random digits to string
+  for($i = 0; $i < 10; $i++) {
+  $magic_number .= rand(0, 9);
+  }
+  
   $time_start = microtime(true);
   
   $user_program = $_SESSION['user_program'];
   $url = 'http://www.mc-butter.se/cgi-bin/cgi-list-betygalla.cgi';
   $fields = array( 'user_program' => $user_program,
-                   'sessionid' => $ses_id
+                   'magic_number' => $magic_number
                   );
   //url-ify the data for the POST with php built-in function
   $php_url_string = http_build_query($fields);
@@ -187,13 +208,12 @@ elseif ($_SESSION['usertype_id'] >= 2)
   
   $time_mid = microtime(true);
   $mycbltime = number_format($time_mid - $time_start, 5) ;
-  echo "Väntade på backend: $mycbltime sekunder<br>";
 
   // read file from database
   $user_row = file($betyg_all_file);
   
   // is backend data valid
-  $session_ok_file = "data/".$ses_id."."."OK";       
+  $session_ok_file = "data/".$magic_number."."."OK";       
   if(!file_exists($session_ok_file)) {
       echo "Ogiltiga data returnerades från databasen.<br>" ; 
   }
@@ -203,62 +223,61 @@ elseif ($_SESSION['usertype_id'] >= 2)
   
   $time_end = microtime(true);
   $mytime = number_format($time_end - $time_mid, 5) ;
-  echo "PHP processa infil: $mytime sekunder<br>";
+
   
     // loop through the array
     for ($i = 0; $i < count($user_row); $i++) {
         // separate each field
         $tmp = preg_split("/\s*,\s*/", trim($user_row[$i]), -1, PREG_SPLIT_NO_EMPTY);
         // assign each field into a named array key
-        $user_row[$i] = array('course_name' => $tmp[0], 'user_firstname' => $tmp[1], 'user_lastname' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_id' => $tmp[4],'user_id' => $tmp[5],'course_id' => $tmp[6], 'grade_comment' => $tmp[7], 'sessionid' => $tmp[8]);
-    
-        // FIX: although data is correct the comparison based on the regex above does complain
-        if($user_row[$i]['sessionid'] <> $ses_id) {
-        ; //  echo "En rad i datat från servern stämmer ej med som var förväntat.<br>" ; 
+        $user_row[$i] = array('course_name' => $tmp[0], 'user_firstname' => $tmp[1], 'user_lastname' => $tmp[2], 'grade_grade' => $tmp[3], 'grade_id' => $tmp[4],'user_id' => $tmp[5],'course_id' => $tmp[6], 'grade_comment' => $tmp[7], 'magic_number' => $tmp[8]);
+        
+        // check each row for the magic number
+        if($user_row[$i]['magic_number'] <> $magic_number) {
+            echo "En rad i datat från servern stämmer ej med som var förväntat.<br>" ; 
         }
     
     }
-        // initilize to remember previous group of the course names
-        $lastcoursename = '-';
-
-        // iterate through all course user data
-        for ($i = 0; $i < count($user_row); $i++)
-        { 
-        
-          // only echo if course name different from previous iteration
-          if ( $lastcoursename !=  $user_row[$i]['course_name'] )
-          {
-        ?>
-        
+    
+    // initilize to anything except a real course name
+    $lastcoursename = '-';
+    
+    // iterate through all course user data
+    for ($i = 0; $i < count($user_row); $i++)
+    { ?>
+    
+    <table class="table table-hover">
+      
+      <thead>
+      <?php
+        // only echo if course name different from previous iteration
+        if ( $lastcoursename <>  $user_row[$i]['course_name'] ) { ?>
           <h3><?php echo $user_row[$i]['course_name']; ?></h3>
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <td><strong>Förnamn</strong></td>
-                <td><strong>Efternamn</strong></td>
-                <td><strong>Betyg</strong></td>
-                <td></td>
-              </tr>
-            </thead>
-          <?php  
-          }
-          ?>
-          
-          <tbody>        
-            <tr>   
-              <td><?php echo $user_row[$i]['user_firstname']; ?></td>
-              <td><?php echo $user_row[$i]['user_lastname']; ?></td>
-              <td><?php if($user_row[$i]['grade_grade'] == "-") { echo "Ej satt"; } else { echo $user_row[$i]['grade_grade']; } ?></td>
-              <td><?php if($user_row[$i]['grade_grade'] == "-") { ?><a href="course.add.php?user_id=<?php echo $user_row[$i]['user_id']; ?>&course_id=<?php echo $user_row[$i]['course_id']; ?>&user_firstname=<?php echo $user_row[$i]['user_firstname']; ?>&user_lastname=<?php echo $user_row[$i]['user_lastname']; ?>"><span class="label label-primary">Sätt betyg</span></a><?php } else { ?><a href="course.edit.php?id=<?php echo $user_row[$i]['grade_id']; ?>&grade_grade=<?php echo $user_row[$i]['grade_grade']; ?>&grade_comment=<?php echo $user_row[$i]['grade_comment']; ?>"><span class="label label-primary">Ändra betyg</span></a><?php } ?></td>
-            </tr>
-          </tbody>           
-        
-        <?php
-          // assign current course name for next iteration
-          $lastcoursename =  $user_row[$i]['course_name'];
-          
+            <tr>
+            <td><strong>Förnamn</strong></td>
+            <td><strong>Efternamn</strong></td>
+            <td><strong>Betyg</strong></td>
+            <td></td>
+          </tr>
+        <?php  
         }
         ?>
+      </thead>
+
+      <tbody>        
+        <tr>   
+          <td><?php echo trim($user_row[$i]['user_firstname']); ?></td>
+          <td><?php echo trim($user_row[$i]['user_lastname']); ?></td>
+          <td><?php if(trim($user_row[$i]['grade_grade']) == "-") { echo "Ej satt"; } else { echo trim($user_row[$i]['grade_grade']); } ?></td>
+          <td><?php if(trim($user_row[$i]['grade_grade']) == "-") { ?><a href="course.add.php?user_id=<?php echo $user_row[$i]['user_id']; ?>&course_id=<?php echo $user_row[$i]['course_id']; ?>&user_firstname=<?php echo $user_row[$i]['user_firstname']; ?>&user_lastname=<?php echo $user_row[$i]['user_lastname']; ?>"><span class="label label-primary">Sätt betyg</span></a><?php } else { ?><a href="course.edit.php?id=<?php echo $user_row[$i]['grade_id']; ?>&grade_grade=<?php echo $user_row[$i]['grade_grade']; ?>&grade_comment=<?php echo $user_row[$i]['grade_comment']; ?>"><span class="label label-primary">Ändra betyg</span></a><?php } ?></td>
+        </tr>
+      </tbody>           
+        
+    <?php
+    // assign current course name for next iteration
+    $lastcoursename =  $user_row[$i]['course_name'];
+    }
+    ?>
     </table>
   <?php
   echo "Väntade på Cobol databas backend: $mycbltime sekunder. Tid för PHP att processa infil: $mytime sekunder<br>";

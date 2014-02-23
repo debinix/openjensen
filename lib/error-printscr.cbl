@@ -5,7 +5,7 @@
        input-output section.
        file-control.
            SELECT OPTIONAL ojlogfile
-              ASSIGN TO '../_openjensen.log'
+              ASSIGN TO '../data/openjensen.log'
               ORGANIZATION IS LINE SEQUENTIAL.
         
        DATA DIVISION.

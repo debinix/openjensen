@@ -11,17 +11,15 @@
        *>**************************************************
        ENVIRONMENT DIVISION.
        input-output section.
-             
-       *> absolute path does not help to traverse fs for real file      
+                 
        file-control.
            SELECT fileout ASSIGN TO
-              '../betyg-elev.txt'
+              '../data/betyg-elev.txt'
               ORGANIZATION IS LINE SEQUENTIAL.
            
-           *> works only if zero-byte file
            SELECT OPTIONAL statusfile
               ASSIGN TO
-              '/home/jensen/www.mc-butter.se/public_html/data/status'             
+              '../data/status'             
               ORGANIZATION IS LINE SEQUENTIAL.  
               
        *>**************************************************
@@ -40,7 +38,7 @@
            03  fc-sep-4                   PIC X.      
            03  fc-grade-comment           PIC X(40).
            03  fc-sep-5                   PIC X.      
-           03  fc-session-id              PIC X(40).
+           03  fc-magic-number            PIC X(40).
            
        FD  statusfile.
        01  fd-fileout-status         PIC  X(1) VALUE SPACE.           
@@ -55,11 +53,21 @@
             03  is-grade-done-switch        PIC X   VALUE 'N'.
                 88  is-grade-done                   VALUE 'Y'.
             03  is-sql-error-switch         PIC X   VALUE 'N'.
-                88  is-sql-error                    VALUE 'Y'.    
+                88  is-sql-error                    VALUE 'Y'.
+       
+       *> each switch monitors one received POST name-value pair
+       01  sub-init-swithes.        
+            03  is-valid-init-user-switch   PIC X   VALUE 'N'.
+                88  is-valid-init-user              VALUE 'Y'.
+            03  is-valid-init-program-witch PIC X   VALUE 'N'.
+                88  is-valid-init-program           VALUE 'Y'.
+            03  is-valid-init-magic-switch  PIC X   VALUE 'N'.
+                88  is-valid-init-magic             VALUE 'Y'.                
                 
+       *> temporary table for completed grades for this student         
        01   tbl-grade                         VALUE ZERO.
             03 grade OCCURS 25 TIMES.
-                05  wn-tbl-user-id              PIC  9(4).
+                05  wn-tbl-user-id          PIC  9(4).
        01   wn-tbl-cnt                      PIC  9(2) VALUE ZERO.                   
                 
        *> used in calls to dynamic libraries
@@ -121,7 +129,7 @@
        *> receiving variables for data passed from php
        01 wn-user_id                 PIC  9(4) VALUE ZERO.
        01 wn-program_id              PIC  9(4) VALUE ZERO.
-       01 wc-session-id              PIC  X(40) VALUE SPACE.
+       01 wc-magic-number              PIC  X(40) VALUE SPACE.
        
        *> holds the status file real name
        01 wc-file-name               PIC  X(60) VALUE SPACE.
@@ -146,6 +154,9 @@
                     PERFORM B0200-list-elev-betyg
                     PERFORM B0300-disconnect
                 END-IF
+           ELSE
+                MOVE 'Kunde ej läsa POST data' TO wc-printscr-string
+                CALL 'stop-printscr' USING wc-printscr-string
            END-IF
                    
            PERFORM C0100-closedown
@@ -167,16 +178,17 @@
            
            IF wn-rtn-code = ZERO
            
-               SET is-valid-init TO TRUE
-               
                *>  get program_id          
                MOVE ZERO TO wn-rtn-code
                MOVE SPACE TO wc-post-value
                MOVE 'user_program' TO wc-post-name
                CALL 'get-post-value' USING wn-rtn-code
                                            wc-post-name wc-post-value
-               MOVE FUNCTION NUMVAL(wc-post-value) TO wn-program_id   
-               
+               IF wc-post-value NOT = SPACE
+                   SET is-valid-init-program TO TRUE
+                   MOVE FUNCTION NUMVAL(wc-post-value) TO wn-program_id
+               END-IF                            
+
                
                *>  get user_id          
                MOVE ZERO TO wn-rtn-code
@@ -184,19 +196,32 @@
                MOVE 'user_id' TO wc-post-name
                CALL 'get-post-value' USING wn-rtn-code
                                            wc-post-name wc-post-value
-               MOVE FUNCTION NUMVAL(wc-post-value) TO wn-user_id
+               IF wc-post-value NOT = SPACE
+                   SET is-valid-init-user TO TRUE
+                   MOVE FUNCTION NUMVAL(wc-post-value) TO wn-user_id
+               END-IF
                
-               *> get session-id to return with data sent back to php
+               
+               *> get magic number to return with data sent back to php
                MOVE ZERO TO wn-rtn-code
                MOVE SPACE TO wc-post-value
-               MOVE 'sessionid' TO wc-post-name
+               MOVE 'magic_number' TO wc-post-name
                CALL 'get-post-value' USING wn-rtn-code
                                            wc-post-name wc-post-value
-               MOVE wc-post-value TO wc-session-id               
+               IF wc-post-value NOT = SPACE
+                   SET is-valid-init-magic TO TRUE                                                      
+                   MOVE wc-post-value TO wc-magic-number               
+               END-IF
                
-               
-               *> open outfile
-               OPEN OUTPUT fileout
+               *> all must be valid
+               IF is-valid-init-program AND is-valid-init-user AND
+                  is-valid-init-magic
+                  
+                  SET is-valid-init TO TRUE
+                  *> open outfile
+                  OPEN OUTPUT fileout
+                  
+               END-IF   
   
            END-IF
 
@@ -314,7 +339,7 @@
            MOVE ',' TO fc-sep-4           
            MOVE wc-grade_comment TO fc-grade-comment
            MOVE ',' TO fc-sep-5           
-           MOVE wc-session-id TO fc-session-id             
+           MOVE wc-magic-number TO fc-magic-number             
            
            *> Rememeber which user-id have completed their grades
            ADD 1 TO wn-tbl-cnt
@@ -413,7 +438,7 @@
                MOVE ',' TO fc-sep-4           
                MOVE WC-NO-SQLVALUE-TO-PHP TO fc-grade-comment
                MOVE ',' TO fc-sep-5           
-               MOVE wc-session-id TO fc-session-id               
+               MOVE wc-magic-number TO fc-magic-number               
                
                WRITE fd-fileout-post
            
@@ -461,14 +486,14 @@
        *>**************************************************
        Z0200-write-status-ok-file.
        
-           *> move the SESSION_ID as base in new filename
-           MOVE wc-session-id TO wc-file-name
+           *> use the magic number as base in the new filename
+           MOVE wc-magic-number TO wc-file-name
        
            *> create a zero file
            OPEN EXTEND statusfile           
            CLOSE statusfile
            
-           *> create a new name like '7863786§4g78b8§48743723.OK'
+           *> create a new name like '78637866427818048743723.OK'
            MOVE SPACE TO wc-dest-path    
            STRING '../data/'   DELIMITED BY SPACE
               wc-file-name DELIMITED BY SPACE 
@@ -482,9 +507,9 @@
                          CONTINUE
            END-STRING                   
            *> copy existing dummy named 'status' file to OK-file
-           CALL 'CBL_COPY_FILE' USING '../data/status', wc-dest-path
+           CALL 'C$COPY' USING '../data/status', wc-dest-path, 0
            *> remove not needed dummy file
-           CALL 'CBL_DELETE_FILE' USING '../data/status'           
+           CALL 'C$DELETE' USING '../data/status', 0           
        
            .           
            

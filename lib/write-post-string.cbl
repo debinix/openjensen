@@ -1,7 +1,7 @@
        *>*************************************************
        *>
        *> write-post-string: write received environment CGI
-       *>   post, and write it to a sequental file on /tmp.
+       *>   post, and write to a sequental file on ../data.
        *>
        *> Coder: BK
        *>
@@ -17,7 +17,7 @@
               FILE STATUS IS wn-instatus.
        
            SELECT postfileout 
-              ASSIGN TO '/tmp/postfile.dat'
+              ASSIGN TO '../data/postfile.dat'
               ORGANIZATION IS LINE SEQUENTIAL.         
                    
        *>------------------------------------------------- 
