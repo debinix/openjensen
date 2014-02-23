@@ -197,7 +197,7 @@
             .
        *>**************************************************
        B0400-List-Users.
-            OPEN OUTPUT html-file
+            *>OPEN OUTPUT html-file
             
             EXEC SQL
                 DECLARE curpupil CURSOR FOR
@@ -246,29 +246,30 @@
                 PERFORM B0405-Get-Usertype-Name
                 PERFORM B0406-Get-Program-Name
                 
-                STRING html-table-row-start
+                DISPLAY
+                    html-table-row-start
                     html-table-cell-start
-                      wc-usertype-name DELIMITED BY " "
+                      wc-usertype-name
                     html-table-cell-end
                     html-table-cell-start
-                      t-user-firstname DELIMITED BY " "
+                      t-user-firstname
                     html-table-cell-end
                     html-table-cell-start
-                      t-user-lastname DELIMITED BY " "
+                      t-user-lastname
                     html-table-cell-end
                     html-table-cell-start
-                      wc-program-name DELIMITED BY " "
+                      wc-program-name
                     html-table-cell-end
                     html-table-cell-start
-                      t-user-email DELIMITED BY " "
+                      t-user-email
                     html-table-cell-end
                     html-table-cell-start
-                      t-user-phonenumber DELIMITED BY " "
+                      t-user-phonenumber
                     html-table-cell-end
                     html-table-cell-start
-                      t-user-lastlogin DELIMITED BY " "
+                      t-user-lastlogin
                     html-table-cell-end
-                    INTO wc-html-code
+                END-DISPLAY
                 PERFORM B0500-Check-if-Admin
                 
                 *> fetch next
@@ -279,12 +280,12 @@
                         PERFORM B0430-Get-All-User-Data
                 END-EVALUATE
 
-                MOVE wr-html-output-rec TO html-output-rec
-                WRITE html-output-rec
+                *>MOVE wr-html-output-rec TO html-output-rec
+                *>WRITE html-output-rec
             END-PERFORM
 
             *> All users have been written TO file. Close it.
-            CLOSE html-file
+            *>CLOSE html-file
             
             *> Close cursors
             EVALUATE wc-post-value
@@ -353,22 +354,16 @@
        *> Checks IF admin and builds output line
        B0500-Check-if-Admin.
             IF wn-user-type-number = 16 THEN
-                STRING
+                DISPLAY
                    '<td><a href="users.edit.php?user_id='
                    '<?php echo $ row['
                    function trim(t-user-id)
                    ']; ?>"><span class="label label-info">'
                    'Ändra'
                    '</span></a></td>'
-                INTO wc-php-code
-                STRING wc-html-code DELIMITED BY " "
-                      wc-php-code DELIMITED BY " "
-                      html-table-row-end
-                      INTO wc-html-output
+                END-DISPLAY
             ELSE
-                STRING wc-html-code DELIMITED BY " "
-                       html-table-row-end
-                       INTO wc-html-output
+                DISPLAY html-table-row-end
             END-IF
             .
        *>**************************************************
@@ -376,15 +371,15 @@
        *>**************************************************
        C0100-Exit.
 
-            CALL 'wui-end-html' USING wn-rtn-code
+            *>CALL 'wui-end-html' USING wn-rtn-code
             *> rename output file to the name given by php-script
             *> using a build in subroutine. Then remove output file.
-            STRING wc-dest-dir-path DELIMITED BY " "
-                   wc-filename DELIMITED BY " "
-                   INTO wc-dest-file-path
-            CALL "C$COPY"
-                USING wc-src-file-path, wc-dest-file-path, 0
-            CALL "C$DELETE" USING wc-src-file-path, 0
+            *>STRING wc-dest-dir-path DELIMITED BY " "
+            *>       wc-filename DELIMITED BY " "
+            *>       INTO wc-dest-file-path
+            *>CALL "C$COPY"
+            *>    USING wc-src-file-path, wc-dest-file-path, 0
+            *>CALL "C$DELETE" USING wc-src-file-path, 0
             
             goback
             .
