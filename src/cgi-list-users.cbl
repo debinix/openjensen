@@ -159,37 +159,31 @@
             MOVE "html-output.txt"
                 TO wc-src-file-path
 
-            *>CALL 'write-post-string' USING wn-rtn-code
+            CALL 'write-post-string' USING wn-rtn-code
             
-            MOVE ZERO TO wn-rtn-code
             IF wn-rtn-code = ZERO
                 SET is-valid-init TO true
                 MOVE ZERO TO wn-rtn-code
                 MOVE SPACE TO wc-post-value
                 MOVE 'usertype_id' TO wc-post-name
-                *>CALL 'get-post-value'
-                *>    USING wn-rtn-code wc-post-name wc-post-value
+                CALL 'get-post-value'
+                    USING wn-rtn-code wc-post-name wc-post-value
             END-IF
             
-            MOVE "1" TO wc-post-value
             IF wc-post-value = SPACE
                 MOVE 'Saknar ett användattyp id'
                      TO wc-printscr-string
                 CALL 'stop-printscr' USING wc-printscr-string
             ELSE
-                *> *** Get the post values ***
+                *>*** Get the post values ***
                 MOVE function numval(wc-post-value)
                      TO wn-user-type-number
-                DISPLAY "Användartyp: "wn-user-type-number
                 
-                MOVE ZERO TO wn-rtn-code
                 MOVE SPACE TO wc-post-value
                 MOVE 'filename' TO wc-post-name
-                *>CALL 'get-post-value'
-                *>    USING wn-rtn-code wc-post-name wc-post-value
+                CALL 'get-post-value'
+                    USING wn-rtn-code wc-post-name wc-post-value
  
-                MOVE ZERO TO wn-rtn-code
-                MOVE "abcdefghijkl" TO wc-post-value
                 IF wn-rtn-code = ZERO
                     MOVE wc-post-value TO wc-filename
                     SET is-valid-init TO true
