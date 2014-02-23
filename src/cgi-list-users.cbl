@@ -8,21 +8,7 @@
        IDENTIFICATION DIVISION.
        PROGRAM-ID. cgi-list-users.
        *>**************************************************
-       ENVIRONMENT DIVISION.
-       *>**************************************************
-       INPUT-OUTPUT SECTION.
-       FILE-CONTROL.
-            SELECT OPTIONAL html-file ASSIGN TO 'html-output.txt'
-               ORGANIZATION IS LINE SEQUENTIAL.
-
-       *>**************************************************
        DATA DIVISION.
-       *>**************************************************
-       FILE SECTION.
-       FD html-file.
-       01  html-output-rec.
-           05  html-output                     PIC X(1024).
-        
        *>**************************************************
        WORKING-STORAGE SECTION.
        *>**************************************************
@@ -33,10 +19,6 @@
                88  is-db-connected                     VALUE 'Y'.
            05  is-valid-init-switch            PIC X   VALUE 'N'.
                88 is-valid-init                        VALUE 'Y'.
-
-       *> Working sTOrage for record TO file
-       01 wr-html-output-rec.
-            05 wc-html-output          PIC X(1024) VALUE SPACE.
 
        *>**************************************************
        *> SQL Copybooks
@@ -74,6 +56,33 @@
              05  wc-user-lastlogin     PIC  X(40) VALUE SPACE.
              05  wc-user-usertype-id   PIC  9(9) VALUE ZERO.
              05  wc-user-program-id    PIC  9(9) VALUE ZERO.
+             
+       EXEC SQL BEGIN DECLARE SECTION END-EXEC.
+       01  program-rec-vars.
+             05 t-program-id           PIC 9(4) VALUE ZERO.
+             05 t-program-name         PIC X(40) VALUE SPACE.
+             05 t-program-startdate    PIC X(40) VALUE SPACE.
+             05 t-program-enddate      PIC X(40) VALUE SPACE.
+       EXEC SQL END DECLARE SECTION END-EXEC.
+
+       01  wr-program-rec-vars.
+             05 wc-program-id          PIC 9(4) VALUE ZERO.
+             05 wc-program-name        PIC X(40) VALUE SPACE.
+             05 wc-program-startdate   PIC X(40) VALUE SPACE.
+             05 wc-program-enddate     PIC X(40) VALUE SPACE.
+
+       EXEC SQL BEGIN DECLARE SECTION END-EXEC.
+       01  usertype-rec-vars.
+             05 t-usertype-id         PIC 9(4) VALUE ZERO.
+             05 t-usertype-name       PIC X(40) VALUE SPACE.
+             05 t-usertype-rights     PIC 9(4) VALUE ZERO.
+       EXEC SQL END DECLARE SECTION END-EXEC.
+
+       01  wr-usertype-rec-vars.
+             05 wc-usertype-id         PIC 9(4) VALUE ZERO.
+             05 wc-usertype-name       PIC X(40) VALUE SPACE.
+             05 wc-usertype-rights     PIC 9(4) VALUE ZERO.
+
 
        *>**************************************************
        *> used in CALLs TO dynamic libraries
@@ -105,8 +114,7 @@
        01 wc-src-file-path              PIC X(15)  VALUE SPACE.
        01 wc-dest-dir-path              PIC X(8)  VALUE "../data/".
        01 wc-dest-file-path             PIC X(64) VALUE SPACE.
-       01 wc-usertype-name              PIC X(20) VALUE SPACE.
-       01 wc-program-name               PIC X(20) VALUE SPACE.
+       01 wc-user-id-edit               PIC X(4)  VALUE SPACE.
        
        *> These two plus html-table-row-end makes up one
        *> line in the output file
@@ -134,7 +142,9 @@
                 TO wc-src-file-path
 
             CALL 'write-post-string' USING wn-rtn-code
-
+            
+            *>MOVE ZERO TO wn-rtn-code
+            
             IF wn-rtn-code = ZERO
                 SET is-valid-init TO true
                 MOVE ZERO TO wn-rtn-code
@@ -142,27 +152,21 @@
                 MOVE 'usertype_id' TO wc-post-name
                 CALL 'get-post-value'
                     USING wn-rtn-code wc-post-name wc-post-value
-            END-IF
-
-            IF wc-post-value = SPACE
-                MOVE 'Saknar ett användattyp id'
-                     TO wc-printscr-string
-                CALL 'stop-printscr' USING wc-printscr-string
             ELSE
-                *> *** Get the post values ***
-                MOVE function numval(wc-post-value)
+               MOVE 'Fel i wui-print-header'
+                    TO wc-printscr-string
+               CALL 'stop-printscr' USING wc-printscr-string
+            END-IF
+            
+            *>MOVE "4" TO wc-post-value
+            IF wc-post-value = SPACE
+               MOVE 'Saknar ett användattyp id'
+                    TO wc-printscr-string
+               CALL 'stop-printscr' USING wc-printscr-string
+            ELSE
+                *> *** Get the post values ***            
+                MOVE FUNCTION numval(wc-post-value)
                      TO wn-user-type-number
- 
-                MOVE ZERO TO wn-rtn-code
-                MOVE SPACE TO wc-post-value
-                MOVE 'filename' TO wc-post-name
-                CALL 'get-post-value'
-                    USING wn-rtn-code wc-post-name wc-post-value
- 
-                IF wn-rtn-code = ZERO
-                    MOVE wc-post-value TO wc-filename
-                    SET is-valid-init TO true
-                END-IF
             END-IF
            .       
        *>**************************************************
@@ -172,8 +176,9 @@
                 PERFORM B0200-connect
                 
                 IF is-db-connected
-                     PERFORM B0400-List-Users
-                     PERFORM Z0200-Disconnect
+                    PERFORM B0300-Get-Lookup-Data
+                    PERFORM B0400-List-Users
+                    PERFORM Z0200-Disconnect
                 END-IF
             END-IF
            .
@@ -196,12 +201,92 @@
             END-IF
             .
        *>**************************************************
+       B0300-Get-Lookup-Data.
+           perform B0310-Get-Program-Names
+           perform B0320-Get-User-Type-Names
+           .
+       *>**************************************************
+       B0310-Get-Program-Names.
+            EXEC SQL
+                DECLARE cur4 CURSOR FOR
+                   SELECT  program_id, program_name
+                   FROM tbl_program
+                   ORDER BY program_id
+            END-EXEC
+            
+           EXEC SQL
+                OPEN cur4
+           END-EXEC
+
+           EXEC SQL
+               FETCH cur4 INTO
+                   :t-program-id,
+                   :t-program-name
+           END-EXEC
+
+           SET idx-program TO 1
+
+           PERFORM UNTIL SQLSTATE NOT = ZERO
+                MOVE t-program-name TO tbl-program-name(idx-program)
+                SET idx-program UP BY 1
+ 
+                EXEC SQL
+                    FETCH cur4 INTO
+                        :t-program-id,
+                        :t-program-name
+                END-EXEC
+           END-PERFORM
+
+           EXEC SQL
+                CLOSE CUR4
+           END-EXEC
+           .
+       *>**************************************************
+       B0320-Get-User-Type-Names.
+            EXEC SQL
+                DECLARE cur5 CURSOR FOR
+                   SELECT usertype_id, usertype_name
+                   FROM tbl_usertype
+                   ORDER BY usertype_id
+            END-EXEC
+            
+            EXEC SQL
+                OPEN cur5
+            END-EXEC
+ 
+            EXEC SQL
+                FETCH cur5 INTO
+                    :t-usertype-id,
+                    :t-usertype-name
+            END-EXEC
+ 
+            SET idx-user-type TO 1
+ 
+            PERFORM UNTIL SQLSTATE NOT = ZERO
+                MOVE t-usertype-name
+                    TO tbl-user-type-name(idx-user-type)
+                
+                SET idx-user-type UP BY 1
+ 
+                EXEC SQL
+                    FETCH cur5 INTO
+                        :t-usertype-id,
+                        :t-usertype-name
+                END-EXEC
+ 
+            END-PERFORM
+ 
+            EXEC SQL
+                CLOSE cur5
+            END-EXEC
+           .
+       *>**************************************************
        B0400-List-Users.
-            *>OPEN OUTPUT html-file
             
             EXEC SQL
                 DECLARE curpupil CURSOR FOR
-                   SELECT  user_firstname,
+                   SELECT  user_id,
+                           user_firstname,
                            user_lastname,
                            user_email,
                            user_phonenumber,
@@ -215,7 +300,8 @@
 
             EXEC SQL
                 DECLARE curall CURSOR FOR
-                    SELECT  user_firstname,
+                    SELECT  user_id,
+                            user_firstname,
                             user_lastname,
                             user_email,
                             user_phonenumber,
@@ -226,7 +312,7 @@
                     ORDER BY user_lastname, user_firstname
             END-EXEC
  
-            *> Fetch the first record
+            *> Fetch the first record           
             EVALUATE wn-user-type-number
                 WHEN 1
                     EXEC SQL
@@ -243,13 +329,13 @@
             *> Fetch the remaining records
             PERFORM UNTIL sqlstate NOT = ZERO
                 
-                PERFORM B0405-Get-Usertype-Name
-                PERFORM B0406-Get-Program-Name
+                *>PERFORM B0405-Get-Usertype-Name
+                *>PERFORM B0406-Get-Program-Name
                 
                 DISPLAY
                     html-table-row-start
                     html-table-cell-start
-                      wc-usertype-name
+                      tbl-user-type-name(t-user-usertype-id)
                     html-table-cell-end
                     html-table-cell-start
                       t-user-firstname
@@ -258,7 +344,7 @@
                       t-user-lastname
                     html-table-cell-end
                     html-table-cell-start
-                      wc-program-name
+                      tbl-program-name(t-user-program-id)
                     html-table-cell-end
                     html-table-cell-start
                       t-user-email
@@ -280,15 +366,10 @@
                         PERFORM B0430-Get-All-User-Data
                 END-EVALUATE
 
-                *>MOVE wr-html-output-rec TO html-output-rec
-                *>WRITE html-output-rec
             END-PERFORM
 
-            *> All users have been written TO file. Close it.
-            *>CLOSE html-file
-            
             *> Close cursors
-            EVALUATE wc-post-value
+            EVALUATE wn-user-type-number
                WHEN 1
                   EXEC SQL
                         CLOSE curpupil
@@ -309,9 +390,9 @@
                     MOVE 'Elev' TO wc-usertype-name
                 WHEN 2
                     MOVE 'Lärare' TO wc-usertype-name
-                WHEN 4
+                WHEN 3
                     MOVE 'Utbildningsledare' TO wc-usertype-name
-                WHEN 16
+                WHEN 4
                     MOVE 'Administratör' TO wc-usertype-name
             END-EVALUATE
             .
@@ -328,39 +409,42 @@
        B0410-Get-Pupil-Data.
             EXEC SQL
                FETCH curpupil INTO
-                   :t-user-firstname,
-                   :t-user-lastname,
-                   :t-user-email,
-                   :t-user-phonenumber,
-                   :t-user-usertype-id,
-                   :t-user-program-id,
-                   :t-user-lastlogin
+                    :t-user-id,
+                    :t-user-firstname,
+                    :t-user-lastname,
+                    :t-user-email,
+                    :t-user-phonenumber,
+                    :t-user-usertype-id,
+                    :t-user-program-id,
+                    :t-user-lastlogin
             END-EXEC
             .
        *>**************************************************
        B0430-Get-All-User-Data.
             EXEC SQL
                FETCH curall INTO
-                   :t-user-firstname,
-                   :t-user-lastname,
-                   :t-user-email,
-                   :t-user-phonenumber,
-                   :t-user-usertype-id,
-                   :t-user-program-id,
-                   :t-user-lastlogin
+                    :t-user-id,
+                    :t-user-firstname,
+                    :t-user-lastname,
+                    :t-user-email,
+                    :t-user-phonenumber,
+                    :t-user-usertype-id,
+                    :t-user-program-id,
+                    :t-user-lastlogin
             END-EXEC
             .
        *>**************************************************
        *> Checks IF admin and builds output line
        B0500-Check-if-Admin.
-            IF wn-user-type-number = 16 THEN
+            IF wn-user-type-number >= 3 THEN
                 DISPLAY
                    '<td><a href="users.edit.php?user_id='
                    '<?php echo $ row['
-                   function trim(t-user-id)
+                   t-user-id
                    ']; ?>"><span class="label label-info">'
-                   'Ändra'
+                   'Redigera'
                    '</span></a></td>'
+                   html-table-row-end
                 END-DISPLAY
             ELSE
                 DISPLAY html-table-row-end
@@ -370,16 +454,6 @@
        *> Exit and cleanup procedures
        *>**************************************************
        C0100-Exit.
-
-            *>CALL 'wui-end-html' USING wn-rtn-code
-            *> rename output file to the name given by php-script
-            *> using a build in subroutine. Then remove output file.
-            *>STRING wc-dest-dir-path DELIMITED BY " "
-            *>       wc-filename DELIMITED BY " "
-            *>       INTO wc-dest-file-path
-            *>CALL "C$COPY"
-            *>    USING wc-src-file-path, wc-dest-file-path, 0
-            *>CALL "C$DELETE" USING wc-src-file-path, 0
             
             goback
             .
