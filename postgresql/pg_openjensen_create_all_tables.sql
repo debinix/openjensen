@@ -6,12 +6,12 @@
 --
 -- Before creating all tables, run drop script (to remove old tables)
 
--- Creation order is defined by FK constraints (but we load FK's
--- at the end, and in this case the creation order is not important)
+-- Creation order is defined by FK constraints (but by loading FK's
+-- at the end, the creation order is not important here)
 
 
 --
--- (A) Emilio tbl_user
+-- (A) tbl_user
 --
 
 CREATE TABLE tbl_user (
@@ -31,7 +31,7 @@ CREATE TABLE tbl_user (
 
 
 --
--- (B) Emilio tbl_program
+-- (B) tbl_program
 --
 
 CREATE TABLE tbl_program (
@@ -45,7 +45,7 @@ CREATE TABLE tbl_program (
 
 
 --
--- (C) Emilio tbl_usertype
+-- (C) tbl_usertype
 --
 
 CREATE TABLE tbl_usertype (
@@ -58,7 +58,7 @@ CREATE TABLE tbl_usertype (
 
 
 --
--- (D) Emilio tbl_grade
+-- (D) tbl_grade
 --
 
 CREATE TABLE tbl_grade (
@@ -73,7 +73,7 @@ CREATE TABLE tbl_grade (
 
 
 --
--- (E) Emilio tbl_course
+-- (E) tbl_course
 --
 
 
@@ -87,26 +87,26 @@ CREATE TABLE tbl_course (
 )
 ;
 
-
 --
--- T_NYHETER (12) - first used table to be (partly migrated) OpenJensen
+-- (F) tbl_news
 --
 
-CREATE TABLE T_NYHETER
-(
-   News_id INTEGER NOT NULL,
-   News_title CHAR(255) NOT NULL,
-   News_content TEXT NOT NULL,
-   News_date DATE NOT NULL,
-   News_author INTEGER NOT NULL,
-   /* Primary key */
-   CONSTRAINT pk_nyheter PRIMARY KEY(news_id)
+CREATE TABLE tbl_news (
+   news_id int NOT NULL,
+   news_title char(255) NOT NULL,
+   news_content char(1024) NOT NULL,
+   news_date  date NOT NULL,
+   news_author` int NOT NULL,
+  /* Primary key */  
+  CONSTRAINT e_tbl_news_pk PRIMARY KEY (`news_id`)
 )
 ;
 
+
+
 -------------------------------------------------------------------
 --
--- Front-end (php) have not yet migrated to any tables (1) - (11) 
+-- Product backlog tables (1) - (12) - also used for tests 
 --
 -------------------------------------------------------------------
 
@@ -285,7 +285,21 @@ CREATE TABLE T_BETYG (
 ;
 
 
+--
+-- T_NYHETER (12)
+--
 
+CREATE TABLE T_NYHETER
+(
+   News_id INTEGER NOT NULL,
+   News_title CHAR(255) NOT NULL,
+   News_content TEXT NOT NULL,
+   News_date DATE NOT NULL,
+   News_author INTEGER NOT NULL,
+   /* Primary key */
+   CONSTRAINT pk_nyheter PRIMARY KEY(news_id)
+)
+;
 
 
 --
@@ -340,11 +354,48 @@ ALTER TABLE T_BETYG ADD CONSTRAINT betyg_elev_id_fk
 	FOREIGN KEY(Elev_id) REFERENCES T_ELEV(Elev_id)
 ;
 
---
--- Used (partly migrated) currently in front-end OpenJensen
---
 
 ALTER TABLE T_NYHETER ADD CONSTRAINT fk_news_author
     FOREIGN KEY (news_author) REFERENCES T_KONTAK(kontakt_id)
     ON UPDATE NO ACTION ON DELETE NO ACTION
 ;
+
+-------------------------------------------------------------------
+--
+-- Current enforced foreign constraints
+--
+-------------------------------------------------------------------
+
+ALTER TABLE tbl_user ADD CONSTRAINT fk_user_usertype_id
+    FOREIGN KEY (usertype_id) REFERENCES tbl_usertype(usertype_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_user ADD CONSTRAINT fk_user_user_program
+    FOREIGN KEY (user_program) REFERENCES tbl_program(program_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_grade ADD CONSTRAINT fk_grade_user_id
+    FOREIGN KEY (user_id) REFERENCES tbl_user(user_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_grade ADD CONSTRAINT fk_grade_course_id
+    FOREIGN KEY (course_id) REFERENCES tbl_course(course_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_course ADD CONSTRAINT fk_course_program_id
+    FOREIGN KEY (program_id) REFERENCES tbl_program(program_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_news ADD CONSTRAINT fk_news_news_author
+    FOREIGN KEY (news_author) REFERENCES tbl_user(user_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+
+
+

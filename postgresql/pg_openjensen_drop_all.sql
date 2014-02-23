@@ -1,5 +1,62 @@
 --
--- Drop all foreign constraints
+-- Drop all foreign constraints (current used tables)
+--
+
+--
+-- Drop tbl_user
+--
+
+ALTER TABLE tbl_user DROP CONSTRAINT e_tbl_user_pk ;
+
+DROP TABLE tbl_user ;
+
+
+--
+-- Drop tbl_program
+--
+
+ALTER TABLE tbl_program DROP CONSTRAINT e_tbl_program_pk ;
+
+DROP TABLE tbl_program ;
+
+
+--
+-- Drop tbl_usertype
+--
+
+ALTER TABLE tbl_usertype DROP CONSTRAINT e_tbl_usertype_pk ;
+
+DROP TABLE tbl_usertype ;
+
+--
+-- Drop tbl_grade
+--
+
+ALTER TABLE tbl_grade DROP CONSTRAINT e_tbl_grade_pk ;
+
+DROP TABLE tbl_grade ;
+
+
+--
+-- Drop tbl_course
+--
+
+ALTER TABLE tbl_course DROP CONSTRAINT e_tbl_course_pk ;
+
+DROP TABLE tbl_course ;
+
+
+--
+-- Drop table tbl_news
+--
+
+ALTER TABLE tbl_news DROP CONSTRAINT e_tbl_news_pk ;
+
+DROP TABLE tbl_news ;
+
+
+--
+-- Drop all foreign constraints (future tables)
 --
 
 ALTER TABLE T_UTBILD DROP CONSTRAINT utbild_ort_id_fk ;
@@ -29,50 +86,6 @@ ALTER TABLE T_BETYG DROP CONSTRAINT betyg_kurs_id_fk ;
 ALTER TABLE T_BETYG DROP CONSTRAINT betyg_elev_id_fk ;
 
 ALTER TABLE T_NYHETER DROP CONSTRAINT fk_news_author ;
-
-
---
--- Drop Emilio tbl_user
---
-
-ALTER TABLE tbl_user DROP CONSTRAINT e_tbl_user_pk ;
-
-DROP TABLE tbl_user ;
-
-
---
--- Drop Emilio tbl_program
---
-
-ALTER TABLE tbl_program DROP CONSTRAINT e_tbl_program_pk ;
-
-DROP TABLE tbl_program ;
-
-
---
--- Drop Emilio tbl_usertype
---
-
-ALTER TABLE tbl_usertype DROP CONSTRAINT e_tbl_usertype_pk ;
-
-DROP TABLE tbl_usertype ;
-
---
--- Drop Emilio tbl_grade
---
-
-ALTER TABLE tbl_grade DROP CONSTRAINT e_tbl_grade_pk ;
-
-DROP TABLE tbl_grade ;
-
-
---
--- Drop Emilio tbl_course
---
-
-ALTER TABLE tbl_course DROP CONSTRAINT e_tbl_course_pk ;
-
-DROP TABLE tbl_course ;
 
 
 --
@@ -175,3 +188,5 @@ DROP TABLE T_BETYG ;
 ALTER TABLE T_NYHETER DROP CONSTRAINT pk_nyheter ;
 
 DROP TABLE T_NYHETER ;
+
+

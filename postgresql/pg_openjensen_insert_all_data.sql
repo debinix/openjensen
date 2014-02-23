@@ -1,5 +1,5 @@
 --
--- Drop all foreign constraints
+-- Drop all foreign constraints (future tables)
 --
 
 ALTER TABLE T_UTBILD DROP CONSTRAINT utbild_ort_id_fk ;
@@ -30,9 +30,30 @@ ALTER TABLE T_BETYG DROP CONSTRAINT betyg_elev_id_fk ;
 
 ALTER TABLE T_NYHETER DROP CONSTRAINT fk_news_author ;
 
+--
+-- Drop all foreign constraints (current tables)
+--
+
+ALTER TABLE tbl_user DROP CONSTRAINT fk_user_usertype_id ;
+
+
+ALTER TABLE tbl_user DROP CONSTRAINT fk_user_user_program ;
+
+
+ALTER TABLE tbl_grade DROP CONSTRAINT fk_grade_user_id ;
+
+
+ALTER TABLE tbl_grade DROP CONSTRAINT fk_grade_course_id ;
+
+
+ALTER TABLE tbl_course DROP CONSTRAINT fk_course_program_id ;
+
+
+ALTER TABLE tbl_news DROP CONSTRAINT fk_news_news_author ;
+
 
 --
--- Emilio tbl_user
+-- tbl_user
 --
 
 INSERT INTO tbl_user (user_id, user_firstname, user_lastname, user_email, user_phonenumber, user_username, user_password, user_lastlogin, usertype_id, user_program)
@@ -50,7 +71,7 @@ VALUES
 
 
 --
--- Emilio tbl_program
+-- tbl_program
 --
 
 INSERT INTO tbl_program (program_id, program_name, program_startdate, program_enddate)
@@ -61,7 +82,7 @@ VALUES
 
 
 --
--- Emilio tbl_usertype
+-- tbl_usertype
 --
 
 INSERT INTO tbl_usertype (usertype_id, usertype_name, usertype_rights)
@@ -74,7 +95,7 @@ VALUES
 
 
 --
--- Emilio tbl_grade
+-- tbl_grade
 --
 
 INSERT INTO tbl_grade (grade_id, grade_grade, grade_comment, user_id, course_id)
@@ -87,7 +108,7 @@ VALUES
 
 
 --
--- Emilio tbl_course
+-- tbl_course
 --
 
 
@@ -99,6 +120,18 @@ VALUES
 (4, 'Testkurs 4', '2014-07-01', '2014-12-31', 2),
 (5, 'Fri kurs 1', '2013-11-01', '2013-11-30', 0)
 ;
+
+
+--
+-- tbl_news
+--
+
+INSERT INTO tbl_news
+(news_id, news_title, news_content, news_date, news_author)
+VALUES
+(3, 'Nyhet1', 'Bacon ipsum dolor sit amet kielbasa hamburger cow pork. Cow ham jowl kevin swine. Doner filet mignon tail pork belly sausage beef ribs spare ribs shankle brisket sirloin pastrami kevin cow kielbasa jerky. Beef ribs cow spare ribs, t-bone andouille ground round prosciutto swine sausage. Swine meatball pastrami, beef tenderloin ham hock shank shankle rump strip steak beef ribs turducken fatback hamburger ribeye. Ham bresaola shoulder pork chop, sausage meatball pork rump spare ribs cow bacon filet mignon. Prosciutto pastrami pork loin, kevin kielbasa swine rump spare ribs beef ribs strip steak pork chop pork frankfurter sausage ground round.', '2013-07-27', 2)
+;
+
 
 --
 -- T_KONTAK (1)
@@ -281,7 +314,7 @@ VALUES
 
 
 --
--- T_BETYG
+-- T_NYHETER
 --
 
 
@@ -290,11 +323,6 @@ INSERT INTO T_NYHETER
 VALUES
 (3, 'Nyhet1', 'Bacon ipsum dolor sit amet kielbasa hamburger cow pork. Cow ham jowl kevin swine. Doner filet mignon tail pork belly sausage beef ribs spare ribs shankle brisket sirloin pastrami kevin cow kielbasa jerky. Beef ribs cow spare ribs, t-bone andouille ground round prosciutto swine sausage. Swine meatball pastrami, beef tenderloin ham hock shank shankle rump strip steak beef ribs turducken fatback hamburger ribeye. Ham bresaola shoulder pork chop, sausage meatball pork rump spare ribs cow bacon filet mignon. Prosciutto pastrami pork loin, kevin kielbasa swine rump spare ribs beef ribs strip steak pork chop pork frankfurter sausage ground round.', '2013-07-27', 2)
 ;
-
-
---
--- 
---
 
 
     
@@ -337,7 +365,44 @@ ALTER TABLE T_BETYG ADD CONSTRAINT betyg_kurs_id_fk
 
 ALTER TABLE T_BETYG ADD CONSTRAINT betyg_elev_id_fk
 	FOREIGN KEY(Elev_id) REFERENCES T_ELEV(Elev_id);
-    
+        
 ALTER TABLE T_NYHETER ADD CONSTRAINT fk_news_author
     FOREIGN KEY (news_author) REFERENCES T_KONTAK(kontakt_id)
     ON UPDATE NO ACTION ON DELETE NO ACTION;
+    
+
+-------------------------------------------------------------------
+--
+-- Current applied foreign constraints
+--
+-------------------------------------------------------------------
+
+ALTER TABLE tbl_user ADD CONSTRAINT fk_user_usertype_id
+    FOREIGN KEY (usertype_id) REFERENCES tbl_usertype(usertype_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_user ADD CONSTRAINT fk_user_user_program
+    FOREIGN KEY (user_program) REFERENCES tbl_program(program_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_grade ADD CONSTRAINT fk_grade_user_id
+    FOREIGN KEY (user_id) REFERENCES tbl_user(user_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_grade ADD CONSTRAINT fk_grade_course_id
+    FOREIGN KEY (course_id) REFERENCES tbl_course(course_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_course ADD CONSTRAINT fk_course_program_id
+    FOREIGN KEY (program_id) REFERENCES tbl_program(program_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_news ADD CONSTRAINT fk_news_news_author
+    FOREIGN KEY (news_author) REFERENCES tbl_user(user_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
