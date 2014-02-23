@@ -103,7 +103,7 @@
        01 wn-user-type-number           PIC 9(4)  VALUE ZERO.
        01 wc-filename                   PIC X(40) VALUE ZERO.
        01 wc-src-file-path              PIC X(15)  VALUE SPACE.
-       01 wc-dest-dir-path              PIC X(8)  VALUE "../data/".
+       01 wc-dest-dir-path              PIC X(8)  VALUE "../".
        01 wc-dest-file-path             PIC X(64) VALUE SPACE.
        01 wc-usertype-name              PIC X(20) VALUE SPACE.
        01 wc-program-name               PIC X(20) VALUE SPACE.
