@@ -96,9 +96,9 @@ CREATE TABLE tbl_news (
    news_title char(255) NOT NULL,
    news_content char(1024) NOT NULL,
    news_date  date NOT NULL,
-   news_author` int NOT NULL,
+   news_author int NOT NULL,
   /* Primary key */  
-  CONSTRAINT e_tbl_news_pk PRIMARY KEY (`news_id`)
+  CONSTRAINT e_tbl_news_pk PRIMARY KEY (news_id)
 )
 ;
 

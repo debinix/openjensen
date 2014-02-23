@@ -6,7 +6,7 @@
 -- Drop tbl_user
 --
 
-ALTER TABLE tbl_user DROP CONSTRAINT e_tbl_user_pk ;
+ALTER TABLE tbl_user DROP CONSTRAINT e_tbl_user_pk CASCADE ;
 
 DROP TABLE tbl_user ;
 
@@ -15,7 +15,7 @@ DROP TABLE tbl_user ;
 -- Drop tbl_program
 --
 
-ALTER TABLE tbl_program DROP CONSTRAINT e_tbl_program_pk ;
+ALTER TABLE tbl_program DROP CONSTRAINT e_tbl_program_pk CASCADE ;
 
 DROP TABLE tbl_program ;
 
@@ -24,7 +24,7 @@ DROP TABLE tbl_program ;
 -- Drop tbl_usertype
 --
 
-ALTER TABLE tbl_usertype DROP CONSTRAINT e_tbl_usertype_pk ;
+ALTER TABLE tbl_usertype DROP CONSTRAINT e_tbl_usertype_pk CASCADE ;
 
 DROP TABLE tbl_usertype ;
 
