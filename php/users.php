@@ -43,26 +43,26 @@ $Success->show();
     $result = curl_exec($ch);
     if($result === false) $Error->set("Kan ej kontakta servern: $url") ;
 
-    $Success->set("Användarlistan hämtad.");
+    //close connection
+    curl_close($ch);
     
-
-    //Query is executed and the CGI has created a file we sleep
-    // max 5s to make sure that the file exists before continue
-    //with our php code below
+    $filename = "../data/".$filename;
     
-    for ($f=0; $f <= 5; $f++)
-    {
-      $file_exists=file_exists("data/".$filename);
-      if($file_exists)
-      {
+    // time out after 5s
+    for ($f=0; $f <= 50; $f++) {
+      $file_exists=file_exists($filename);
+      if($file_exists) {
           break;
       }
-      sleep(1);
+      // sleep 100 ms
+      usleep(100000);   
     }
-    //Include the files contenst once
-    include_once($filename);
     
-    header('location: users.php');
+    if($f === 50) {
+        echo "Saknar fil från databas: $filename <br>" ; 
+    }
+
+    include($filename)
     ?>
   </tbody>
 </table>
