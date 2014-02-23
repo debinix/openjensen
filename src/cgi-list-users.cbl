@@ -12,7 +12,7 @@
        *>**************************************************
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-            SELECT OPTIONAL html-file ASSIGN TO 'output.txt'
+            SELECT OPTIONAL html-file ASSIGN TO 'html-output.txt'
                ORGANIZATION IS LINE SEQUENTIAL.
 
        *>**************************************************
@@ -130,7 +130,7 @@
        A0100-Init.
             CALL 'wui-print-header' USING wn-rtn-code
            
-            MOVE "output.txt"
+            MOVE "html-output.txt"
                 TO wc-src-file-path
 
             CALL 'write-post-string' USING wn-rtn-code
@@ -246,21 +246,30 @@
                 PERFORM B0405-Get-Usertype-Name
                 PERFORM B0406-Get-Program-Name
                 
-                STRING wc-usertype-name DELIMITED BY " "
-                    ";"
-                    t-user-firstname DELIMITED BY " "
-                    ";"
-                    t-user-lastname DELIMITED BY " "
-                    ";"
-                    wc-program-name DELIMITED BY " "
-                    ";"
-                    t-user-email DELIMITED BY " "
-                    ";"
-                    t-user-phonenumber DELIMITED BY " "
-                    ";"
-                    t-user-lastlogin DELIMITED BY " "
+                STRING html-table-row-start
+                    html-table-cell-start
+                      wc-usertype-name DELIMITED BY " "
+                    html-table-cell-end
+                    html-table-cell-start
+                      t-user-firstname DELIMITED BY " "
+                    html-table-cell-end
+                    html-table-cell-start
+                      t-user-lastname DELIMITED BY " "
+                    html-table-cell-end
+                    html-table-cell-start
+                      wc-program-name DELIMITED BY " "
+                    html-table-cell-end
+                    html-table-cell-start
+                      t-user-email DELIMITED BY " "
+                    html-table-cell-end
+                    html-table-cell-start
+                      t-user-phonenumber DELIMITED BY " "
+                    html-table-cell-end
+                    html-table-cell-start
+                      t-user-lastlogin DELIMITED BY " "
+                    html-table-cell-end
                     INTO wc-html-code
-                *>PERFORM B0500-Check-if-Admin
+                PERFORM B0500-Check-if-Admin
                 
                 *> fetch next
                 EVALUATE wn-user-type-number
