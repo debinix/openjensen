@@ -12,30 +12,26 @@
        file section.
        FD  ojlogfile.
        01  fd-ojlogfile-post.
-           03  fe-yyyy                    PIC ZZZ9.
+           03  fc-yyyy                    PIC X(4).
            03  fc-sep-1                   PIC X.
-           03  fe-monthmonth              PIC Z9.
+           03  fc-monthmonth              PIC X(2).
            03  fc-sep-2                   PIC X.
-           03  fe-dd                      PIC Z9.
+           03  fc-dd                      PIC X(2).
            03  fc-sep-3                   PIC X.
-           03  fe-hh                      PIC Z9.
+           03  fc-hh                      PIC X(2).
            03  fc-sep-4                   PIC X.
-           03  fe-mm                      PIC Z9.
+           03  fc-mm                      PIC X(2).
            03  fc-sep-5                   PIC X.           
-           03  fe-ss                      PIC Z9.
+           03  fc-ss                      PIC X(2).
            03  fc-sep-6                   PIC X.
-           03  fe-tt                      PIC Z9.
+           03  fc-tt                      PIC X(2).
            03  fc-sep-7                   PIC X.           
            03  fc-err-state               PIC X(5).
            03  fc-sep-8                   PIC X.      
            03  fc-err-msg                 PIC X(40).
            03  fc-sep-9                   PIC X.       
        
-       working-storage section.
-       01   switches.
-           03  is-eof-input-switch   PIC X   VALUE 'N'.
-               88  is-eof-input              VALUE 'Y'.
-       
+       working-storage section.       
        01  wr-log-date-time.
            03  wr-yyyymmdd.
                05 wn-year     PIC 9(4) VALUE ZERO.
@@ -79,47 +75,30 @@
        *>******************************************************             
        A0100-append-msg-to-error-file.
        
-           
            MOVE FUNCTION CURRENT-DATE TO wr-log-date-time
            
            *> append data
            OPEN EXTEND ojlogfile
-           
-           *>  Read first record
-           READ ojlogfile INTO fd-ojlogfile-post
-              AT END
-                   SET is-eof-input TO TRUE
-           END-READ           
-           
-           PERFORM UNTIL is-eof-input             
-                      
-               MOVE wn-year TO fe-yyyy  
-               MOVE '-' TO fc-sep-1   
-               MOVE wn-month TO fe-monthmonth   
-               MOVE '-' TO fc-sep-2    
-               MOVE wn-day TO fe-dd     
-               MOVE 'T' TO fc-sep-3     
-               MOVE wn-hour TO fe-hh      
-               MOVE ':' TO fc-sep-4                 
-               MOVE wn-minute TO fe-mm    
-               MOVE ':' TO fc-sep-5                  
-               MOVE wn-second TO fe-ss
-               MOVE '-' TO fc-sep-6
-               MOVE wn-hundred TO fe-tt               
-               MOVE '|' TO fc-sep-7               
-               MOVE lc-err-state TO fc-err-state      
-               MOVE '|' TO fc-sep-8          
-               MOVE lc-err-msg TO fc-err-msg
-               MOVE '|' TO fc-sep-9        
+                            
+           MOVE wn-year TO fc-yyyy  
+           MOVE '-' TO fc-sep-1   
+           MOVE wn-month TO fc-monthmonth   
+           MOVE '-' TO fc-sep-2    
+           MOVE wn-day TO fc-dd     
+           MOVE 'T' TO fc-sep-3     
+           MOVE wn-hour TO fc-hh      
+           MOVE ':' TO fc-sep-4                 
+           MOVE wn-minute TO fc-mm    
+           MOVE ':' TO fc-sep-5                  
+           MOVE wn-second TO fc-ss
+           MOVE ',' TO fc-sep-6
+           MOVE wn-hundred TO fc-tt               
+           MOVE '|' TO fc-sep-7               
+           MOVE lc-err-state TO fc-err-state      
+           MOVE '|' TO fc-sep-8          
+           MOVE lc-err-msg TO fc-err-msg
+           MOVE '|' TO fc-sep-9        
                              
-               *>  Read next record            
-               READ ojlogfile INTO fd-ojlogfile-post
-                    AT END
-                        SET is-eof-input TO TRUE
-               END-READ            
-           
-           END-PERFORM
-        
            WRITE fd-ojlogfile-post
            
            CLOSE ojlogfile
