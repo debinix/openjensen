@@ -8,21 +8,7 @@
        IDENTIFICATION DIVISION.
        PROGRAM-ID. cgi-list-users.
        *>**************************************************
-       ENVIRONMENT DIVISION.
-       *>**************************************************
-       INPUT-OUTPUT SECTION.
-       FILE-CONTROL.
-            SELECT OPTIONAL html-file ASSIGN TO 'html-output.txt'
-               ORGANIZATION IS LINE SEQUENTIAL.
-
-       *>**************************************************
        DATA DIVISION.
-       *>**************************************************
-       FILE SECTION.
-       FD html-file.
-       01  html-output-rec.
-           05  html-output                     PIC X(1024).
-        
        *>**************************************************
        WORKING-STORAGE SECTION.
        *>**************************************************
@@ -33,10 +19,6 @@
                88  is-db-connected                     VALUE 'Y'.
            05  is-valid-init-switch            PIC X   VALUE 'N'.
                88 is-valid-init                        VALUE 'Y'.
-
-       *> Working sTOrage for record TO file
-       01 wr-html-output-rec.
-            05 wc-html-output          PIC X(1024) VALUE SPACE.
 
        *>**************************************************
        *> SQL Copybooks
@@ -161,6 +143,8 @@
 
             CALL 'write-post-string' USING wn-rtn-code
             
+            *>MOVE ZERO TO wn-rtn-code
+            
             IF wn-rtn-code = ZERO
                 SET is-valid-init TO true
                 MOVE ZERO TO wn-rtn-code
@@ -168,26 +152,21 @@
                 MOVE 'usertype_id' TO wc-post-name
                 CALL 'get-post-value'
                     USING wn-rtn-code wc-post-name wc-post-value
+            ELSE
+               MOVE 'Fel i wui-print-header'
+                    TO wc-printscr-string
+               CALL 'stop-printscr' USING wc-printscr-string
             END-IF
             
+            *>MOVE "4" TO wc-post-value
             IF wc-post-value = SPACE
-                MOVE 'Saknar ett användattyp id'
-                     TO wc-printscr-string
-                CALL 'stop-printscr' USING wc-printscr-string
+               MOVE 'Saknar ett användattyp id'
+                    TO wc-printscr-string
+               CALL 'stop-printscr' USING wc-printscr-string
             ELSE
-                *>*** Get the post values ***
-                MOVE function numval(wc-post-value)
+                *> *** Get the post values ***            
+                MOVE FUNCTION numval(wc-post-value)
                      TO wn-user-type-number
-                
-                MOVE SPACE TO wc-post-value
-                MOVE 'filename' TO wc-post-name
-                CALL 'get-post-value'
-                    USING wn-rtn-code wc-post-name wc-post-value
- 
-                IF wn-rtn-code = ZERO
-                    MOVE wc-post-value TO wc-filename
-                    SET is-valid-init TO true
-                END-IF
             END-IF
            .       
        *>**************************************************
@@ -248,16 +227,14 @@
            SET idx-program TO 1
 
            PERFORM UNTIL SQLSTATE NOT = ZERO
-
-               MOVE t-program-name TO tbl-program-name(idx-program)
-               SET idx-program UP BY 1
-
-               EXEC SQL
-                   FETCH CUR4 INTO
-                       :t-program-id,
-                       :t-program-name
-               END-EXEC
-
+                MOVE t-program-name TO tbl-program-name(idx-program)
+                SET idx-program UP BY 1
+ 
+                EXEC SQL
+                    FETCH cur4 INTO
+                        :t-program-id,
+                        :t-program-name
+                END-EXEC
            END-PERFORM
 
            EXEC SQL
@@ -286,7 +263,6 @@
             SET idx-user-type TO 1
  
             PERFORM UNTIL SQLSTATE NOT = ZERO
- 
                 MOVE t-usertype-name
                     TO tbl-user-type-name(idx-user-type)
                 
@@ -306,7 +282,6 @@
            .
        *>**************************************************
        B0400-List-Users.
-            *>OPEN OUTPUT html-file
             
             EXEC SQL
                 DECLARE curpupil CURSOR FOR
@@ -337,7 +312,7 @@
                     ORDER BY user_lastname, user_firstname
             END-EXEC
  
-            *> Fetch the first record
+            *> Fetch the first record           
             EVALUATE wn-user-type-number
                 WHEN 1
                     EXEC SQL
@@ -354,13 +329,13 @@
             *> Fetch the remaining records
             PERFORM UNTIL sqlstate NOT = ZERO
                 
-                PERFORM B0405-Get-Usertype-Name
-                PERFORM B0406-Get-Program-Name
+                *>PERFORM B0405-Get-Usertype-Name
+                *>PERFORM B0406-Get-Program-Name
                 
                 DISPLAY
                     html-table-row-start
                     html-table-cell-start
-                      tbl-user-type-name(wn-user-type-number)
+                      tbl-user-type-name(t-user-usertype-id)
                     html-table-cell-end
                     html-table-cell-start
                       t-user-firstname
@@ -391,13 +366,8 @@
                         PERFORM B0430-Get-All-User-Data
                 END-EVALUATE
 
-                *>MOVE wr-html-output-rec TO html-output-rec
-                *>WRITE html-output-rec
             END-PERFORM
 
-            *> All users have been written TO file. Close it.
-            *>CLOSE html-file
-            
             *> Close cursors
             EVALUATE wn-user-type-number
                WHEN 1
@@ -484,16 +454,6 @@
        *> Exit and cleanup procedures
        *>**************************************************
        C0100-Exit.
-
-            *>CALL 'wui-end-html' USING wn-rtn-code
-            *> rename output file to the name given by php-script
-            *> using a build in subroutine. Then remove output file.
-            *>STRING wc-dest-dir-path DELIMITED BY " "
-            *>       wc-filename DELIMITED BY " "
-            *>       INTO wc-dest-file-path
-            *>CALL "C$COPY"
-            *>    USING wc-src-file-path, wc-dest-file-path, 0
-            *>CALL "C$DELETE" USING wc-src-file-path, 0
             
             goback
             .
