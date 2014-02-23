@@ -52,9 +52,8 @@ Git Group 1 as Full Name.
 
     # adduser --shell /usr/bin/git-shell git1
 
-To use this shared git depot Alice and Bob must know this password in order
-to collaborate as a team in this project. If very fine-grained access control
-is required then look at the gitolite project [5].
+If very fine-grained access control is required then look at the
+gitolite project [5].
 
 Confirm that git1 user shell is set to git-shell with:
 

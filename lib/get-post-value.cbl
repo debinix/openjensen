@@ -3,7 +3,7 @@
        *>*************************************************
        *>
        *> get-post-value: Reads CGI post data file,
-       *>     returns the asked value of named post item.
+       *>     returns the asked value of named post value.
        *>
        *> Coder: BK
        *>
@@ -15,7 +15,7 @@
        file-control. 
        *>  Infile
            SELECT OPTIONAL postfilein
-               ASSIGN TO '/tmp/postfile.dat'
+               ASSIGN TO '../data/postfile.dat'
                ORGANIZATION IS LINE SEQUENTIAL.             
         
        DATA DIVISION.

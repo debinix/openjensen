@@ -1,5 +1,5 @@
 --
--- Drop all foreign constraints
+-- Drop all foreign constraints (future tables)
 --
 
 ALTER TABLE T_UTBILD DROP CONSTRAINT utbild_ort_id_fk ;
@@ -30,38 +30,59 @@ ALTER TABLE T_BETYG DROP CONSTRAINT betyg_elev_id_fk ;
 
 ALTER TABLE T_NYHETER DROP CONSTRAINT fk_news_author ;
 
+--
+-- Drop all foreign constraints (current tables)
+--
+
+ALTER TABLE tbl_user DROP CONSTRAINT fk_user_usertype_id ;
+
+
+ALTER TABLE tbl_user DROP CONSTRAINT fk_user_user_program ;
+
+
+ALTER TABLE tbl_grade DROP CONSTRAINT fk_grade_user_id ;
+
+
+ALTER TABLE tbl_grade DROP CONSTRAINT fk_grade_course_id ;
+
+
+ALTER TABLE tbl_course DROP CONSTRAINT fk_course_program_id ;
+
+
+ALTER TABLE tbl_news DROP CONSTRAINT fk_news_news_author ;
+
 
 --
--- Emilio tbl_user
+-- tbl_user
 --
 
 INSERT INTO tbl_user (user_id, user_firstname, user_lastname, user_email, user_phonenumber, user_username, user_password, user_lastlogin, usertype_id, user_program)
 VALUES
-(1, 'Samuel', 'Johansson', 'test@test.se', '070123123', 'samuel', 'samuel', '2013-12-18 21:49:51', 2, 1),
-(2, 'Robert', 'Karlsson', 'test@test.se', '070321321', 'robert', 'robert', '2013-12-18 21:49:51', 2, 1),
-(3, 'Pelle', 'Pellsson', 'test@test.se', '070111111', 'ppp', 'ppp', '2013-12-19 23:22:55', 1, 2),
-(4, 'Bosse', 'Boss', 'test@test.se', '070111111', 'bbb', 'bbb', '1970-01-01 00:00:00', 1, 1),
-(5, 'Mia', 'Yoo', 'test@test.se', '070111111', 'mmm', 'mmm', '1970-01-01 00:00:00', 1, 1),
-(6, 'Frida', 'Falkman', 'test@test.se', '070111111', 'fff', 'fff', '1970-01-01 00:00:00', 1, 2),
-(7, 'Woody', 'Wood', 'test@test.se', '070111111', 'www', 'www', '1970-01-01 00:00:00', 1, 2),
-(8, 'Elin', 'Testsson', 'test@test.se', '070888888', 'eee', 'eee', '1970-01-01 00:00:00', 3, 2),
-(9, 'Jens', 'Jensen', 'test@test.se', '070999999', 'jjj', 'jjj', '1970-01-01 00:00:00', 4, 2)
+(1, 'Samuel', 'Johansson', 'test@test.se', '070123123', 'samuel', 'samuel', '2013-12-18', 2, 1),
+(2, 'Robert', 'Karlsson', 'test@test.se', '070321321', 'robert', 'robert', '2013-12-18', 2, 1),
+(3, 'Pelle', 'Pellsson', 'test@test.se', '070111111', 'ppp', 'ppp', '2013-12-19', 1, 2),
+(4, 'Bosse', 'Boss', 'test@test.se', '070111111', 'bbb', 'bbb', '1970-01-01', 1, 1),
+(5, 'Mia', 'Yoo', 'test@test.se', '070111111', 'mmm', 'mmm', '1970-01-01', 1, 1),
+(6, 'Frida', 'Falkman', 'test@test.se', '070111111', 'fff', 'fff', '1970-01-01', 1, 2),
+(7, 'Woody', 'Wood', 'test@test.se', '070111111', 'www', 'www', '1970-01-01', 1, 2),
+(8, 'Elin', 'Testsson', 'test@test.se', '070888888', 'eee', 'eee', '1970-01-01', 3, 2),
+(9, 'Jens', 'Jensen', 'test@test.se', '070999999', 'jjj', 'jjj', '1970-01-01', 4, 2)
 ;
 
 
 --
--- Emilio tbl_program
+-- tbl_program
 --
 
 INSERT INTO tbl_program (program_id, program_name, program_startdate, program_enddate)
 VALUES
-(1, 'Testprogram 1', '2013-11-26 00:00:00', '2014-08-27 00:00:00'),
-(2, 'Testprogram 2', '2014-01-01 00:00:00', '2014-12-18 00:00:00')
+(1, 'Testprogram 1', '2013-11-26', '2014-08-27'),
+(2, 'Testprogram 2', '2014-01-01', '2014-12-18')
 ;
 
 
 --
--- Emilio tbl_usertype
+-- tbl_usertype
 --
 
 INSERT INTO tbl_usertype (usertype_id, usertype_name, usertype_rights)
@@ -74,31 +95,42 @@ VALUES
 
 
 --
--- Emilio tbl_grade
+-- tbl_grade
 --
 
 INSERT INTO tbl_grade (grade_id, grade_grade, grade_comment, user_id, course_id)
 VALUES
-(1, 'G', 'Blablabla men klarade G', 6, 1),
-(2, 'VG', 'Blablabla jobbat bra ', 7, 3),
-(3, 'VG', 'Ett test betyg', 3, 3),
-(8, 'IG', 'Inte bra bosse.', 4, 3)
+(1, 'G', 'Frida lite mer flit snart blir det VG', 6, 3),
+(2, 'VG', 'Woody du har jobbat bra', 7, 3),
+(3, 'VG', 'Pelle ett test betyg', 3, 3),
+(8, 'IG', 'Inte bra Bosse', 4, 1)
 ;
 
 
 --
--- Emilio tbl_course
+-- tbl_course
 --
 
 
 INSERT INTO tbl_course (course_id, course_name, course_startdate, course_enddate, program_id)
 VALUES
-(1, 'Testkurs 1', '2013-11-26 00:00:00', '2014-03-26 00:00:00', 1),
-(2, 'Testkurs 2', '2014-03-30 00:00:00', '2014-06-26 00:00:00', 1),
-(3, 'Testkurs 3', '2014-01-01 00:00:00', '2014-06-30 00:00:00', 2),
-(4, 'Testkurs 4', '2014-07-01 00:00:00', '2014-12-31 00:00:00', 2),
-(5, 'Fristående kurs 1', '2013-11-01 00:00:00', '2013-11-30 00:00:00', 0)
+(1, 'Testkurs 1', '2013-11-26', '2014-03-26', 1),
+(2, 'Testkurs 2', '2014-03-30', '2014-06-26', 1),
+(3, 'Testkurs 3', '2014-01-01', '2014-06-30', 2),
+(4, 'Testkurs 4', '2014-07-01', '2014-12-31', 2)
 ;
+
+
+--
+-- tbl_news
+--
+
+INSERT INTO tbl_news
+(news_id, news_title, news_content, news_date, news_author)
+VALUES
+(3, 'Nyhet1', 'Bacon ipsum dolor sit amet kielbasa hamburger cow pork. Cow ham jowl kevin swine. Doner filet mignon tail pork belly sausage beef ribs spare ribs shankle brisket sirloin pastrami kevin cow kielbasa jerky. Beef ribs cow spare ribs, t-bone andouille ground round prosciutto swine sausage. Swine meatball pastrami, beef tenderloin ham hock shank shankle rump strip steak beef ribs turducken fatback hamburger ribeye. Ham bresaola shoulder pork chop, sausage meatball pork rump spare ribs cow bacon filet mignon. Prosciutto pastrami pork loin, kevin kielbasa swine rump spare ribs beef ribs strip steak pork chop pork frankfurter sausage ground round.', '2013-07-27', 2)
+;
+
 
 --
 -- T_KONTAK (1)
@@ -281,7 +313,7 @@ VALUES
 
 
 --
--- T_BETYG
+-- T_NYHETER
 --
 
 
@@ -292,8 +324,7 @@ VALUES
 ;
 
 
-
-
+    
 --
 -- Add all foreign key (FK) constraints
 --
@@ -333,7 +364,44 @@ ALTER TABLE T_BETYG ADD CONSTRAINT betyg_kurs_id_fk
 
 ALTER TABLE T_BETYG ADD CONSTRAINT betyg_elev_id_fk
 	FOREIGN KEY(Elev_id) REFERENCES T_ELEV(Elev_id);
-    
+        
 ALTER TABLE T_NYHETER ADD CONSTRAINT fk_news_author
     FOREIGN KEY (news_author) REFERENCES T_KONTAK(kontakt_id)
     ON UPDATE NO ACTION ON DELETE NO ACTION;
+    
+
+-------------------------------------------------------------------
+--
+-- Current applied foreign constraints
+--
+-------------------------------------------------------------------
+
+ALTER TABLE tbl_user ADD CONSTRAINT fk_user_usertype_id
+    FOREIGN KEY (usertype_id) REFERENCES tbl_usertype(usertype_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_user ADD CONSTRAINT fk_user_user_program
+    FOREIGN KEY (user_program) REFERENCES tbl_program(program_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_grade ADD CONSTRAINT fk_grade_user_id
+    FOREIGN KEY (user_id) REFERENCES tbl_user(user_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_grade ADD CONSTRAINT fk_grade_course_id
+    FOREIGN KEY (course_id) REFERENCES tbl_course(course_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_course ADD CONSTRAINT fk_course_program_id
+    FOREIGN KEY (program_id) REFERENCES tbl_program(program_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_news ADD CONSTRAINT fk_news_news_author
+    FOREIGN KEY (news_author) REFERENCES tbl_user(user_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;

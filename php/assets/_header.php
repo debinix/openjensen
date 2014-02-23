@@ -7,17 +7,38 @@ if($Check->loggedIn() == false)
 }
 
 ?>
+
+<?php
+$path = pathinfo($_SERVER['PHP_SELF']);
+$fileName = $path['filename'];
+
+
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SCRUM</title>
+    <title>JENSEN Education</title>
     <link href="assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/css/main.css" rel="stylesheet">
   </head>
   <body>
+<script type="text/javascript">
+function checkheight(){
+ if ($(document).height() > $(window).height()) {
+ //that is if there is vertical scrollbar
+ document.getElementById('container').style.paddingLeft='8px'; 
+ //8px because the scrollbars are (?always?) 16px
+ }else{
+ document.getElementById('container').style.paddingLeft='0px';
+ }
+}
+</script>
     <div class="container">
       <div class="navbar navbar-default" role="navigation">
         <div class="navbar-header">
@@ -31,11 +52,11 @@ if($Check->loggedIn() == false)
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li><a href="index.php"><b>Nyheter</b></a></li>
-            <li><a href="course.php"><b>Betyg</b></a></li>
-            <?php if($_SESSION['usertype_id'] >= 3) { ?><li><a href="program.php">Program</a></li><?php } ?>
-            <?php if($_SESSION['usertype_id'] >= 2) { ?><li><a href="users.php">Användare</a></li><?php } ?>
-            <li><a href="contact.php"><b>Kontakt</b></a></li>
+            <li><a href="index.php"><?php if($fileName == 'index') {echo '<b>Start</b>';}else{ echo 'Start';} ?> </a></li>
+            <li><a href="course.php"><?php if($fileName == 'course') {echo '<b>Betyg</b>';}else{ echo 'Betyg';} ?></a></li>
+            <?php if($_SESSION['usertype_id'] >= 3) { ?><li><a href="program.php"><?php if($fileName == 'program') {echo '<b>Program</b>';}else{ echo 'Program';} ?></a></li><?php } ?>
+            <?php if($_SESSION['usertype_id'] >= 2) { ?><li><a href="users.php"><?php if($fileName == 'users') {echo '<b>Användare</b>';}else{ echo 'Användare';} ?></a></li><?php } ?>
+            <li><a href="contact.php"><?php if($fileName == 'contact') {echo '<b>Kontakt</b>';}else{ echo 'Kontakt';} ?></a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">

@@ -6,23 +6,23 @@
 --
 -- Before creating all tables, run drop script (to remove old tables)
 
--- Creation order is defined by FK constraints (but we load FK's
--- at the end, and in this case the creation order is not important)
+-- Creation order is defined by FK constraints (but by loading FK's
+-- at the end, the creation order is not important here)
 
 
 --
--- (A) Emilio tbl_user
+-- (A) tbl_user
 --
 
 CREATE TABLE tbl_user (
     user_id int NOT NULL,
-    user_firstname varchar(255) NOT NULL,
-    user_lastname varchar(255) NOT NULL,
-    user_email varchar(255) NOT NULL,
-    user_phonenumber varchar(255) NOT NULL,
-    user_username varchar(255) NOT NULL,
-    user_password varchar(255) NOT NULL,
-    user_lastlogin timestamp NOT NULL,
+    user_firstname char(40) NOT NULL,
+    user_lastname char(40) NOT NULL,
+    user_email char(40) NOT NULL,
+    user_phonenumber char(40) NOT NULL,
+    user_username char(40) NOT NULL,
+    user_password char(40) NOT NULL,
+    user_lastlogin DATE NOT NULL,
     usertype_id int NOT NULL,
     user_program int NOT NULL,
     CONSTRAINT e_tbl_user_pk PRIMARY KEY (user_id)
@@ -31,26 +31,26 @@ CREATE TABLE tbl_user (
 
 
 --
--- (B) Emilio tbl_program
+-- (B) tbl_program
 --
 
 CREATE TABLE tbl_program (
   program_id int NOT NULL,
-  program_name varchar(255) NOT NULL,
-  program_startdate timestamp NOT NULL,
-  program_enddate timestamp NOT NULL,
+  program_name char(40) NOT NULL,
+  program_startdate DATE NOT NULL,
+  program_enddate DATE NOT NULL,
   CONSTRAINT e_tbl_program_pk PRIMARY KEY (program_id)
 )
 ;
 
 
 --
--- (C) Emilio tbl_usertype
+-- (C) tbl_usertype
 --
 
 CREATE TABLE tbl_usertype (
   usertype_id int NOT NULL,
-  usertype_name varchar(255) NOT NULL,
+  usertype_name char(40) NOT NULL,
   usertype_rights int  NOT NULL,
   CONSTRAINT e_tbl_usertype_pk PRIMARY KEY (usertype_id)
 )
@@ -58,13 +58,13 @@ CREATE TABLE tbl_usertype (
 
 
 --
--- (D) Emilio tbl_grade
+-- (D) tbl_grade
 --
 
 CREATE TABLE tbl_grade (
   grade_id int NOT NULL,
-  grade_grade varchar(100) NOT NULL,
-  grade_comment varchar(255) NOT NULL,
+  grade_grade char(40) NOT NULL,
+  grade_comment char(40) NOT NULL,
   user_id int NOT NULL,
   course_id int NOT NULL,
   CONSTRAINT e_tbl_grade_pk PRIMARY KEY (grade_id)
@@ -73,20 +73,42 @@ CREATE TABLE tbl_grade (
 
 
 --
--- (E) Emilio tbl_course
+-- (E) tbl_course
 --
 
 
 CREATE TABLE tbl_course (
   course_id int NOT NULL,
-  course_name varchar(255) NOT NULL,
-  course_startdate timestamp NOT NULL,
-  course_enddate timestamp NOT NULL,
+  course_name char(40) NOT NULL,
+  course_startdate DATE NOT NULL,
+  course_enddate DATE NOT NULL,
   program_id int NOT NULL,
   CONSTRAINT e_tbl_course_pk PRIMARY KEY (course_id)
 )
 ;
 
+--
+-- (F) tbl_news
+--
+
+CREATE TABLE tbl_news (
+   news_id int NOT NULL,
+   news_title char(255) NOT NULL,
+   news_content char(1024) NOT NULL,
+   news_date  date NOT NULL,
+   news_author int NOT NULL,
+  /* Primary key */  
+  CONSTRAINT e_tbl_news_pk PRIMARY KEY (news_id)
+)
+;
+
+
+
+-------------------------------------------------------------------
+--
+-- Product backlog tables (1) - (12) - also used for tests 
+--
+-------------------------------------------------------------------
 
 --
 -- T_KONTAK (1)
@@ -332,7 +354,48 @@ ALTER TABLE T_BETYG ADD CONSTRAINT betyg_elev_id_fk
 	FOREIGN KEY(Elev_id) REFERENCES T_ELEV(Elev_id)
 ;
 
+
 ALTER TABLE T_NYHETER ADD CONSTRAINT fk_news_author
     FOREIGN KEY (news_author) REFERENCES T_KONTAK(kontakt_id)
     ON UPDATE NO ACTION ON DELETE NO ACTION
 ;
+
+-------------------------------------------------------------------
+--
+-- Current enforced foreign constraints
+--
+-------------------------------------------------------------------
+
+ALTER TABLE tbl_user ADD CONSTRAINT fk_user_usertype_id
+    FOREIGN KEY (usertype_id) REFERENCES tbl_usertype(usertype_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_user ADD CONSTRAINT fk_user_user_program
+    FOREIGN KEY (user_program) REFERENCES tbl_program(program_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_grade ADD CONSTRAINT fk_grade_user_id
+    FOREIGN KEY (user_id) REFERENCES tbl_user(user_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_grade ADD CONSTRAINT fk_grade_course_id
+    FOREIGN KEY (course_id) REFERENCES tbl_course(course_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_course ADD CONSTRAINT fk_course_program_id
+    FOREIGN KEY (program_id) REFERENCES tbl_program(program_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE tbl_news ADD CONSTRAINT fk_news_news_author
+    FOREIGN KEY (news_author) REFERENCES tbl_user(user_id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+
+
+
