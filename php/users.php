@@ -46,6 +46,7 @@ $Success->show();
     //close connection
     curl_close($ch);
     
+    /*
     $filename = "../data/".$filename;
     
     // time out after 5s
@@ -63,6 +64,7 @@ $Success->show();
     }
 
     include($filename)
+    */
     ?>
   </tbody>
 </table>
