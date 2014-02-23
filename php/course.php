@@ -21,6 +21,7 @@ if($_SESSION['usertype_id'] == 1)
         <td><strong>Kommentar</strong></td>
       </tr>
     </thead>
+    
     <tbody>
       
       <?php
@@ -237,45 +238,46 @@ elseif ($_SESSION['usertype_id'] >= 2)
         }
     
     }
-        // initilize to remember previous group of the course names
-        $lastcoursename = 'Ingen kurs';
-        
-        // iterate through all course user data
-        for ($i = 0; $i < count($user_row); $i++)
-        { 
-          // only echo if course name different from previous iteration
-          if ( $lastcoursename <>  $user_row[$i]['course_name'] ) { ?>
-             
-             <h3><?php echo $user_row[$i]['course_name']; ?></h3>
-                <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <td><strong>Förnamn</strong></td>
-                    <td><strong>Efternamn</strong></td>
-                    <td><strong>Betyg</strong></td>
-                    <td></td>
-                  </tr>
-                </thead>
-
-          <?php  
-          }
-          ?>
-          
-          <tbody>        
-            <tr>   
-              <td><?php echo $user_row[$i]['user_firstname']; ?></td>
-              <td><?php echo $user_row[$i]['user_lastname']; ?></td>
-              <td><?php if($user_row[$i]['grade_grade'] == "-") { echo "Ej satt"; } else { echo $user_row[$i]['grade_grade']; } ?></td>
-              <td><?php if($user_row[$i]['grade_grade'] == "-") { ?><a href="course.add.php?user_id=<?php echo $user_row[$i]['user_id']; ?>&course_id=<?php echo $user_row[$i]['course_id']; ?>&user_firstname=<?php echo $user_row[$i]['user_firstname']; ?>&user_lastname=<?php echo $user_row[$i]['user_lastname']; ?>"><span class="label label-primary">Sätt betyg</span></a><?php } else { ?><a href="course.edit.php?id=<?php echo $user_row[$i]['grade_id']; ?>&grade_grade=<?php echo $user_row[$i]['grade_grade']; ?>&grade_comment=<?php echo $user_row[$i]['grade_comment']; ?>"><span class="label label-primary">Ändra betyg</span></a><?php } ?></td>
-            </tr>
-          </tbody>           
-        
-          <?php
-          // assign current course name for next iteration
-          $lastcoursename =  $user_row[$i]['course_name'];
+    
+    // initilize to anything except a real course name
+    $lastcoursename = '-';
+    
+    // iterate through all course user data
+    for ($i = 0; $i < count($user_row); $i++)
+    { ?>
+    
+    <table class="table table-hover">
+      
+      <thead>
+      <?php
+        // only echo if course name different from previous iteration
+        if ( $lastcoursename <>  $user_row[$i]['course_name'] ) { ?>
+          <h3><?php echo $user_row[$i]['course_name']; ?></h3>
+        <?php  
         }
-        
         ?>
+        <tr>
+          <td><strong>Förnamn</strong></td>
+          <td><strong>Efternamn</strong></td>
+          <td><strong>Betyg</strong></td>
+          <td></td>
+        </tr>
+      </thead>
+
+      <tbody>        
+        <tr>   
+          <td><?php echo $user_row[$i]['user_firstname']; ?></td>
+          <td><?php echo $user_row[$i]['user_lastname']; ?></td>
+          <td><?php if($user_row[$i]['grade_grade'] == "-") { echo "Ej satt"; } else { echo $user_row[$i]['grade_grade']; } ?></td>
+          <td><?php if($user_row[$i]['grade_grade'] == "-") { ?><a href="course.add.php?user_id=<?php echo $user_row[$i]['user_id']; ?>&course_id=<?php echo $user_row[$i]['course_id']; ?>&user_firstname=<?php echo $user_row[$i]['user_firstname']; ?>&user_lastname=<?php echo $user_row[$i]['user_lastname']; ?>"><span class="label label-primary">Sätt betyg</span></a><?php } else { ?><a href="course.edit.php?id=<?php echo $user_row[$i]['grade_id']; ?>&grade_grade=<?php echo $user_row[$i]['grade_grade']; ?>&grade_comment=<?php echo $user_row[$i]['grade_comment']; ?>"><span class="label label-primary">Ändra betyg</span></a><?php } ?></td>
+        </tr>
+      </tbody>           
+        
+    <?php
+    // assign current course name for next iteration
+    $lastcoursename =  $user_row[$i]['course_name'];
+    }
+    ?>
     </table>
   <?php
   echo "Väntade på Cobol databas backend: $mycbltime sekunder. Tid för PHP att processa infil: $mytime sekunder<br>";
