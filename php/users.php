@@ -46,7 +46,7 @@ $Success->show();
     //close connection
     curl_close($ch);
     
-    $filename = "../data/".$filename;
+    //$filename = "../data/".$filename;
     
     // time out after 5s
     for ($f=0; $f <= 50; $f++) {
