@@ -253,15 +253,15 @@ elseif ($_SESSION['usertype_id'] >= 2)
         // only echo if course name different from previous iteration
         if ( $lastcoursename <>  $user_row[$i]['course_name'] ) { ?>
           <h3><?php echo $user_row[$i]['course_name']; ?></h3>
+            <tr>
+            <td><strong>Förnamn</strong></td>
+            <td><strong>Efternamn</strong></td>
+            <td><strong>Betyg</strong></td>
+            <td></td>
+          </tr>
         <?php  
         }
         ?>
-        <tr>
-          <td><strong>Förnamn</strong></td>
-          <td><strong>Efternamn</strong></td>
-          <td><strong>Betyg</strong></td>
-          <td></td>
-        </tr>
       </thead>
 
       <tbody>        
