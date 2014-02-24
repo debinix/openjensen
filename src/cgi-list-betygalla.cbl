@@ -105,7 +105,7 @@
        *>#######################################################
            EXEC SQL BEGIN DECLARE SECTION END-EXEC.
        *>
-       01  tbl_user-rec-vars.       
+       01  tbl-user-record.       
            05  tbl_user-user_id          PIC  9(4).
            05  tbl_user-user_firstname   PIC  X(40).
            05  tbl_user-user_lastname    PIC  X(40).
@@ -113,7 +113,7 @@
            05  tbl_user-user_program     PIC  9(4).           
 
        *> table data
-       01  wr-rec-vars.
+       01  wr-user-record.
            05  wn-user_id               PIC  9(4)  VALUE ZERO.          
            05  wc-user_firstname        PIC  X(40) VALUE SPACE.
            05  wc-user_lastname         PIC  X(40) VALUE SPACE.
@@ -121,28 +121,27 @@
            05  wn-user-program          PIC  9(4)  VALUE ZERO.         
        
        *>*******************************************************
-       01  tbl_course-rec-vars.       
+       01  tbl-course-record.       
            05  tbl_course-course_id        PIC  9(4).
            05  tbl_course-course_name      PIC  X(40).
            05  tbl_course-program_id       PIC  9(4).           
 
        *> table data
-       01  wr-rec-vars.
+       01  wr-course-record.
            05  wn-course_id          PIC  9(4)  VALUE ZERO.          
            05  wc-course_name        PIC  X(40) VALUE SPACE.
            05  wn-course-program_id  PIC  9(4)  VALUE ZERO.  
        
        *>*******************************************************
-       01  tbl_grade-rec-vars.
+       01  tbl-grade-record.
            05  tbl_grade-grade_id         PIC  9(4).          
            05  tbl_grade-grade_grade      PIC  X(40).
            05  tbl_grade-grade_comment    PIC  X(40).           
            05  tbl_grade-user_id          PIC  9(4).
-           05  tbl_grade-course_id        PIC  9(4).           
-       *>    
+           05  tbl_grade-course_id        PIC  9(4).            
 
        *> table data
-       01  wr-rec-vars.
+       01  wr-grade-record.
            05  wn-grade-grade_id     PIC  9(4)  VALUE ZERO.       
            05  wc-grade_grade        PIC  X(40) VALUE SPACE.
            05  wc-grade_comment      PIC  X(40) VALUE SPACE.           
@@ -313,8 +312,8 @@
               
               PERFORM B0210-write-grade-to-file
 
-              INITIALIZE tbl_grade-rec-vars
-              INITIALIZE tbl_user-rec-vars
+              INITIALIZE wr-grade-record
+              INITIALIZE wr-user-record
 
               *> fetch next row  
                EXEC SQL 
@@ -412,8 +411,8 @@
               
               PERFORM B0260-write-course-row
 
-              INITIALIZE tbl_user-rec-vars
-              INITIALIZE tbl_course-rec-vars
+              INITIALIZE wr-user-record
+              INITIALIZE wr-course-record
               
            
               *> fetch next row  
