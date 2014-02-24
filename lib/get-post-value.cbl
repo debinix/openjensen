@@ -1,14 +1,19 @@
-       IDENTIFICATION DIVISION.
-       program-id. get-post-value IS INITIAL.
        *>*************************************************
        *>
-       *> get-post-value: Reads CGI post data file,
-       *>     returns the asked value of named post value.
+       *> 'get-post-value': Reads received CGI post data,
+       *>    and returns one asked value of a named post.
+       *>  (reads a file which is created by 'write-post-string')
+       *>
+       *> This modules also handles Swedish non-ACII characters.
+       *> These are encoded from the web client like %C3%A5. They
+       *> are converted to corresponding the utf-8 character, which
+       *> also the database supports (international environment).
        *>
        *> Coder: BK
        *>
        *>*************************************************
-        
+       IDENTIFICATION DIVISION.
+       program-id. get-post-value IS INITIAL.
        ENVIRONMENT DIVISION.
        input-output section.
         

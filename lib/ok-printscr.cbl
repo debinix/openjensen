@@ -1,3 +1,9 @@
+       *>
+       *> ok-printscr: optional display ok messages
+       *> if environment is set
+       *> 
+       *> Coder: BK 
+       *>
        IDENTIFICATION DIVISION.
        program-id. ok-printscr IS INITIAL.
         
@@ -19,10 +25,7 @@
            IF wc-debug = '1'
                DISPLAY '<br>OK: ' lc-string
            END-IF
-           
-           *> TODO
-           *> Only write to log file if OJ_LOG is set 1
-            
+                       
            EXIT PROGRAM
            .
             
