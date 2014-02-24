@@ -408,11 +408,12 @@
        *> Checks IF admin and builds output line
        B0500-Check-if-Admin.
             IF wn-user-type-number >= 3 THEN
+            MOVE t-user-id TO wc-user-id-edit
+            
                 DISPLAY
                    '<td><a href="users.edit.php?user_id='
-                   '<?php echo $ row['
-                   t-user-id
-                   ']; ?>"><span class="label label-info">'
+                   '<?php echo $ row['wc-user-id-edit'];'
+                   '?>"><span class="label label-info">'
                    'Redigera'
                    '</span></a></td>'
                    html-table-row-end
