@@ -1,3 +1,9 @@
+       *>
+       *> error-printscr: optional display error messages
+       *> and save to error log file if environment is set
+       *> 
+       *> Coder: BK 
+       *>
        IDENTIFICATION DIVISION.
        program-id. error-printscr IS INITIAL.
         
