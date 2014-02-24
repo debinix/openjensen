@@ -4,9 +4,9 @@
 $Error->show();
 $Success->show();
 
-//$news_result = mysql_query("SELECT * FROM tbl_news ORDER BY news_id DESC");
-//while($news_row = mysql_fetch_array($news_result))
-$news_result = pg_query("SELECT * FROM T_NYHETER ORDER BY News_id DESC");
+// Not yet converted to call Cobol, back-end
+
+$news_result = pg_query("SELECT * FROM tbl_news ORDER BY news_id DESC");
 while($news_row = pg_fetch_array($news_result))
 {
 	?>
