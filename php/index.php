@@ -12,7 +12,7 @@ while($news_row = pg_fetch_array($news_result))
 	?>
 	<h1><?php echo $news_row['news_title']; ?></h1>
 	<p><?php echo $news_row['news_content']; ?></p>
-	<span class="label label-info"><?php echo $news_row['news_date']; ?></span> <?php if($_SESSION['usertype_id'] >= 3) { ?><a href="index.delete.php?news_id=<?php echo $news_row['news_id']; ?>"><span class="label label-danger">Ta bort</span></a><?php } ?>
+	<span class="label label-info"><?php echo $news_row['news_date']; ?></span> <?php if($_SESSION['usertype_id'] >= 3) { ?><a href="index.delete.php?news_id=<?php echo $news_row['news_id']; ?>"><span class="label label-danger">Teamet</span></a><?php } ?>
 	<hr>
 	<?php
 }
