@@ -274,6 +274,9 @@ elseif ($_SESSION['usertype_id'] >= 2)
       </tbody>           
         
     <?php
+    // dump array - debug
+    var_dump($user_row[$i]);
+    
     // assign current course name for next iteration
     $lastcoursename =  $user_row[$i]['course_name'];
     }
