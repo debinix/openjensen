@@ -21,3 +21,8 @@ reloadpgdata/
 *.cob
 *.tmp
 
+# local conf. files
+/home/peterb/projects/openjensen/makefile
+/home/peterb/projects/openjensen/html/makefile
+/home/peterb/projects/openjensen/copy/sqlca.cbl
+

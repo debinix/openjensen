@@ -38,7 +38,7 @@
        01  wc-username              PIC  X(30).
        EXEC SQL END DECLARE SECTION END-EXEC.
 
-       exec sql begin declare section end-exec.
+       EXEC SQL BEGIN DECLARE SECTION END-EXEC.
        01  users-rec-vars.
              05  t-user-id             PIC  9(4) VALUE ZERO.
              05  t-user-firstname      PIC  X(40) VALUE SPACE.
@@ -50,18 +50,18 @@
              05  t-user-lastlogin      PIC  X(40) VALUE SPACE.
              05  t-user-usertype-id    PIC  9(9) VALUE ZERO.
              05  t-user-program-id     PIC  9(9) VALUE ZERO.
-       exec sql end declare section end-exec.
+       EXEC SQL END DECLARE SECTION END-EXEC.
 
        01  wr-rec-vars.
-             05  wn-user-id           PIC  9(4) VALUE zero.
-             05  wc-firstname         PIC  x(40) VALUE space.
-             05  wc-lastname          PIC  x(40) VALUE space.
-             05  wc-user-email        PIC  x(40) VALUE space.
-             05  wc-user-phonenumber  PIC  x(40) VALUE space.
-             05  wc-user-username     PIC  x(40) VALUE space.
-             05  wc-user-password     PIC  x(40) VALUE space.
-             05  wn-user-usertype-id  PIC  9(4) VALUE zero.
-             05  wn-user-program-id   PIC  9(4) VALUE zero.
+             05  wn-user-id           PIC  9(4) VALUE ZERO.
+             05  wc-firstname         PIC  x(40) VALUE SPACE.
+             05  wc-lastname          PIC  x(40) VALUE SPACE.
+             05  wc-user-email        PIC  x(40) VALUE SPACE.
+             05  wc-user-phonenumber  PIC  x(40) VALUE SPACE.
+             05  wc-user-username     PIC  x(40) VALUE SPACE.
+             05  wc-user-password     PIC  x(40) VALUE SPACE.
+             05  wn-user-usertype-id  PIC  9(4) VALUE ZERO.
+             05  wn-user-program-id   PIC  9(4) VALUE ZERO.
 
        EXEC SQL INCLUDE SQLCA END-EXEC.
 
@@ -71,168 +71,168 @@
        0000-main.
 
            *> contains development environment settings for test
-           copy setupenv_openjensen.
+           COPY setupenv_openjensen.
 
-           perform A0100-init
+           PERFORM A0100-init
 
-           if is-valid-init
+           IF is-valid-init
 
-                perform B0100-connect
-                if is-db-connected
+                PERFORM B0100-connect
+                IF is-db-connected
 
-                    perform B0200-add-dataitem
-                    perform Z0200-disconnect
+                    PERFORM B0200-add-dataitem
+                    PERFORM Z0200-disconnect
 
-                end-if
+                END-IF
 
-           end-if
+           END-IF
 
-           perform C0100-closedown
+           PERFORM C0100-closedown
 
-           goback
+           GOBACK
         .
        *>**************************************************
        A0100-init.
 
            *> always send out the content-type before any other i/o
-           call 'wui-print-header' using wn-rtn-code
+           CALL 'wui-print-header' USING wn-rtn-code
            *>  start html doc
-           call 'wui-start-html' using wc-pagetitle
+           CALL 'wui-start-html' USING wc-pagetitle
 
            *> decompose and save current post string
-           call 'write-post-string' using wn-rtn-code
+           CALL 'write-post-string' USING wn-rtn-code
 
-           if wn-rtn-code = zero
-               perform A0110-init-add-action
-           end-if
+           IF wn-rtn-code = ZERO
+               PERFORM A0110-init-add-action
+           END-IF
 
         .
        *>**************************************************
        A0110-init-add-action.
 
-           move zero to wn-rtn-code
-           move space to wc-post-value
-           move 'firstname' to wc-post-name
-           call 'get-post-value' using wn-rtn-code
+           MOVE ZERO TO wn-rtn-code
+           MOVE SPACE TO wc-post-value
+           MOVE 'firstname' TO wc-post-name
+           CALL 'get-post-value' USING wn-rtn-code
                                        wc-post-name wc-post-value
 
-           if wn-rtn-code = zero
-               move wc-post-value TO wc-firstname
-               set is-valid-init to true
-           end-if
+           IF wn-rtn-code = ZERO
+               MOVE wc-post-value TO wc-firstname
+               SET is-valid-init TO TRUE
+           END-IF
 
-           move zero to wn-rtn-code
-           move space to wc-post-value
-           move 'lastname' to wc-post-name
-           call 'get-post-value' using wn-rtn-code
+           MOVE ZERO TO wn-rtn-code
+           MOVE SPACE TO wc-post-value
+           MOVE 'lastname' TO wc-post-name
+           CALL 'get-post-value' USING wn-rtn-code
                                        wc-post-name wc-post-value
 
-           if wn-rtn-code = zero
-               move wc-post-value TO wc-lastname
-               set is-valid-init to true
-           end-if
+           IF wn-rtn-code = ZERO
+               MOVE wc-post-value TO wc-lastname
+               SET is-valid-init TO true
+           END-IF
 
-           move zero to wn-rtn-code
-           move space to wc-post-value
-           move 'email' to wc-post-name
-           call 'get-post-value' using wn-rtn-code
+           MOVE ZERO TO wn-rtn-code
+           MOVE SPACE TO wc-post-value
+           MOVE 'email' TO wc-post-name
+           CALL 'get-post-value' USING wn-rtn-code
                                        wc-post-name wc-post-value
 
-           if wn-rtn-code = zero
-               move wc-post-value TO wc-user-email
-               set is-valid-init to true
-           end-if
+           IF wn-rtn-code = ZERO
+               MOVE wc-post-value TO wc-user-email
+               SET is-valid-init TO true
+           END-IF
 
-           move zero to wn-rtn-code
-           move space to wc-post-value
-           move 'phone' to wc-post-name
-           call 'get-post-value' using wn-rtn-code
+           MOVE ZERO TO wn-rtn-code
+           MOVE SPACE TO wc-post-value
+           MOVE 'phone' TO wc-post-name
+           CALL 'get-post-value' USING wn-rtn-code
                                        wc-post-name wc-post-value
 
-           if wn-rtn-code = zero
-               move wc-post-value TO wc-user-phonenumber
-               set is-valid-init to true
-           end-if
+           IF wn-rtn-code = ZERO
+               MOVE wc-post-value TO wc-user-phonenumber
+               SET is-valid-init TO true
+           END-IF
 
-           move zero to wn-rtn-code
-           move space to wc-post-value
-           move 'username' to wc-post-name
-           call 'get-post-value' using wn-rtn-code
+           MOVE ZERO TO wn-rtn-code
+           MOVE SPACE TO wc-post-value
+           MOVE 'username' TO wc-post-name
+           CALL 'get-post-value' USING wn-rtn-code
                                        wc-post-name wc-post-value
 
-           if wn-rtn-code = zero
-               move wc-post-value TO wc-user-username
-               set is-valid-init to true
-           end-if
+           IF wn-rtn-code = ZERO
+               MOVE wc-post-value TO wc-user-username
+               SET is-valid-init TO true
+           END-IF
 
-           move zero to wn-rtn-code
-           move space to wc-post-value
-           move 'password' to wc-post-name
-           call 'get-post-value' using wn-rtn-code
+           MOVE ZERO TO wn-rtn-code
+           MOVE SPACE TO wc-post-value
+           MOVE 'password' TO wc-post-name
+           CALL 'get-post-value' USING wn-rtn-code
                                        wc-post-name wc-post-value
 
-           if wn-rtn-code = zero
-               move wc-post-value TO wc-user-password
-               set is-valid-init to true
-           end-if
+           IF wn-rtn-code = ZERO
+               MOVE wc-post-value TO wc-user-password
+               SET is-valid-init TO true
+           END-IF
 
-           move zero to wn-rtn-code
-           move space to wc-post-value
-           move 'program' to wc-post-name
-           call 'get-post-value' using wn-rtn-code
+           MOVE ZERO TO wn-rtn-code
+           MOVE SPACE TO wc-post-value
+           MOVE 'program' TO wc-post-name
+           CALL 'get-post-value' USING wn-rtn-code
                                        wc-post-name wc-post-value
 
-           if wn-rtn-code = zero
-               move wc-post-value TO wn-user-program-id
-               set is-valid-init to true
-           end-if
+           IF wn-rtn-code = ZERO
+               MOVE wc-post-value TO wn-user-program-id
+               SET is-valid-init TO true
+           END-IF
 
-           move zero to wn-rtn-code
-           move space to wc-post-value
-           move 'usertype' to wc-post-name
-           call 'get-post-value' using wn-rtn-code
+           MOVE ZERO TO wn-rtn-code
+           MOVE SPACE TO wc-post-value
+           MOVE 'usertype' TO wc-post-name
+           CALL 'get-post-value' USING wn-rtn-code
                                        wc-post-name wc-post-value
 
-           if wn-rtn-code = zero
-               move wc-post-value TO wn-user-usertype-id
-               set is-valid-init to true
-           end-if
+           IF wn-rtn-code = ZERO
+               MOVE wc-post-value TO wn-user-usertype-id
+               SET is-valid-init TO true
+           END-IF
        .
        *>**************************************************
        B0100-connect.
 
            *>  connect
-           move  "openjensen"    to   wc-database
-           move  "jensen"        to   wc-username
-           move  SPACE           to   wc-passwd
+           MOVE  "openjensen"    TO   wc-database
+           MOVE  "jensen"        TO   wc-username
+           MOVE  SPACE           TO   wc-passwd
 
            EXEC SQL
                CONNECT :wc-username identified BY :wc-passwd
                                             USING :wc-database
            END-EXEC
 
-           if  sqlstate not = zero
-                perform Z0100-error-routine
-           else
-                set is-db-connected to true
-           end-if
+           IF  SQLSTATE NOT = ZERO
+                PERFORM Z0100-error-routine
+           ELSE
+                SET is-db-connected TO true
+           END-IF
         .
 
        *>**************************************************
        B0200-add-dataitem.
 
-           perform B0210-does-username-exist
+           PERFORM B0210-does-username-exist
 
            IF not name-is-in-table
-               perform B0220-get-new-row-number
+               PERFORM B0220-get-new-row-number
 
                IF is-valid-table-position
-                   perform B0230-add-dataitem-to-table
+                   PERFORM B0230-add-dataitem-to-table
                END-IF
            ELSE
-           move 'det finns redan användare med detta användarnamn'
-                    to wc-printscr-string
-               call 'stop-printscr' using wc-printscr-string
+           MOVE 'det finns redan användare med detta användarnamn'
+                    TO wc-printscr-string
+               CALL 'stop-printscr' USING wc-printscr-string
            END-IF
            .
 
@@ -258,12 +258,12 @@
                         :t-user-username
            END-EXEC
 
-           PERFORM UNTIL sqlcode not = zero
+           PERFORM UNTIL SQLCODE NOT = ZERO
 
                *> set flag if already in the table
                IF FUNCTION UPPER-CASE (wc-user-username) =
                   FUNCTION UPPER-CASE (t-user-username)
-                        set name-is-in-table to true
+                        SET name-is-in-table TO true
                END-IF
 
               *> fetch next row
@@ -277,7 +277,7 @@
 
            *> end of data
            IF  sqlstate not = '02000'
-                perform Z0100-error-routine
+                PERFORM Z0100-error-routine
            END-IF
 
            *> close cursor
@@ -309,12 +309,12 @@
                    INTO :t-user-id
            END-EXEC
 
-           IF  sqlcode not = zero
-                perform Z0100-error-routine
+           IF  SQLCODE NOT = ZERO
+                PERFORM Z0100-error-routine
            ELSE
-               set is-valid-table-position to true
+               SET is-valid-table-position TO TRUE
                *> next number for new row in table
-               compute wn-user-id  = t-user-id  + 1
+               COMPUTE wn-user-id  = t-user-id  + 1
            END-IF
 
            *> close cursor
@@ -333,15 +333,15 @@
                 INTO :t-user-lastlogin
            END-EXEC
 
-           move wn-user-id to t-user-id
-           move wc-firstname to t-user-firstname
-           move wc-lastname to t-user-lastname
-           move wc-user-email to t-user-email
-           move wc-user-phonenumber to t-user-phonenumber
-           move wc-user-username to t-user-username
-           move wc-user-password to t-user-password
-           move wn-user-usertype-id to t-user-usertype-id
-           move wn-user-program-id to t-user-program-id
+           MOVE wn-user-id TO t-user-id
+           MOVE wc-firstname TO t-user-firstname
+           MOVE wc-lastname TO t-user-lastname
+           MOVE wc-user-email TO t-user-email
+           MOVE wc-user-phonenumber TO t-user-phonenumber
+           MOVE wc-user-username TO t-user-username
+           MOVE wc-user-password TO t-user-password
+           MOVE wn-user-usertype-id TO t-user-usertype-id
+           MOVE wn-user-program-id TO t-user-program-id
 
            EXEC SQL
                INSERT INTO tbl_user
@@ -352,12 +352,12 @@
                        :t-user-usertype-id, :t-user-program-id)
            END-EXEC
 
-           IF  sqlcode not = zero
-                perform Z0100-error-routine
+           IF  SQLCODE NOT = ZERO
+                PERFORM Z0100-error-routine
            ELSE
-                perform B0240-commit-work
-                move 'användare adderad' to wc-printscr-string
-                call 'ok-printscr' using wc-printscr-string
+                PERFORM B0240-commit-work
+                MOVE 'användare adderad' TO wc-printscr-string
+                CALL 'ok-printscr' USING wc-printscr-string
            END-IF
 
         .
@@ -374,7 +374,7 @@
        *>**************************************************
        C0100-closedown.
 
-          call 'wui-end-html' using wn-rtn-code
+          CALL 'wui-end-html' USING wn-rtn-code
 
         .
 
@@ -382,7 +382,7 @@
        Z0100-error-routine.
 
            *> requires the ending dot (and no extension)!
-           copy z0100-error-routine.
+           COPY z0100-error-routine.
 
        .
 
