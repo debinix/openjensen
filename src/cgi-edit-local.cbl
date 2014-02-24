@@ -1,8 +1,11 @@
        *>
+       *> INITIAL TEMPLATE FOR SQL UPDATE (here lokal)
+       *>          
+       *>
        *> cgi-edit-local: changes existing data.
        *> Finally saves into table T_JLOKAL
        *> 
-       *> Coder: BK 
+       *> Coder: BK (not part of application)
        *>
        IDENTIFICATION DIVISION.
        program-id. cgi-edit-local.
