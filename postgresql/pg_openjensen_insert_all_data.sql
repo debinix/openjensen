@@ -58,15 +58,15 @@ ALTER TABLE tbl_news DROP CONSTRAINT fk_news_news_author ;
 
 INSERT INTO tbl_user (user_id, user_firstname, user_lastname, user_email, user_phonenumber, user_username, user_password, user_lastlogin, usertype_id, user_program)
 VALUES
-(1, 'Samuel', 'Johansson', 'test@test.se', '070123123', 'samuel', 'samuel', '2013-12-18', 2, 1),
-(2, 'Robert', 'Karlsson', 'test@test.se', '070321321', 'robert', 'robert', '2013-12-18', 2, 1),
-(3, 'Pelle', 'Pellsson', 'test@test.se', '070111111', 'ppp', 'ppp', '2013-12-19', 1, 2),
-(4, 'Bosse', 'Boss', 'test@test.se', '070111111', 'bbb', 'bbb', '1970-01-01', 1, 1),
-(5, 'Mia', 'Yoo', 'test@test.se', '070111111', 'mmm', 'mmm', '1970-01-01', 1, 1),
-(6, 'Frida', 'Falkman', 'test@test.se', '070111111', 'fff', 'fff', '1970-01-01', 1, 2),
-(7, 'Woody', 'Wood', 'test@test.se', '070111111', 'www', 'www', '1970-01-01', 1, 2),
-(8, 'Elin', 'Testsson', 'test@test.se', '070888888', 'eee', 'eee', '1970-01-01', 3, 2),
-(9, 'Jens', 'Jensen', 'test@test.se', '070999999', 'jjj', 'jjj', '1970-01-01', 4, 2)
+(1, 'Samuel', 'Johansson', 'samuel@example.com', '070123123', 'samuel', 'samuel', '2013-12-18', 2, 1),
+(2, 'Robert', 'Karlsson', 'robertk@example.com', '070321321', 'robert', 'robert', '2013-12-18', 2, 1),
+(3, 'Pelle', 'Pellsson', 'pellep@example.com', '070333333', 'ppp', 'ppp', '2013-12-19', 1, 2),
+(4, 'Bosse', 'Boss', 'bosse@example.com', '070444444', 'bbb', 'bbb', '1970-01-01', 1, 1),
+(5, 'Mia', 'Yoo', 'miay@example.com', '070555555', 'mmm', 'mmm', '1970-01-01', 1, 1),
+(6, 'Frida', 'Falkman', 'fridaf@example.com', '070666666', 'fff', 'fff', '1970-01-01', 1, 2),
+(7, 'Woody', 'Wood', 'woodyw@example.com', '070777777', 'www', 'www', '1970-01-01', 1, 2),
+(8, 'Elin', 'Testsson', 'elint@example.com', '070888888', 'eee', 'eee', '1970-01-01', 3, 2),
+(9, 'Jens', 'Jensen', 'jensj@example.com', '070999999', 'jjj', 'jjj', '1970-01-01', 4, 2)
 ;
 
 
@@ -76,8 +76,8 @@ VALUES
 
 INSERT INTO tbl_program (program_id, program_name, program_startdate, program_enddate)
 VALUES
-(1, 'Testprogram 1', '2013-11-26', '2014-08-27'),
-(2, 'Testprogram 2', '2014-01-01', '2014-12-18')
+(1, 'Webbutvecklare', '2013-11-26', '2014-08-27'),
+(2, 'IT-projektledare', '2014-01-01', '2014-12-18')
 ;
 
 
@@ -114,10 +114,10 @@ VALUES
 
 INSERT INTO tbl_course (course_id, course_name, course_startdate, course_enddate, program_id)
 VALUES
-(1, 'Testkurs 1', '2013-11-26', '2014-03-26', 1),
-(2, 'Testkurs 2', '2014-03-30', '2014-06-26', 1),
-(3, 'Testkurs 3', '2014-01-01', '2014-06-30', 2),
-(4, 'Testkurs 4', '2014-07-01', '2014-12-31', 2)
+(1, 'Programmeringskunskaper', '2013-11-26', '2014-03-26', 1),
+(2, 'Webblogik', '2014-03-30', '2014-06-26', 1),
+(3, 'Systemutvecklingsprojekt', '2014-01-01', '2014-06-30', 2),
+(4, 'Integrationsprojekt', '2014-07-01', '2014-12-31', 2)
 ;
 
 
@@ -128,7 +128,7 @@ VALUES
 INSERT INTO tbl_news
 (news_id, news_title, news_content, news_date, news_author)
 VALUES
-(3, 'Nyhet1', 'Bacon ipsum dolor sit amet kielbasa hamburger cow pork. Cow ham jowl kevin swine. Doner filet mignon tail pork belly sausage beef ribs spare ribs shankle brisket sirloin pastrami kevin cow kielbasa jerky. Beef ribs cow spare ribs, t-bone andouille ground round prosciutto swine sausage. Swine meatball pastrami, beef tenderloin ham hock shank shankle rump strip steak beef ribs turducken fatback hamburger ribeye. Ham bresaola shoulder pork chop, sausage meatball pork rump spare ribs cow bacon filet mignon. Prosciutto pastrami pork loin, kevin kielbasa swine rump spare ribs beef ribs strip steak pork chop pork frankfurter sausage ground round.', '2013-07-27', 2)
+(3, 'Nyhet1', 'Bacon ipsum dolor sit amet kielbasa hamburger cow pork. Cow ham jowl kevin swine. Doner filet mignon tail pork belly sausage beef ribs spare ribs shankle brisket sirloin pastrami kevin cow kielbasa jerky. Beef ribs cow spare ribs, t-bone andouille ground round prosciutto swine sausage. Swine meatball pastrami, beef tenderloin ham hock shank shankle rump strip steak beef ribs turducken fatback hamburger ribeye. Ham bresaola shoulder pork chop, sausage meatball pork rump spare ribs cow bacon filet mignon. Prosciutto pastrami pork loin, kevin kielbasa swine rump spare ribs beef ribs strip steak pork chop pork frankfurter sausage ground round.', '2014-02-25', 2)
 ;
 
 
@@ -320,7 +320,7 @@ VALUES
 INSERT INTO T_NYHETER
 (News_id, News_title, News_content, News_date, News_author)
 VALUES
-(3, 'Nyhet1', 'Bacon ipsum dolor sit amet kielbasa hamburger cow pork. Cow ham jowl kevin swine. Doner filet mignon tail pork belly sausage beef ribs spare ribs shankle brisket sirloin pastrami kevin cow kielbasa jerky. Beef ribs cow spare ribs, t-bone andouille ground round prosciutto swine sausage. Swine meatball pastrami, beef tenderloin ham hock shank shankle rump strip steak beef ribs turducken fatback hamburger ribeye. Ham bresaola shoulder pork chop, sausage meatball pork rump spare ribs cow bacon filet mignon. Prosciutto pastrami pork loin, kevin kielbasa swine rump spare ribs beef ribs strip steak pork chop pork frankfurter sausage ground round.', '2013-07-27', 2)
+(3, 'Nyhet1', 'Bacon ipsum dolor sit amet kielbasa hamburger cow pork. Cow ham jowl kevin swine. Doner filet mignon tail pork belly sausage beef ribs spare ribs shankle brisket sirloin pastrami kevin cow kielbasa jerky. Beef ribs cow spare ribs, t-bone andouille ground round prosciutto swine sausage. Swine meatball pastrami, beef tenderloin ham hock shank shankle rump strip steak beef ribs turducken fatback hamburger ribeye. Ham bresaola shoulder pork chop, sausage meatball pork rump spare ribs cow bacon filet mignon. Prosciutto pastrami pork loin, kevin kielbasa swine rump spare ribs beef ribs strip steak pork chop pork frankfurter sausage ground round.', '2014-02-25', 2)
 ;
 
 
