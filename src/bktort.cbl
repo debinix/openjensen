@@ -1,7 +1,11 @@
        *>
-       *>  Open Cobol ESQL (Ocesql) Sample Program
-       *>  bktort -- demonstrates SQL connect and
-       *>  select data from table 't_ort'.
+       *> bktort (not part of application)
+       *>
+       *> Open Cobol ESQL (Ocesql) Sample Program
+       *> bktort -- demonstrates SQL connect and
+       *> select data from table 't_ort'.
+       *>
+       *> Coder: BK
        *>
        IDENTIFICATION DIVISION.
        
@@ -31,6 +35,7 @@
 
        MAIN-RTN.
            DISPLAY "*** CONNECT STARTED ***".
+           DISPLAY "*** DB: openjensen TBL: t_ort ***".
            
        *>  CONNECT
            MOVE  "openjensen"    TO   dbname.

@@ -1,8 +1,10 @@
        *>
+       *> INITIAL TEMPLATE FOR SQL INSERT (here lokal)
+       *>
        *> cgi-add-local: adds user data related to
        *> a local, saves into table T_JLOKAL
        *> 
-       *> Coder: BK 
+       *> Coder: BK (not part of application)
        *>
        IDENTIFICATION DIVISION.
        program-id. cgi-add-local.

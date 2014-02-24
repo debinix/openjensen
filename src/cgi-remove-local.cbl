@@ -1,8 +1,10 @@
        *>
+       *> INITIAL TEMPLATE FOR SQL DELETE (here lokal)
+       *>         
        *> cgi-remove-local: Removes a named local 
        *> from table T_JLOKAL 
        *> 
-       *> Coder: BK 
+       *> Coder: BK (not part of application)
        *>
        IDENTIFICATION DIVISION.
        program-id. cgi-remove-local.

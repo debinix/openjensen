@@ -2,6 +2,8 @@
        *> creates a file (0-byte) for delete tests
        *> from php with the php unlink() function
        *>
+       *> Coder: Bk
+       *>
        IDENTIFICATION DIVISION.
        program-id. test-php-unlink.
        *>**************************************************

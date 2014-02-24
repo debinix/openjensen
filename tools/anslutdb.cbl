@@ -1,6 +1,9 @@
        *>******************************************************
-       *> Test setup of setup of OC ESQL
+       *> Test setup of setup of OCESQL (pre-processor)
        *> Database: openjensen, test table: tbl_user
+       *>
+       *> Coder: BK
+       *>
        *>******************************************************        
        IDENTIFICATION DIVISION.
        program-id. anslutdb.
@@ -8,14 +11,14 @@
        DATA DIVISION.         
        working-storage section.
         
-           EXEC SQL BEGIN DECLARE SECTION END-EXEC.
+       EXEC SQL BEGIN DECLARE SECTION END-EXEC.
        01 username                PIC  X(30) VALUE SPACE.        
        01 dbname                  PIC  X(30) VALUE SPACE.
        01 dbpasswd                PIC  X(10) VALUE SPACE.
        01 record-cnt              PIC  9(04) VALUE ZERO.
-           EXEC SQL END DECLARE SECTION END-EXEC.
+       EXEC SQL END DECLARE SECTION END-EXEC.
  
-           EXEC SQL INCLUDE SQLCA END-EXEC.        
+       EXEC SQL INCLUDE SQLCA END-EXEC.        
         
        *>******************************************************
        PROCEDURE DIVISION.
@@ -25,6 +28,7 @@
            COPY setupenv_openjensen. 
            
            DISPLAY "*** ANSLUTNINGSTEST STARTAS ***"
+           DISPLAY "*** DB: openjensen TBL: tbl_user ***"           
      
            PERFORM A100-connect-to-database
               

@@ -1,8 +1,10 @@
        *>
+       *> INITIAL TEMPLATE FOR SQL SELECT (here list lokal)
+       *>       
        *> cgi-list-local: fetch a list of locals 
        *> from table T_JLOKAL and writes to STDOUT 
        *> 
-       *> Coder: BK 
+       *> Coder: BK (not part of application)
        *>
        IDENTIFICATION DIVISION.
        program-id. cgi-list-local.
