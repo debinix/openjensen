@@ -4,15 +4,15 @@
 $Error->show();
 $Success->show();
 
-//$news_result = mysql_query("SELECT * FROM tbl_news ORDER BY news_id DESC");
-//while($news_row = mysql_fetch_array($news_result))
-$news_result = pg_query("SELECT * FROM T_NYHETER ORDER BY News_id DESC");
+// Not yet converted to call Cobol, back-end
+
+$news_result = pg_query("SELECT * FROM tbl_news ORDER BY news_id DESC");
 while($news_row = pg_fetch_array($news_result))
 {
 	?>
 	<h1><?php echo $news_row['news_title']; ?></h1>
 	<p><?php echo $news_row['news_content']; ?></p>
-	<span class="label label-info"><?php echo $news_row['news_date']; ?></span> <?php if($_SESSION['usertype_id'] >= 3) { ?><a href="index.delete.php?news_id=<?php echo $news_row['news_id']; ?>"><span class="label label-danger">Ta bort</span></a><?php } ?>
+	<span class="label label-info"><?php echo $news_row['news_date']; ?></span> <?php if($_SESSION['usertype_id'] >= 3) { ?><a href="index.delete.php?news_id=<?php echo $news_row['news_id']; ?>"><span class="label label-danger">Teamet</span></a><?php } ?>
 	<hr>
 	<?php
 }
