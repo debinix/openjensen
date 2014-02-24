@@ -54,8 +54,8 @@
              05  wc-user-username      PIC  X(40) VALUE SPACE.
              05  wc-user-password      PIC  X(40) VALUE SPACE.
              05  wc-user-lastlogin     PIC  X(40) VALUE SPACE.
-             05  wc-user-usertype-id   PIC  9(9) VALUE ZERO.
-             05  wc-user-program-id    PIC  9(9) VALUE ZERO.
+             05  wn-user-usertype-id   PIC  9(9) VALUE ZERO.
+             05  wn-user-program-id    PIC  9(9) VALUE ZERO.
              
        EXEC SQL BEGIN DECLARE SECTION END-EXEC.
        01  program-rec-vars.
@@ -160,7 +160,7 @@
             
             *>MOVE "4" TO wc-post-value
             IF wc-post-value = SPACE
-               MOVE 'Saknar ett användattyp id'
+               MOVE 'Saknar ett anvï¿½ndattyp id'
                     TO wc-printscr-string
                CALL 'stop-printscr' USING wc-printscr-string
             ELSE
@@ -207,12 +207,12 @@
            .
        *>**************************************************
        B0310-Get-Program-Names.
-            EXEC SQL
-                DECLARE cur4 CURSOR FOR
-                   SELECT  program_id, program_name
-                   FROM tbl_program
-                   ORDER BY program_id
-            END-EXEC
+           EXEC SQL
+               DECLARE cur4 CURSOR FOR
+                  SELECT  program_id, program_name
+                  FROM tbl_program
+                  ORDER BY program_id
+           END-EXEC
             
            EXEC SQL
                 OPEN cur4
@@ -238,7 +238,7 @@
            END-PERFORM
 
            EXEC SQL
-                CLOSE CUR4
+                CLOSE cur4
            END-EXEC
            .
        *>**************************************************
@@ -327,11 +327,7 @@
             END-EVALUATE
 
             *> Fetch the remaining records
-            PERFORM UNTIL sqlstate NOT = ZERO
-                
-                *>PERFORM B0405-Get-Usertype-Name
-                *>PERFORM B0406-Get-Program-Name
-                
+            PERFORM UNTIL sqlstate NOT = ZERO              
                 DISPLAY
                     html-table-row-start
                     html-table-cell-start
@@ -378,31 +374,6 @@
                    EXEC SQL
                         CLOSE curall
                    END-EXEC
-            END-EVALUATE
-            .
-       *>**************************************************
-       *> TO-DO: move these two procedures into a subroutine
-       *> and fetch the names from the db and put them in in-
-       *> ternal tables. /PB 
-       B0405-Get-Usertype-Name.
-            EVALUATE t-user-usertype-id
-                WHEN 1
-                    MOVE 'Elev' TO wc-usertype-name
-                WHEN 2
-                    MOVE 'Lärare' TO wc-usertype-name
-                WHEN 3
-                    MOVE 'Utbildningsledare' TO wc-usertype-name
-                WHEN 4
-                    MOVE 'Administratör' TO wc-usertype-name
-            END-EVALUATE
-            .
-       *>**************************************************
-       B0406-Get-Program-Name.
-            EVALUATE t-user-program-id
-                WHEN 1
-                    MOVE 'Testprogram1' TO wc-program-name
-                WHEN 2
-                    MOVE 'Testprogram2' TO wc-program-name
             END-EVALUATE
             .
        *>**************************************************

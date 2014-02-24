@@ -75,20 +75,20 @@
        0000-main.
 
            *> contains development environment settings for test
-           copy setupenv_openjensen.
+           COPY setupenv_openjensen.
 
-           perform a0100-init
+           PERFORM a0100-init
 
-           if is-valid-post and is-valid-init
+           IF is-valid-post AND is-valid-init
 
-                perform B0100-connect
-                if is-db-connected
-                    perform B0200-cgi-delete-row
-                end-if
+                PERFORM B0100-connect
+                IF is-db-connected
+                    PERFORM B0200-cgi-delete-row
+                END-IF
 
-           end-if
+           END-IF
 
-           perform c0100-closedown
+           PERFORM c0100-closedown
 
            goback
         .
@@ -102,30 +102,30 @@
            CALL 'wui-start-html' USING wc-pagetitle
 
            *> decompose and save current post string
-           call 'write-post-string' using wn-rtn-code
+           CALL 'write-post-string' USING wn-rtn-code
 
-           if wn-rtn-code = zero
+           IF wn-rtn-code = ZERO
 
-               set is-valid-init to true
+               SET is-valid-init TO true
 
                *> cgi post: remove row by local-id
-               move zero to wn-rtn-code
-               move space to wc-post-VALUE
-               move 'user_id' to wc-post-name
-               call 'get-post-value' using wn-rtn-code
+               MOVE ZERO TO wn-rtn-code
+               MOVE SPACE TO wc-post-VALUE
+               MOVE 'user_id' TO wc-post-name
+               CALL 'get-post-value' USING wn-rtn-code
                                            wc-post-name wc-post-value
                *> convert to number (space --> 0)
-               move function numval(wc-post-value) to wn-user-id
+               MOVE function numval(wc-post-value) TO wn-user-id
 
-           end-if
+           END-IF
 
-           if wn-user-id = 0
-                move 'Saknar användarens identifikation'
-                    to wc-printscr-string
-                call 'stop-printscr' using wc-printscr-string
-           else
-                set is-valid-post to true
-           end-if
+           IF wn-user-id = 0
+                MOVE 'Saknar användarens identifikation'
+                    TO wc-printscr-string
+                CALL 'stop-printscr' USING wc-printscr-string
+           ELSE
+                SET is-valid-post TO true
+           END-IF
 
         .
 
@@ -133,20 +133,20 @@
        B0100-connect.
 
            *>  connect
-           move  "openjensen"    to   wc-database
-           move  "jensen"        to   wc-username
-           move  SPACE        to   wc-passwd
+           MOVE  "openjensen"    TO   wc-database
+           MOVE  "jensen"        TO   wc-username
+           MOVE  SPACE        TO   wc-passwd
 
-           exec sql
-               connect :wc-username identified by :wc-passwd
-                                            using :wc-database
-           end-exec
+           EXEC SQL
+               CONNECT :wc-username IDENTIFIED BY :wc-passwd
+                                            USING :wc-database
+           END-EXEC
 
-           if  sqlstate not = zero
-                perform Z0100-error-routine
-           else
-                set is-db-connected to true
-           end-if
+           IF  SQLSTATE NOT = ZERO
+                PERFORM Z0100-error-routine
+           ELSE
+                SET is-db-connected TO true
+           END-IF
 
         .
 
@@ -154,12 +154,12 @@
        B0200-cgi-delete-row.
 
            *> delete based on user_id
-           if wn-user-id not = 0
+           IF wn-user-id NOT = 0
 
                 *> the selected row to be removed
-                move wn-user-id to t-user-id
+                MOVE wn-user-id TO t-user-id
 
-                perform B0210-is-id-found
+                PERFORM B0210-is-id-found
 
                 *> delete row from table
                 *> the pre-compiler does not like lowercase
@@ -172,19 +172,19 @@
                      END-EXEC
                 END-IF
 
-                if  sqlstate = zero
-                    move 'Användaren bortagen'
-                    to wc-printscr-string
-                    call 'ok-printscr' using wc-printscr-string
-                else
-                    perform Z0100-error-routine
-                end-if
+                IF  sqlstate = ZERO
+                    MOVE 'Användaren bortagen'
+                    TO wc-printscr-string
+                    CALL 'ok-printscr' USING wc-printscr-string
+                ELSE
+                    PERFORM Z0100-error-routine
+                END-IF
 
-           end-if
+           END-IF
 
-           perform B0300-commit-work
+           PERFORM B0300-commit-work
 
-           perform B0310-disconnect
+           PERFORM B0310-disconnect
 
         .
 
@@ -192,27 +192,31 @@
        B0210-is-id-found.
 
            *> cursor for tbl_user
-           exec sql
-             declare curs1 cursor for
-                 select user_id
-                 from tbl_user
-                     where user_id = :t-user-id
-           end-exec.
+           EXEC SQL
+             DECLARE curs1 CURSOR FOR
+                 SELECT user_id
+                 FROM tbl_user
+                     WHERE user_id = :t-user-id
+           END-EXEC
 
            *> open the cursor
-           exec sql
-                open curs1
-           end-exec
+           EXEC SQL
+                OPEN curs1
+           END-EXEC
 
            *> try a fetch
-           exec sql
-               fetch curs1
-                   into :wn-user-id
-           end-exec
-
-           if sqlstate = zero
-               set is-id-found to true
-           end-if
+           EXEC SQL
+               FETCH curs1
+                   INTO :wn-user-id
+           END-EXEC
+            
+           EXEC SQL
+                CLOSE cur1
+           END-EXEC
+           
+           IF SQLSTATE = ZERO
+               SET is-id-found TO true
+           END-IF
 
         .
 
@@ -220,18 +224,18 @@
        B0300-commit-work.
 
            *>  commit work permanently
-           exec sql
-               commit work
-           end-exec
+           EXEC SQL
+               COMMIT WORK
+           END-EXEC
         .
 
        *>**************************************************
        B0310-disconnect.
 
            *>  disconnect
-           exec sql
-               disconnect all
-           end-exec
+           EXEC SQL
+               DISCONNECT ALL
+           END-EXEC
 
         .
 
@@ -246,5 +250,5 @@
        Z0100-error-routine.
 
            *> requires the ending dot (and no extension)!
-           copy z0100-error-routine.
+           COPY z0100-error-routine.
         .

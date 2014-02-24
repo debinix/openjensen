@@ -37,7 +37,7 @@
        EXEC SQL END DECLARE SECTION END-EXEC.
 
        *>#######################################################
-       exec sql begin declare section end-exec.
+       EXEC SQL BEGIN DECLARE SECTION END-EXEC.
        01  users-rec-vars.
              05  t-user-id             PIC  9(4) VALUE ZERO.
              05  t-user-firstname      PIC  X(40) VALUE SPACE.
@@ -48,7 +48,7 @@
              05  t-user-password       PIC  X(40) VALUE SPACE.
              05  t-user-lastlogin      PIC  X(40) VALUE SPACE.
              05  t-user-program-id     PIC  9(9) VALUE ZERO.
-       exec sql end declare section end-exec.
+       EXEC SQL END DECLARE SECTION END-EXEC.
 
        01  wr-users-rec-vars.
              05  wn-user-id            PIC  9(4) VALUE ZERO.
@@ -137,83 +137,83 @@
                CALL 'stop-printscr' USING wc-printscr-string
            ELSE
                *> *** Get the post values ***
-               move zero to wn-rtn-code
-               move space to wc-post-value
-               move 'firstname' to wc-post-name
-               call 'get-post-value'
-                    using wn-rtn-code wc-post-name wc-post-value
+               MOVE ZERO TO wn-rtn-code
+               MOVE SPACE TO wc-post-value
+               MOVE 'firstname' TO wc-post-name
+               CALL 'get-post-value'
+                    USING wn-rtn-code wc-post-name wc-post-value
 
-               if wn-rtn-code = zero
-                   move wc-post-value TO wc-user-firstname
-                   set is-valid-init to true
-               end-if
+               IF wn-rtn-code = ZERO
+                   MOVE wc-post-value TO wc-user-firstname
+                   SET is-valid-init TO true
+               END-IF
 
-               move zero to wn-rtn-code
-               move space to wc-post-value
-               move 'lastname' to wc-post-name
-               call 'get-post-value'
-                    using wn-rtn-code wc-post-name wc-post-value
+               MOVE ZERO TO wn-rtn-code
+               MOVE SPACE TO wc-post-value
+               MOVE 'lastname' TO wc-post-name
+               CALL 'get-post-value'
+                    USING wn-rtn-code wc-post-name wc-post-value
 
-               if wn-rtn-code = zero
-                   move wc-post-value TO wc-user-lastname
-                   set is-valid-init to true
-               end-if
+               IF wn-rtn-code = ZERO
+                   MOVE wc-post-value TO wc-user-lastname
+                   SET is-valid-init TO true
+               END-IF
 
-               move zero to wn-rtn-code
-               move space to wc-post-value
-               move 'email' to wc-post-name
-               call 'get-post-value'
-                    using wn-rtn-code wc-post-name wc-post-value
+               MOVE ZERO TO wn-rtn-code
+               MOVE SPACE TO wc-post-value
+               MOVE 'email' TO wc-post-name
+               CALL 'get-post-value'
+                    USING wn-rtn-code wc-post-name wc-post-value
 
-               if wn-rtn-code = zero
-                   move wc-post-value TO wc-user-email
-                   set is-valid-init to true
-               end-if
+               IF wn-rtn-code = ZERO
+                   MOVE wc-post-value TO wc-user-email
+                   SET is-valid-init TO true
+               END-IF
 
-               move zero to wn-rtn-code
-               move space to wc-post-value
-               move 'phone' to wc-post-name
-               call 'get-post-value'
-                    using wn-rtn-code wc-post-name wc-post-value
+               MOVE ZERO TO wn-rtn-code
+               MOVE SPACE TO wc-post-value
+               MOVE 'phone' TO wc-post-name
+               CALL 'get-post-value'
+                    USING wn-rtn-code wc-post-name wc-post-value
 
-               if wn-rtn-code = zero
-                   move wc-post-value TO wc-user-phonenumber
-                   set is-valid-init to true
-               end-if
+               IF wn-rtn-code = ZERO
+                   MOVE wc-post-value TO wc-user-phonenumber
+                   SET is-valid-init TO true
+               END-IF
 
-               move zero to wn-rtn-code
-               move space to wc-post-value
-               move 'username' to wc-post-name
-               call 'get-post-value'
-                    using wn-rtn-code wc-post-name wc-post-value
+               MOVE ZERO TO wn-rtn-code
+               MOVE SPACE TO wc-post-value
+               MOVE 'username' TO wc-post-name
+               CALL 'get-post-value'
+                    USING wn-rtn-code wc-post-name wc-post-value
 
-               if wn-rtn-code = zero
-                   move wc-post-value TO wc-user-username
-                   set is-valid-init to true
-               end-if
+               IF wn-rtn-code = ZERO
+                   MOVE wc-post-value TO wc-user-username
+                   SET is-valid-init TO true
+               END-IF
 
-               move zero to wn-rtn-code
-               move space to wc-post-value
-               move 'password' to wc-post-name
-               call 'get-post-value'
-                    using wn-rtn-code wc-post-name wc-post-value
+               MOVE ZERO TO wn-rtn-code
+               MOVE SPACE TO wc-post-value
+               MOVE 'password' TO wc-post-name
+               CALL 'get-post-value'
+                    USING wn-rtn-code wc-post-name wc-post-value
 
-               if wn-rtn-code = zero
-                   move wc-post-value TO wc-user-password
-                   set is-valid-init to true
-               end-if
+               IF wn-rtn-code = ZERO
+                   MOVE wc-post-value TO wc-user-password
+                   SET is-valid-init TO true
+               END-IF
 
-               move zero to wn-rtn-code
-               move space to wc-post-value
-               move 'program' to wc-post-name
-               call 'get-post-value'
-                    using wn-rtn-code wc-post-name wc-post-value
+               MOVE ZERO TO wn-rtn-code
+               MOVE SPACE TO wc-post-value
+               MOVE 'program' TO wc-post-name
+               CALL 'get-post-value'
+                    USING wn-rtn-code wc-post-name wc-post-value
 
-               if wn-rtn-code = zero
-                   move function numval(wc-post-value)
+               IF wn-rtn-code = ZERO
+                   MOVE function numval(wc-post-value)
                         TO wn-user-program-id
-                   set is-valid-init to true
-               end-if
+                   SET is-valid-init TO true
+               END-IF
 
            END-IF
            .
