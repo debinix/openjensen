@@ -114,7 +114,7 @@
        01 wc-src-file-path              PIC X(15)  VALUE SPACE.
        01 wc-dest-dir-path              PIC X(8)  VALUE "../data/".
        01 wc-dest-file-path             PIC X(64) VALUE SPACE.
-       01 wc-user-id-edit               PIC X(4)  VALUE SPACE.
+       01 wn-user-id-edit               PIC ZZZ9  VALUE ZERO.
        
        *> These two plus html-table-row-end makes up one
        *> line in the output file
@@ -408,11 +408,11 @@
        *> Checks IF admin and builds output line
        B0500-Check-if-Admin.
             IF wn-user-type-number >= 3 THEN
+            MOVE t-user-id TO wn-user-id-edit
                 DISPLAY
                    '<td><a href="users.edit.php?user_id='
-                   '<?php echo $ row['
-                   t-user-id
-                   ']; ?>"><span class="label label-info">'
+                   FUNCTION trim (wn-user-id-edit)
+                   '"><span class="label label-info">'
                    'Redigera'
                    '</span></a></td>'
                    html-table-row-end
