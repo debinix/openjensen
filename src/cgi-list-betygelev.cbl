@@ -89,7 +89,7 @@
        *>#######################################################
            EXEC SQL BEGIN DECLARE SECTION END-EXEC.
        *>
-       01  tbl_course-rec-vars.       
+       01  tbl-cource-record.       
            05  tbl_course-course_id        PIC  9(4).
            05  tbl_course-course_name      PIC  X(40).
            05  tbl_course-course_startdate PIC  X(10).
@@ -97,7 +97,7 @@
            05  tbl_course-program_id       PIC  9(4).           
 
        *> table data
-       01  wr-rec-vars.
+       01  wr-course-record.
            05  wn-course_id          PIC  9(4)  VALUE ZERO.          
            05  wc-course_name        PIC  X(40) VALUE SPACE.
            05  wc-course_startdate   PIC  X(10) VALUE SPACE.
@@ -105,16 +105,15 @@
            05  wn-course-program_id  PIC  9(4)  VALUE ZERO.  
        
        *>*******************************************************
-       01  tbl_grade-rec-vars.       
+       01  tbl-grade-record.       
            05  tbl_grade-grade_id         PIC  9(4).
            05  tbl_grade-grade_grade      PIC  X(40).
            05  tbl_grade-grade_comment    PIC  X(40).
            05  tbl_grade-user_id          PIC  9(4).
-           05  tbl_grade-course_id        PIC  9(4).           
-       *>    
+           05  tbl_grade-course_id        PIC  9(4).             
 
        *> table data
-       01  wr-rec-vars.
+       01  wr-grade-record.
            05  wn-grade_id           PIC  9(4)  VALUE ZERO.          
            05  wc-grade_grade        PIC  X(40) VALUE SPACE.
            05  wc-grade_comment      PIC  X(40) VALUE SPACE.
@@ -300,7 +299,7 @@
               
               PERFORM B0220-write-grade-row
 
-              INITIALIZE tbl_grade-rec-vars
+              INITIALIZE wr-grade-record
            
               *> fetch next row  
                EXEC SQL 
@@ -385,7 +384,7 @@
               
               PERFORM B0260-write-program-row
 
-              INITIALIZE tbl_course-rec-vars
+              INITIALIZE wr-course-record
            
               *> fetch next row  
                EXEC SQL 
