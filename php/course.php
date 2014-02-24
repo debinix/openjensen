@@ -266,10 +266,10 @@ elseif ($_SESSION['usertype_id'] >= 2)
 
       <tbody>        
         <tr>   
-          <td><?php echo trim($user_row[$i]['user_firstname']); ?></td>
-          <td><?php echo trim($user_row[$i]['user_lastname']); ?></td>
-          <td><?php if(trim($user_row[$i]['grade_grade']) == "-") { echo "Ej satt"; } else { echo trim($user_row[$i]['grade_grade']); } ?></td>
-          <td><?php if(trim($user_row[$i]['grade_grade']) == "-") { ?><a href="course.add.php?user_id=<?php echo $user_row[$i]['user_id']; ?>&course_id=<?php echo $user_row[$i]['course_id']; ?>&user_firstname=<?php echo $user_row[$i]['user_firstname']; ?>&user_lastname=<?php echo $user_row[$i]['user_lastname']; ?>"><span class="label label-primary">Sätt betyg</span></a><?php } else { ?><a href="course.edit.php?id=<?php echo $user_row[$i]['grade_id']; ?>&grade_grade=<?php echo $user_row[$i]['grade_grade']; ?>&grade_comment=<?php echo $user_row[$i]['grade_comment']; ?>"><span class="label label-primary">Ändra betyg</span></a><?php } ?></td>
+          <td><?php echo trim($user_row[$i]['user_firstname'], " "); ?></td>
+          <td><?php echo trim($user_row[$i]['user_lastname'], " "); ?></td>
+          <td><?php if(trim($user_row[$i]['grade_grade'], " ") == "-") { echo "Ej satt"; } else { echo trim($user_row[$i]['grade_grade'], " "); } ?></td>
+          <td><?php if(trim($user_row[$i]['grade_grade'], " ") == "-") { ?><a href="course.add.php?user_id=<?php echo $user_row[$i]['user_id']; ?>&course_id=<?php echo $user_row[$i]['course_id']; ?>&user_firstname=<?php echo $user_row[$i]['user_firstname']; ?>&user_lastname=<?php echo $user_row[$i]['user_lastname']; ?>"><span class="label label-primary">Sätt betyg</span></a><?php } else { ?><a href="course.edit.php?id=<?php echo $user_row[$i]['grade_id']; ?>&grade_grade=<?php echo $user_row[$i]['grade_grade']; ?>&grade_comment=<?php echo $user_row[$i]['grade_comment']; ?>"><span class="label label-primary">Ändra betyg</span></a><?php } ?></td>
         </tr>
       </tbody>           
         
