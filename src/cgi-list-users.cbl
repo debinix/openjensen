@@ -412,8 +412,7 @@
                 DISPLAY
                    '<td><a href="users.edit.php?user_id='
                    FUNCTION trim (wn-user-id-edit)
-                   '];'
-                   '?>"><span class="label label-info">'
+                   '<span class="label label-info">'
                    'Redigera'
                    '</span></a></td>'
                    html-table-row-end
