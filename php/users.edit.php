@@ -11,7 +11,6 @@ $user_result = pg_query("SELECT * FROM tbl_user WHERE user_id=".$user_id." LIMIT
 $user_row = pg_fetch_assoc($user_result);
 
 
-
 ?>
 <h1><?php echo $user_row['user_firstname']." ".$user_row['user_lastname'] ?></h1>
 <form method="POST" action="./process.php?function=editUser&user_id=<?php echo $user_row['user_id']; ?>">
@@ -31,12 +30,12 @@ $user_row = pg_fetch_assoc($user_result);
   <br>
   <input type="text" name="password" class="form-control" placeholder="Lösenord" value="<?php echo $user_row['user_password'] ?>">
   <?php
-  
+
   // $result = mysql_query("SELECT * FROM tbl_program");
-  $result = pg_query("SELECT * FROM tbl_program");  
-  
+  $result = pg_query("SELECT * FROM tbl_program");
+
   // while($row = mysql_fetch_array($result))
-  while($row = pg_fetch_array($result))  
+  while($row = pg_fetch_array($result))
   {
     ?>
     <div class="radio">
