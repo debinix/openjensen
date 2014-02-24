@@ -1,19 +1,26 @@
-        IDENTIFICATION DIVISION.
-        program-id. wui-start-html.
+       *>
+       *> wui-start-html:
+       *>
+       *> display manadatory html page start
+       *> 
+       *> Coder: BK 
+       *>        
+       IDENTIFICATION DIVISION.
+       program-id. wui-start-html.
         
-        ENVIRONMENT DIVISION.
+       ENVIRONMENT DIVISION.
         
-        DATA DIVISION.
-        working-storage section.      
+       DATA DIVISION.
+       working-storage section.      
         
-        linkage section.
-        01  wc-pagetitle        PIC X(20).   
+       linkage section.
+       01  wc-pagetitle        PIC X(20).   
         
-        PROCEDURE DIVISION USING wc-pagetitle.
-        000-start-html.
+       PROCEDURE DIVISION USING wc-pagetitle.
+       000-start-html.
         
-            *> Always send out the Content-type before any other IO
-            DISPLAY
+           *> Always send out the Content-type before any other IO
+           DISPLAY
             "<!DOCTYPE HTML PUBLIC "
             "-//W3C//DTD HTML 4.01 Transitional//EN "
             "http://www.w3.org/TR/html4/loose.dtd"
@@ -30,10 +37,11 @@
             "</style>"
             "</head>"
             "<body>"            
-            END-DISPLAY        
+           END-DISPLAY        
         
-            GOBACK
-            .
+           EXIT PROGRAM
+           .
             
+       *>******************************************************
 
 
