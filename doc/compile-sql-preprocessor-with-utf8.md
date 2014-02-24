@@ -152,8 +152,8 @@ To install switch to root and run:
 
     # make install
     
-This installs the binaray library to */usr/local*, unless configured different.
-To have the application, at runtime find the osesql library export:
+This installs the binary library to */usr/local*, unless configured different.
+To have the application, at run time find the osesql library export:
 
     export LD_LIBRARY_PATH=/usr/local/lib
     
@@ -171,6 +171,39 @@ run direct from the command line:
 
     $ ./anslutdb.cgi
     
-This file is hardcoded to a specific database and table.
+This file is hard coded to a specific database and table.
 
 
+### Re-compile for UTF-8 character support
+
+First check and the remove previous installation (as root):
+
+    # ls -l libocesql*
+    -rw-r--r-- 1 root staff 165658 Feb 20 09:40 libocesql.a
+    -rwxr-xr-x 1 root staff    841 Feb 20 09:40 libocesql.la
+    lrwxrwxrwx 1 root staff     18 Feb 20 09:40 libocesql.so -> libocesql.so.0.0.0
+    lrwxrwxrwx 1 root staff     18 Feb 20 09:40 libocesql.so.0 -> libocesql.so.0.0.0
+    -rwxr-xr-x 1 root staff 100904 Feb 20 09:40 libocesql.so.0.0.0
+
+Now, remove the original non-utf8 installation with *rm libocesql* (backup first).
+Remove also the symbolic link in */usr/lib* with:
+
+    # rm /usr/lib/libocesql.so.0
+
+Install the pre-processor as above, and unpack from the original archive to
+have a new original source to work with. This time, we will patch one source file
+before the usual ./configure, make, make test and make install as above.
+
+The only single change required is to change one line in the c source file:
+
+    ~/tmp/ocesql-1.0.0/dblib/ocesql.c
+    
+Open the file in a text editor , locate the *_ocesqlConnectMain()* routine.
+It should be around row 149. In that file comment out and add a line as below:
+
+	//char *cencoding = "SJIS";
+	char *cencoding = "UTF8";
+    
+Save and close the editor and you are ready to recompile as above. With this
+the pre-processor will accept utf-8 encoded characters. According to the developers
+a new version will be released which in some way will have an option for this.
