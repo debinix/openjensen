@@ -364,10 +364,11 @@ elseif($function == "addNews")
 	}
 	else
 	{
+		// Not yet converted to Cobol back-end
 		$date = date('Y-m-d');
-		pg_query("INSERT INTO tbl_news (news_title, news_content, news_author, news_date) VALUES ('".$news_title."', '".$news_content."', '".$news_author."', '".$date."')") or die(pg_last_error());
-
-		$Success->set("Nyheten har skapats.");
+		// pg_query("INSERT INTO tbl_news (news_title, news_content, news_author, news_date) VALUES ('".$news_title."', '".$news_content."', '".$news_author."', '".$date."')") or die(pg_last_error());
+		// $Success->set("Nyheten har skapats.");
+		
 		header('location: index.php');
 	}
 }
