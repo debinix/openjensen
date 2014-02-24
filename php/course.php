@@ -266,15 +266,15 @@ elseif ($_SESSION['usertype_id'] >= 2)
 
       <tbody>        
         <tr>   
-          <td>
+          <td style=" width:280px">
             <?php echo trim($user_row[$i]['user_firstname'], " "); ?>
           </td>
           
-          <td>
+          <td style=" width:304px">
             <?php echo trim($user_row[$i]['user_lastname'], " "); ?>
           </td>
       
-          <td>
+          <td style=" width:194px">
             <?php if(trim($user_row[$i]['grade_grade'], " ") == "-") { echo "Ej satt"; } else { echo trim($user_row[$i]['grade_grade'], " "); } ?>
           </td>
           
