@@ -86,4 +86,4 @@ IBM offers DB2 Express-C for Linux, Unix and Windows (LUW) which
 inludes both the DB2 SQL relational database manager as well
 the required SQL pre-processor. Some limitation apply, which above
 solution does not have otherwise it is *free to develop, free to deploy,
-free to distribute*. This path have not been explored in depth, though.
+free to distribute*. This path have not been explored at all, though.
