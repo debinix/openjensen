@@ -8,6 +8,9 @@ based on COBOL, a relational database back-end and front-end based on php.
 The [web application](http://mc-butter.se/index.php) can only be viewed
 from school and from members IP addresses due to firewall settings.
 
+### What COBOL, is that not dead?
+
+![Cobol dead](img/cobol.jpg)
 
 ### Version information
 
